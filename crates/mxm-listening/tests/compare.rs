@@ -87,7 +87,7 @@ fn rank(c: &Comparison, id: &str) -> Option<(usize, f64)> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_same_sound_has_no_audible_difference() {
     let c = run(Drum::default(), Drum::default());
     let audible: Vec<_> = c.audible().map(|f| f.id).collect();
@@ -95,7 +95,7 @@ fn the_same_sound_has_no_audible_difference() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_longer_ring_comes_back_as_a_longer_ring() {
     let c = run(
         Drum::default(),
@@ -113,7 +113,7 @@ fn a_longer_ring_comes_back_as_a_longer_ring() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_higher_drum_comes_back_as_higher_pitched() {
     let c = run(
         Drum::default(),
@@ -135,7 +135,7 @@ fn a_higher_drum_comes_back_as_higher_pitched() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_softer_attack_comes_back_as_a_softer_attack() {
     let c = run(
         Drum::default(),
@@ -149,7 +149,7 @@ fn a_softer_attack_comes_back_as_a_softer_attack() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_quieter_render_is_a_fader_difference() {
     let c = run(
         Drum::default(),
@@ -174,7 +174,7 @@ fn a_quieter_render_is_a_fader_difference() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_wobbling_ring_comes_back_as_a_wobble() {
     let c = run(
         Drum::default(),
@@ -199,7 +199,7 @@ fn a_wobbling_ring_comes_back_as_a_wobble() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_change_well_under_threshold_is_not_reported() {
     // 10 % on the ring's time constant: under the 25 % decay threshold.
     let c = run(
@@ -219,7 +219,7 @@ fn a_change_well_under_threshold_is_not_reported() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_change_comes_back_at_its_size_in_thresholds() {
     // The plan's §6 sweep: each change at 0.5, 2 and 4 of its reading's threshold comes back as that
     // reading at that many thresholds, on its side, and under one threshold it is not reported.

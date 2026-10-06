@@ -104,7 +104,7 @@ impl Struck {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_struck_notes_changes_come_back_at_their_sizes() {
     let reference = STRUCK.report();
     // The fundamental is read to a hundredth of a cent on a noise-free partial.
@@ -208,7 +208,7 @@ fn held(f0: f64, depth: f64) -> Report {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_held_notes_changes_come_back_at_their_sizes() {
     let reference = held(293.66, 20.0);
     // The held pitch is the median of a track every 10 ms: a vibrato's swing averages out to a cent.
@@ -269,7 +269,7 @@ fn voice(attack_s: f64, sustain_db: f64) -> Report {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_voices_changes_come_back_at_their_sizes() {
     let reference = voice(0.06, -6.0);
     // The envelope is an RMS over two periods (9 ms at 220 Hz), read every millisecond: near a short
@@ -338,7 +338,7 @@ fn room(x: &[f64], t60: f64) -> Vec<f64> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn an_impulse_responses_changes_come_back_at_their_sizes() {
     let mut sweep_s = Stimulus::new(Kind::Sweep {
         from_hz: 20.0,

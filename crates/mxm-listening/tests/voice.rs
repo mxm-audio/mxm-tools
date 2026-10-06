@@ -91,7 +91,7 @@ fn additive_saw(f0: f64) -> impl Fn(f64) -> f64 {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_naive_saw_aliases_audibly_and_an_additive_one_does_not() {
     let s = note(81, 1.0);
     let f0 = 880.0;
@@ -111,7 +111,7 @@ fn a_naive_saw_aliases_audibly_and_an_additive_one_does_not() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn an_adsr_reads_its_stages() {
     let s = note(69, 1.5);
     let env = Adsr {
@@ -130,7 +130,7 @@ fn an_adsr_reads_its_stages() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_hard_note_off_clicks_and_a_released_one_does_not() {
     // Released a quarter cycle into the last period, where the sine is at its peak.
     let s = note(69, 1.0 + 0.25 / 440.0);
@@ -163,7 +163,7 @@ fn a_hard_note_off_clicks_and_a_released_one_does_not() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_gain_stepped_every_64_samples_reads_as_zipper_at_750_hz() {
     let s = note(95, 1.5);
     let f0 = 440.0 * 2f64.powf(26.0 / 12.0);
@@ -181,7 +181,7 @@ fn a_gain_stepped_every_64_samples_reads_as_zipper_at_750_hz() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_detuned_unison_beats_twice_as_fast_on_its_second_harmonic() {
     let s = note(57, 3.0);
     let (up, down) = (
@@ -195,7 +195,7 @@ fn a_detuned_unison_beats_twice_as_fast_on_its_second_harmonic() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_resonant_filter_peaks_on_the_series_and_a_singing_filter_is_a_line_off_it() {
     let s = note(45, 1.0);
     let saw = additive_saw(110.0);
@@ -225,7 +225,7 @@ fn a_resonant_filter_peaks_on_the_series_and_a_singing_filter_is_a_line_off_it()
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_bent_sine_reads_its_distortion_and_an_offset_its_dc() {
     let s = note(69, 1.0);
     let clean = play(&s, HELD, |t| (TAU * 440.0 * t).sin());

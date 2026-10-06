@@ -42,7 +42,7 @@ fn no_nan(r: &Report) {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_damped_tone_decays_at_its_known_rate_at_every_rate() {
     // τ = 0.2 s: the amplitude falls 20 dB in τ·ln 10 = 460.5 ms, at 8.686/τ = 43.4 dB/s.
     for rate in mxm_measure::RATES {
@@ -73,7 +73,7 @@ fn a_damped_tone_decays_at_its_known_rate_at_every_rate() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_two_stage_decay_shows_two_slopes() {
     // A fast first stage (τ = 30 ms) over a quiet slow ring (τ = 0.5 s, 30 dB down).
     let rate = 48_000.0;
@@ -97,7 +97,7 @@ fn a_two_stage_decay_shows_two_slopes() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_attack_reads_a_known_rise_peak_and_direction() {
     // A 1 kHz tone whose envelope rises linearly over 5 ms, then decays: the RMS envelope's 10–90 %
     // rise is about 0.8 × 5 ms, the peak comes at the top of the ramp, and the first swing is up.
@@ -123,7 +123,7 @@ fn the_attack_reads_a_known_rise_peak_and_direction() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_first_swing_s_direction_is_read() {
     let up = damped(48_000.0, 200.0, 0.1, 0.5);
     let down = Sound::new("down", 48_000, up.samples.iter().map(|s| -s).collect());
@@ -134,7 +134,7 @@ fn the_first_swing_s_direction_is_read() {
 /// The octave under the rest, 25–50 Hz, read over one of its own periods (40 ms): a kick's lowest
 /// push sounds there, below the octave table's old floor of 50 Hz.
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_lowest_octave_finds_a_kicks_sub_bass() {
     let rate = 48_000.0;
     let r = describe(&damped(rate, 35.0, 2.0, 1.5), Some(Family::Percussive));
@@ -161,7 +161,7 @@ fn the_lowest_octave_finds_a_kicks_sub_bass() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn brightness_and_octave_levels_find_a_tone() {
     let rate = 48_000.0;
     let r = describe(&damped(rate, 1000.0, 2.0, 1.5), Some(Family::Percussive));
@@ -192,7 +192,7 @@ fn brightness_and_octave_levels_find_a_tone() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn resonance_finds_a_known_peak_and_q() {
     // A Lorentzian power peak at 2 kHz with Q = 10, sampled every 1 Hz; lightly smoothed.
     let (f0, q) = (2000.0, 10.0);
@@ -214,7 +214,7 @@ fn resonance_finds_a_known_peak_and_q() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn silence_and_broken_audio_are_reported_not_measured() {
     let r = describe(&Sound::new("silence", 48_000, vec![0.0; 48_000]), None);
     assert!(r.sections.is_empty());
@@ -229,7 +229,7 @@ fn silence_and_broken_audio_are_reported_not_measured() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_short_file_reports_late_readings_absent() {
     let r = describe(&damped(48_000.0, 300.0, 0.05, 0.2), None);
     no_nan(&r);
@@ -243,7 +243,7 @@ fn a_short_file_reports_late_readings_absent() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn reports_serialise_without_nan() {
     let r = describe(&damped(48_000.0, 440.0, 0.3, 1.0), None);
     let json = mxm_listening::report::json::to_json(&r);
@@ -258,7 +258,7 @@ fn reports_serialise_without_nan() {
 /// held note's fluctuation strength in its place, the `perception` section last — leaving every
 /// other reading as it was.
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_reading_in_stages_adds_only_the_perceptual_models() {
     use mxm_listening::describe::{Options, describe_staged};
 

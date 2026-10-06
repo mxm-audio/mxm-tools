@@ -79,7 +79,7 @@ fn level_near(rows: &[(f64, f64)], hz: f64) -> Option<f64> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_fast_early_mode_is_read_in_the_early_window_at_its_level() {
     // A strong mode that is gone within 100 ms under a weak long ring: the early window must read the
     // early window. Its low band's filters once spanned 200 ms, read the window 100 ms late, and lost
@@ -104,7 +104,7 @@ fn a_fast_early_mode_is_read_in_the_early_window_at_its_level() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_rebuild_of_a_drum_keeps_its_pitch_and_decay() {
     let x = drum(
         &[(180.0, 0.6, 1.2), (286.0, 0.3, 0.6), (431.0, 0.15, 0.3)],
@@ -132,7 +132,7 @@ fn the_rebuild_of_a_drum_keeps_its_pitch_and_decay() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_rest_pitch_on_different_modes_says_why() {
     // The ring at 262 Hz, a lower mode 9 dB under it in the reference and 15 dB under in the
     // candidate: the rule's 12 dB line lies between, so the rest pitches are different modes.
@@ -161,7 +161,7 @@ fn a_rest_pitch_on_different_modes_says_why() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_difference_no_reading_covers_is_reported_as_unexplained() {
     let base = drum(&[(180.0, 0.6, 1.2), (286.0, 0.3, 0.6)], 0.2);
     // A 1.2 kHz burst from 720 to 780 ms: between every windowed reading's windows (at 580 ms and
@@ -199,7 +199,7 @@ fn a_difference_no_reading_covers_is_reported_as_unexplained() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_rebuild_of_a_note_keeps_its_partials_and_laws() {
     // A struck stiff string: sixteen partials, reaching 3.6 kHz, over a drum analysis's 2 kHz.
     let rate = 48_000.0;

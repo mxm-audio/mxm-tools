@@ -35,7 +35,7 @@ fn snare() -> Sound {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): minutes in a debug build"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; minutes in a debug build"]
 fn the_staircase_recovers_a_simulated_listener() {
     for threshold in [0.5, 2.0, 10.0] {
         let mut estimates: Vec<f64> = (0..200u64)
@@ -71,7 +71,7 @@ fn the_staircase_recovers_a_simulated_listener() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): minutes in a debug build"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; minutes in a debug build"]
 fn a_session_gives_back_a_listeners_threshold_in_the_readings_unit() {
     let subject = Subject::new(snare(), Some(Family::Percussive));
     let mut values = Vec::new();
@@ -110,7 +110,7 @@ fn a_session_gives_back_a_listeners_threshold_in_the_readings_unit() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): minutes in a debug build"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; minutes in a debug build"]
 fn each_perturbation_moves_the_reading_it_names() {
     let sound = snare();
     let subject = Subject::new(sound.clone(), Some(Family::Percussive));
@@ -179,7 +179,7 @@ fn each_perturbation_moves_the_reading_it_names() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): minutes in a debug build"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; minutes in a debug build"]
 fn every_answer_counts_and_the_table_wins_in_its_own_context() {
     use mxm_listening::audibility::Kind;
     use mxm_listening::session::{Answer, fit, table};
@@ -231,7 +231,7 @@ fn every_answer_counts_and_the_table_wins_in_its_own_context() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): minutes in a debug build"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; minutes in a debug build"]
 fn a_session_log_reads_back_without_its_check_trials() {
     let text = "# listen session
 # date	2026-09-27T08-57-18Z
@@ -293,7 +293,7 @@ fn string(vibrato: bool) -> Sound {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): minutes in a debug build"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; minutes in a debug build"]
 fn each_note_perturbation_moves_the_reading_it_names() {
     for (sound, family, ops) in [
         (

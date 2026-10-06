@@ -14,7 +14,7 @@ const RATE: f64 = 48_000.0;
 /// `research:physical-modelling/physical-modelling-synthesis.md` §6.2, computed there from the same
 /// equations and checked against Essl & Cook, Falaize & Hélie and *The Sounding Object*.
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_computed_objects_match_the_research_table() {
     let all = objects::all();
     let row = |name: &str| {
@@ -93,7 +93,7 @@ fn value(r: &Report, id: &str) -> Option<f64> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_free_bar_reads_its_law_its_tilt_and_its_object() {
     let x = note(440.0, &[1.0, 2.7565, 5.4039, 8.9330], -6.0, 2.0, -0.8, None);
     let r = describe(&Sound::new("bar", RATE as u32, x), Some(Family::Note));
@@ -124,7 +124,7 @@ fn a_free_bar_reads_its_law_its_tilt_and_its_object() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_tuned_bar_with_a_split_fundamental_reads_both() {
     // A marimba-like bar: 1 : 4 : 10, the fundamental split 5 Hz by its resonator, partials dying
     // faster than the fundamental as in wood (constant Q, M = −1).
@@ -152,7 +152,7 @@ fn a_tuned_bar_with_a_split_fundamental_reads_both() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_note_struck_over_the_last_one_is_timed_from_its_own_strike() {
     // The note before rings at a third of the new note's level when the new one is struck, 20 ms in.
     let mut x = note(440.0, &[1.0, 2.7565], -6.0, 2.0, -0.8, None);
@@ -176,7 +176,7 @@ fn a_note_struck_over_the_last_one_is_timed_from_its_own_strike() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn two_notes_compare_partial_by_partial() {
     // The candidate's 4× partial is 4 dB louder and dies twice as fast; its 10× is the reference's.
     let reference = lines(261.63, &[1.0, 4.0, 10.0], -9.0, 1.2, -1.0);
@@ -225,7 +225,7 @@ fn two_notes_compare_partial_by_partial() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_key_map_reads_a_decay_halving_each_octave() {
     // A free bar at C3, C4 and C5, its fundamental ringing 2 s at middle C and half as long for
     // each octave up; the tilt and the decay law the same at every key.
@@ -264,7 +264,7 @@ fn a_key_map_reads_a_decay_halving_each_octave() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_caller_can_name_the_note_a_sympathetic_line_would_take() {
     // A high tine at Bb5, short, over a lower tine at F3 ringing in sympathy: weaker at the strike,
     // ringing ten times as long, the most energetic line in the file.
@@ -294,7 +294,7 @@ fn a_caller_can_name_the_note_a_sympathetic_line_would_take() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_tubular_bell_is_heard_at_its_strike_note() {
     // A free bar whose 4th to 6th modes (8.93 : 13.34 : 18.64, near 2 : 3 : 4) are its loudest, as a
     // tube's are, the 4th tuned to twice C5: no partial sits at C5, and the ear hears C5.
@@ -324,7 +324,7 @@ fn a_tubular_bell_is_heard_at_its_strike_note() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_stiff_string_reads_its_inharmonicity_and_where_it_was_plucked() {
     // A2 plucked a fifth of the way along (harmonics 5, 10, 15 and 20 silent), stiff enough to stretch
     // its 24th harmonic by 11 %, the harmonics dying faster the higher they are.
@@ -350,7 +350,7 @@ fn a_stiff_string_reads_its_inharmonicity_and_where_it_was_plucked() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_bar_has_no_harmonic_series() {
     let r = describe(
         &Sound::new(
@@ -391,7 +391,7 @@ fn decays(t60: f64, t: f64) -> f64 {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_two_stage_decay_and_a_damper_are_told_apart() {
     // A piano's aftersound: a prompt decay (T60 0.5 s) over a slow one 20 dB down (T60 4 s).
     let x = shaped(220.0, |t| 0.3 * decays(0.5, t) + 0.03 * decays(4.0, t));
@@ -423,7 +423,7 @@ fn a_two_stage_decay_and_a_damper_are_told_apart() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_set_of_notes_reveals_a_body_resonance_that_stays_put() {
     // Five strings across two octaves, each −6 dB an octave, all through one body that lifts
     // everything near 1 kHz by 8 dB.
@@ -491,7 +491,7 @@ fn held(f0: f64, depth: f64, drift: f64) -> Vec<f32> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_held_note_reads_its_vibrato_drift_and_settling() {
     let r = describe(
         &Sound::new("bowed", RATE as u32, held(293.66, 25.0, 10.0)),
@@ -517,7 +517,7 @@ fn a_held_note_reads_its_vibrato_drift_and_settling() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_body_line_under_every_note_is_found_across_the_set_and_kept_out() {
     // Five strings, each over a body resonance at 100 Hz that rings longer than they do.
     let notes = [147.0, 196.0, 262.0, 349.0, 440.0];
@@ -553,7 +553,7 @@ fn a_body_line_under_every_note_is_found_across_the_set_and_kept_out() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_string_reads_its_polarisations_beating_a_strum_and_a_pickups_harmonics() {
     // Two polarisations of one fundamental, 1.5 Hz apart, over a second harmonic.
     let lines = [(220.0, 0.2, 3.0), (221.5, 0.12, 3.0), (441.0, 0.08, 2.0)];
@@ -619,7 +619,7 @@ fn a_string_reads_its_polarisations_beating_a_strum_and_a_pickups_harmonics() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_steady_rich_tone_reads_its_own_fundamental() {
     // Thirty harmonics at 1/n that neither decay nor grow, noise-free, as a synth holds them: a
     // steady partial's pole sits on the unit circle, and one rounded just outside it had been dropped
@@ -646,7 +646,7 @@ fn a_steady_rich_tone_reads_its_own_fundamental() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_harmonic_deficit_names_the_missing_and_the_sunk_harmonics() {
     // Twelve harmonics of 196 Hz at 1/n; plucked at a quarter of the length, the fourth, eighth and
     // twelfth are missing; blown as a clarinet, the even half sits 25 dB down.

@@ -74,7 +74,7 @@ fn delayed(x: &[f64], by: usize) -> Vec<f64> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn every_kind_round_trips_through_its_sidecar_and_an_edit_is_refused() {
     for name in [
         "impulse",
@@ -110,7 +110,7 @@ fn every_kind_round_trips_through_its_sidecar_and_an_edit_is_refused() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_sweep_is_farinas_and_a_note_is_silent() {
     let s = Stimulus::new(Kind::Sweep {
         from_hz: 20.0,
@@ -136,7 +136,7 @@ fn the_sweep_is_farinas_and_a_note_is_silent() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_sweep_through_a_resonant_low_pass_reads_its_peak_q_and_latency() {
     let s = Stimulus::new(Kind::Sweep {
         from_hz: 20.0,
@@ -163,7 +163,7 @@ fn a_sweep_through_a_resonant_low_pass_reads_its_peak_q_and_latency() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_high_pass_reads_its_edge_and_no_peak() {
     let s = Stimulus::new(Kind::Sweep {
         from_hz: 20.0,
@@ -190,7 +190,7 @@ fn feedback_delay(x: &[f64], d: usize, g: f64, pole: f64) -> Vec<f64> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn an_impulse_through_a_feedback_delay_reads_its_time_feedback_and_darkening() {
     let mut s = Stimulus::new(Kind::Impulse);
     s.tail_s = 1.5;
@@ -209,7 +209,7 @@ fn an_impulse_through_a_feedback_delay_reads_its_time_feedback_and_darkening() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn an_exponentially_decaying_noise_reads_as_a_space_with_its_decay_time() {
     let mut s = Stimulus::new(Kind::Impulse);
     s.tail_s = 3.0;
@@ -237,7 +237,7 @@ fn an_exponentially_decaying_noise_reads_as_a_space_with_its_decay_time() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_sine_through_a_polynomial_reads_its_harmonics_and_dc_exactly() {
     let s = Stimulus::new(Kind::Sine { hz: 1000.0 });
     let y: Vec<f64> = mono(&s)
@@ -267,7 +267,7 @@ fn a_sine_through_a_polynomial_reads_its_harmonics_and_dc_exactly() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_tremolo_and_a_vibrato_on_a_sine_read_as_wobble() {
     let s = Stimulus::new(Kind::Sine { hz: 1000.0 });
     let x = mono(&s);
@@ -295,7 +295,7 @@ fn a_tremolo_and_a_vibrato_on_a_sine_read_as_wobble() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn two_tones_through_a_square_law_read_second_order_intermodulation_exactly() {
     let s = Stimulus::new(Kind::DualSine {
         hz: 60.0,
@@ -345,7 +345,7 @@ fn compressor(s: &Stimulus, threshold: f64, ratio: f64, attack_s: f64, release_s
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn level_steps_through_a_compressor_read_its_curve_and_times() {
     let mut s = Stimulus::new(Kind::default_of("steps").unwrap());
     s.level_dbfs = 0.0;
@@ -359,7 +359,7 @@ fn level_steps_through_a_compressor_read_its_curve_and_times() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn silence_reads_a_line_its_level_and_a_runaway() {
     let s = Stimulus::new(Kind::Silence);
     let noise = mxm_measure::stimulus::noise(s.len(), 3, 1.0);
@@ -401,7 +401,7 @@ fn chorus(x: &[f64], mean_ms: f64, depth_ms: f64, hz: f64, phase: f64, dry: f64)
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn noise_through_a_stereo_chorus_reads_its_sweep_and_the_channels_phase() {
     let s = Stimulus::new(Kind::Noise { seed: 5 });
     let x = mono(&s);
@@ -418,7 +418,7 @@ fn noise_through_a_stereo_chorus_reads_its_sweep_and_the_channels_phase() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn noise_through_a_fixed_filter_is_coherent_and_reads_as_an_impulse_response() {
     let s = Stimulus::new(Kind::Noise { seed: 9 });
     let (b, a) = low_pass(2000.0, std::f64::consts::FRAC_1_SQRT_2);
@@ -429,7 +429,7 @@ fn noise_through_a_fixed_filter_is_coherent_and_reads_as_an_impulse_response() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn stereo_width_correlation_and_the_true_stereo_matrix() {
     let s = Stimulus::new(Kind::Noise { seed: 2 });
     let x = mono(&s);
@@ -461,7 +461,7 @@ fn stereo_width_correlation_and_the_true_stereo_matrix() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn readings_are_tabled_against_a_setting() {
     let mut reports = Vec::new();
     let mut stimuli = Vec::new();
@@ -499,7 +499,7 @@ fn readings_are_tabled_against_a_setting() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn bursts_through_a_plain_gain_read_the_gain_and_a_short_hangover() {
     let s = Stimulus::new(Kind::default_of("bursts").unwrap());
     let r = answer(&s, &mono(&s).iter().map(|v| 0.5 * v).collect::<Vec<f64>>());
@@ -512,7 +512,7 @@ fn bursts_through_a_plain_gain_read_the_gain_and_a_short_hangover() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_response_at_another_rate_or_with_a_nan_is_refused() {
     let s = Stimulus::new(Kind::Sine { hz: 1000.0 });
     let y = f32s(&mono(&s));
@@ -525,7 +525,7 @@ fn a_response_at_another_rate_or_with_a_nan_is_refused() {
 /// The plan's §6 invariants over every stimulus and a voice, at every rate the crate is scored on:
 /// never NaN, absent rather than a value, and identical output for identical input.
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn every_stimulus_and_a_voice_keep_the_invariants_at_every_rate() {
     fn check(r: &Report) {
         for s in &r.sections {

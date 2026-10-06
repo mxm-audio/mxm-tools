@@ -103,7 +103,7 @@ fn inventory() -> BTreeSet<String> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn every_id_in_the_source_is_explained_and_every_row_is_an_id() {
     let ids = inventory();
     let mut rows = BTreeSet::new();
@@ -127,7 +127,7 @@ fn every_id_in_the_source_is_explained_and_every_row_is_an_id() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn no_id_can_be_made_at_runtime() {
     for (path, text) in sources() {
         for leak in ["Box::leak", ".leak()", "String::leak"] {
@@ -155,7 +155,7 @@ fn ids_of(report: &Report) -> BTreeSet<String> {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn every_id_a_report_carries_is_in_the_inventory() {
     const TAU: f64 = std::f64::consts::TAU;
     let rate = 48_000.0;

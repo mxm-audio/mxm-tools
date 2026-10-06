@@ -20,7 +20,7 @@ fn run(s: &Sound) -> sottek::Sottek {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_1khz_tone_at_40_db_is_one_sone_and_one_tonality_unit() {
     let r = run(&tone(1000.0, 40.0, 2.0));
     let n = r.single_loudness().unwrap();
@@ -30,7 +30,7 @@ fn a_1khz_tone_at_40_db_is_one_sone_and_one_tonality_unit() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn noise_has_little_tonality_and_loudness_grows_with_level() {
     let mut state = 0x2545_F491_4F6C_DD1Du64;
     let noise: Vec<f32> = (0..(2.0 * RATE) as usize)
@@ -68,7 +68,7 @@ fn am(hz: f64, db: f64, m: f64, rate: f64, seconds: f64) -> Sound {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_1khz_tone_fully_modulated_at_70_hz_and_60_db_is_one_asper() {
     use mxm_listening::perception::roughness;
     let r = roughness::analyse(&hearing::pressure(&am(1000.0, 60.0, 1.0, 70.0, 2.0))).unwrap();
@@ -108,7 +108,7 @@ fn band_noise(lo: f64, hi: f64, db: f64) -> Sound {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn the_acum_reference_reads_one_acum_and_a_higher_band_reads_sharper() {
     use mxm_listening::perception;
     let mean_sharpness = |s: &Sound| {
@@ -128,7 +128,7 @@ fn the_acum_reference_reads_one_acum_and_a_higher_band_reads_sharper() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_gain_alone_changes_no_perceptual_reading() {
     use mxm_listening::describe::describe;
     // A drum: a ring and a noise burst, 1 s; then the same 6 dB down.
@@ -178,7 +178,7 @@ fn a_gain_alone_changes_no_perceptual_reading() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_1khz_tone_fully_modulated_at_4_hz_and_60_db_is_one_vacil() {
     use mxm_listening::perception::fluctuation;
     let f = fluctuation::analyse(&hearing::pressure(&am(1000.0, 60.0, 1.0, 4.0, 6.0))).unwrap();

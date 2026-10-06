@@ -42,7 +42,7 @@ fn sound(name: &str, seconds: f64, f: impl Fn(f64) -> f64) -> Sound {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_drum_s_rest_pitch_overtone_and_glide_are_read() {
     // A 200 Hz fundamental gliding down 40 cents over its first 50 ms, an overtone at 1.59×, and a
     // quieter low mode at 0.62× that dies fast: the rest pitch is 200 Hz, the overtone's ratio 1.59,
@@ -87,7 +87,7 @@ fn a_drum_s_rest_pitch_overtone_and_glide_are_read() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_ring_s_wobble_scales_with_its_depth_and_a_steady_ring_is_clean() {
     // A 250 Hz ring amplitude-modulated at 30 Hz, 4 % and 8 % deep, against the same ring steady. The
     // measure is the guide's (a 30 ms moving average removed, then 15–300 Hz), which passes only part
@@ -111,7 +111,7 @@ fn a_ring_s_wobble_scales_with_its_depth_and_a_steady_ring_is_clean() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn clustered_slaps_read_as_clustered_and_steady_noise_does_not() {
     let mut n = Noise(0x1234_5678_9ABC_DEF1);
     let steady: Vec<f64> = (0..(1.0 * RATE) as usize).map(|_| n.next()).collect();
@@ -144,7 +144,7 @@ fn clustered_slaps_read_as_clustered_and_steady_noise_does_not() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_step_at_the_onset_reads_as_a_click() {
     // Two sounds, one starting smoothly and one with a step: the step's high band spikes at once.
     let smooth = sound("smooth", 0.6, |t| {
@@ -160,7 +160,7 @@ fn a_step_at_the_onset_reads_as_a_click() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn mains_hum_under_a_decayed_hit_is_found() {
     let hum = |t: f64| {
         0.001
@@ -181,7 +181,7 @@ fn mains_hum_under_a_decayed_hit_is_found() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn a_line_every_take_shares_is_the_room() {
     // Four takes of a drum at slightly different pitches, each with the same faint 168 Hz line that
     // outlasts it: the set names 168 Hz as the room's, and keeps it out of the rest pitch.
@@ -214,7 +214,7 @@ fn a_line_every_take_shares_is_the_room() {
 }
 
 #[test]
-#[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
+#[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn random_wires_read_as_white_noise_a_rattle_above_it_and_the_rattle_share_follows_its_level() {
     // The owner, 2026-09-27: "the rattle from the springs is a little more pronounced on the
     // original". Plain random wires read white noise's kurtosis through this measure (2.75, not 3:
