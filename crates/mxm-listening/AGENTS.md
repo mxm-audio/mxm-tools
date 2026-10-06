@@ -130,8 +130,8 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
   checkout; recording-backed runs are local and manual.
 - Every technique is written from its paper or standard and cited at the top of its file; no
   existing implementation is opened.
-- Verified on Windows; since the split also checked on Linux in WSL before a push, and by CI on all
-  three on `v*` release tags. Nothing here may be Windows-only.
+- Verified on Windows; Linux and macOS are checked later, together, and by CI on all
+  three on `v*` tags. Nothing here may be Windows-only.
 
 # Work Guidance
 

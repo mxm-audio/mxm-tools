@@ -122,8 +122,8 @@ egui-baseview from their MXM forks (`[patch.crates-io]`).
 ## Windows, Linux and macOS — all three, always
 
 **An absolute requirement.** Everything here runs on all three; a change that works on one and
-breaks another is a broken change. CI builds and tests on all three, on `v*` release tags or when
-started by hand (the owner, 2026-10-06); before a push, check on Windows and on Linux in WSL.
+breaks another is a broken change. CI builds and tests on all three, on `v*` tags or when
+started by hand (the owner, 2026-10-06); before a push, check on Windows; Linux and macOS are checked later, together.
 
 - **Anything platform-specific is `cfg`-gated with every arm implemented**, never one arm and a
   silent nothing elsewhere.
@@ -164,9 +164,9 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test
 ```
 
-CI runs the same on Windows, macOS and Linux, but only on `v*` release tags or when started by hand
-(the owner, 2026-10-06). Before a push, run them on Windows and the same on Linux in WSL; only CI
-reaches macOS. The listener's `release gate` suites run by hand: `crates/mxm-listening/AGENTS.md`.
+CI runs the same on Windows, macOS and Linux, but only on `v*` tags or when started by hand
+(the owner, 2026-10-06). Before a push, run them on Windows; Linux and macOS are checked later,
+together. The listener's `release gate` suites run by hand: `crates/mxm-listening/AGENTS.md`.
 
 # Child DOX Index
 

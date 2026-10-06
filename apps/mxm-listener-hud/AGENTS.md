@@ -125,7 +125,7 @@ The owner's rulings (2026-09-28):
   owner's machine; no recording, derived audio, rendered picture of a recording or recording path is
   committed.
 - **Windows is verified; Linux and macOS are not.** Since the split its checks are run on Linux in
-  WSL before a push, as every repository's are, and CI runs them on all three on `v*` release tags;
+  WSL before a push, as every repository's are, and CI runs them on all three on `v*` tags;
   the window itself has been looked at on Windows only.
 
 # Work Guidance
