@@ -1355,7 +1355,8 @@ impl GrainCloud {
     /// Onsets still land on the sample the scheduler chose: every onset in the block
     /// is spawned first and records the frame it belongs to, and its render starts
     /// there. Nothing here rounds an onset to a block boundary, which
-    /// [§10.3](../../docs/oscillators/10-granular.md) measured at 71 dB.
+    /// [§10.3](https://github.com/mxm-audio/mxm-kit/blob/main/docs/oscillators/10-granular.md)
+    /// (in mxm-kit) measured at 71 dB.
     fn render_block(&mut self) {
         let n = GRAIN_BLOCK;
         self.block_l[..n].fill(0.0);

@@ -1,9 +1,11 @@
-//! Measurement harnesses for the `docs/` references.
+//! Measurement harnesses for the `docs/` references, which are mxm-kit's since the split.
 //!
 //! This crate ships nothing. It exists so the evidence behind
-//! [`docs/oscillators/`](../../../docs/oscillators/README.md) and
-//! [`docs/modulation/`](../../../docs/modulation/README.md) lives in the repository and can
-//! be reproduced from a clone, rather than sitting in a scratch project on one machine.
+//! [`docs/oscillators/`](https://github.com/mxm-audio/mxm-kit/blob/main/docs/oscillators/README.md)
+//! and
+//! [`docs/modulation/`](https://github.com/mxm-audio/mxm-kit/blob/main/docs/modulation/README.md)
+//! (both in mxm-kit) lives in a repository and can be reproduced from a clone, rather than sitting
+//! in a scratch project on one machine.
 //!
 //! # There is nothing here any more, and that is the arrangement
 //!

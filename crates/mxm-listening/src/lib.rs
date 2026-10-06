@@ -3,10 +3,11 @@
 //! because the owner hears a difference at once and the agents that tune the collection cannot
 //! listen; every measure here is one the owner's ear had to point at first. Ships nothing.
 //!
-//! The plan is `plans/plan-mxm-listening.md`; the contract is this crate's `AGENTS.md`. **L0**, this
-//! slice: preparation (decode, onset, trim and K-weighted body loudness — the drum A/B page's own
-//! definitions, `prep`), the numerics (`numeric`), the percussive family (`family`), and `describe`
-//! for a hit's attack, level, decay and tone over time (`parts`), reported as JSON and Markdown.
+//! The plan is `plans/plan-mxm-listening.md` (in the private archive); the contract is this crate's
+//! `AGENTS.md`. **L0**, this slice: preparation (decode, onset, trim and K-weighted body loudness —
+//! the drum A/B page's own definitions, `prep`), the numerics (`numeric`), the percussive family
+//! (`family`), and `describe` for a hit's attack, level, decay and tone over time (`parts`),
+//! reported as JSON and Markdown.
 //!
 //! ```text
 //! cargo run -p mxm-listening --release --bin listen -- describe <file> [--name NAME] [--family percussive] [--json OUT] [--md OUT]

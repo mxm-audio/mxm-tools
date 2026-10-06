@@ -8,19 +8,19 @@ Parent: [`../../AGENTS.md`](../../AGENTS.md)
 dropped on it is read by the listener and shown as a HUD — the pitch at the centre under a
 crosshair, the parts of the sound orbiting it as glyphs, the sound through time along the bottom —
 with every reading one wheel-scroll away, and the sound and its rebuilt parts to hear, a playhead
-following. The plan is
-`../../plans/plan-mxm-listener-hud.md` (`plans/plan-mxm-listener-hud.md` in the private archive); its phases name what
-is built.
+following. The plan is `plans/plan-mxm-listener-hud.md` (in the private archive); its phases name
+what is built.
 
 The owner's rulings (2026-09-28):
 
 - **Its own identity.** *"It should have nothing to do with the design of the synths, player and
   plugins. It is its own thing. Made to be useful. And cool."* The design system and the
   standardisation preference govern plugin editors and the player; this app is the owner-named
-  exception and takes nothing from `crates/ui`.
+  exception and takes nothing from mxm-kit's `crates/ui`.
 - **Unshipped, and the decision deferred.** *"If the interface is useful, it might be shipped. Defer
-  that decision."* It is a bench, like `apps/mxm-layout-lab`: a workspace member, not a default
-  member, with no bundle.
+  that decision."* It is a bench, like `apps/mxm-layout-lab` (in the private archive): a workspace
+  member, not a default member, with no bundle. Since the split this workspace has no
+  `default-members`, so a plain `cargo build` builds it too.
 
 # Ownership
 
@@ -42,7 +42,7 @@ The owner's rulings (2026-09-28):
 | `examples/listener_hud_timing.rs` | The stages' times on real files, a local manual run |
 | `examples/listener_hud_shot.rs` | The HUD rendered to PNGs with a sound dropped on it — one without a zoom and one per `--zoom PART:LEVEL`, the sound read once — for reviewing the look without the window; a local manual run |
 | `tests/` | `worker` (the bounds, with a held analysis), `scene` (the lock, the blips, every number a reading's, NO SIGNAL), `figures` (every reading of a part once at zoom 2, each mark at its reading's own value, window or band, tables as the plots their columns call for, the waveform's columns the samples' own, a callout beside its glyph towards the centre), `playback` (the transport's start, switch, stop and end; a buffer given back, never freed in the callback; a full return queue holding a command back; a sound prepared for the device's rate; and, by hand, the default device playing silence) and `window` (a stale reading discarded, no path shown, a drop read end to end, the ring re-reading, the name held against the reading, the wheel's zoom in and out with a reading explained on hover, a suggested family one click away, the PLAY row enabled once the rebuild lands) |
-| `LICENSE` | MIT |
+| `LICENSE` | MIT in the monorepo. *Since the split (2026-10-06):* no file here; the app is GPL-3.0-or-later under the repository's root `LICENSE` |
 
 # Local Contracts
 
@@ -58,8 +58,9 @@ The owner's rulings (2026-09-28):
 - **Five roles, each one colour and one shape, fixed everywhere**: time amber triangles, the ring cyan
   circles, noise magenta diamonds, character violet hexagons, the recording chain steel squares
   (`scene::Role`, `theme`). A part's place on the orbit is fixed too (`glyphs::place`). **Colour
-  never carries meaning alone** (root *User Preferences*: the owner is red-green colour-blind): no
-  red/green pair, and an agreement is said in words.
+  never carries meaning alone** (the owner's working preference, from the monorepo root's *User
+  Preferences*: readable without red/green discrimination, as the owner is red-green colour-blind):
+  no red/green pair, and an agreement is said in words.
 - **The wheel zooms, a part at a time, and every zoom is graphs, not lists** (the owner: *"Cant they
   be graphs?"*). Over a glyph, up goes one level deeper, down one back, and down past zoom 1 closes.
   Zoom 1 is the part in context: the envelope with its windowed levels marked, or the spectrum with
@@ -123,7 +124,9 @@ The owner's rulings (2026-09-28):
 - **Tests use synthetic sounds only.** A recording is read only by the manual examples, on the
   owner's machine; no recording, derived audio, rendered picture of a recording or recording path is
   committed.
-- **Windows is verified; Linux and macOS are not.**
+- **Windows is verified; Linux and macOS are not.** Since the split its checks are run on Linux in
+  WSL before a push, as every repository's are, and CI runs them on all three on `v*` release tags;
+  the window itself has been looked at on Windows only.
 
 # Work Guidance
 

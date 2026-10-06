@@ -1,7 +1,8 @@
-//! The glossary's coverage (`plans/plan-mxm-listener-hud.md` §2.3), against a mechanical inventory
-//! rather than reports: a reading's id is a `&'static str` and this crate makes none at runtime, so
-//! every id is a literal in the source. A synthetic report would miss the ids only some sounds emit;
-//! the scan does not, and the reports are checked against the scan as a second net.
+//! The glossary's coverage (`plans/plan-mxm-listener-hud.md` §2.3, in the private archive), against
+//! a mechanical inventory rather than reports: a reading's id is a `&'static str` and this crate
+//! makes none at runtime, so every id is a literal in the source. A synthetic report would miss the
+//! ids only some sounds emit; the scan does not, and the reports are checked against the scan as a
+//! second net.
 
 use std::collections::BTreeSet;
 use std::path::Path;

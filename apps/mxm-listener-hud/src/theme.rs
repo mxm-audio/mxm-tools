@@ -1,13 +1,15 @@
 //! The HUD's look: its palette, the roles' colours and shapes, and the drawing tools — glow, brackets,
-//! dashed arcs, gradients, the sweep. Its own design, owing nothing to `crates/ui` (the owner's
-//! ruling, `AGENTS.md`).
+//! dashed arcs, gradients, the sweep. Its own design, owing nothing to mxm-kit's `crates/ui` (the
+//! owner's ruling, `AGENTS.md`).
 //!
 //! **Glow is additive light.** egui blends premultiplied colour; a colour with its alpha at zero adds
 //! its light to what is under it instead of covering it, so each line is drawn a few times, wider and
 //! fainter, as light, and once solid. A true bloom would need a shader pass (the plan's H4).
 //!
-//! **Colour never carries meaning alone** (root *User Preferences*: the owner is red-green
-//! colour-blind): the palette holds no red/green pair, and every role has its own shape and place.
+//! **Colour never carries meaning alone** (the owner's working preference that meters and status
+//! displays be readable without red/green discrimination, once in the monorepo root's *User
+//! Preferences*: the owner is red-green colour-blind): the palette holds no red/green pair, and
+//! every role has its own shape and place.
 
 use egui::epaint::{Mesh, Vertex};
 use egui::{Color32, FontId, Painter, Pos2, Rect, Shape, Stroke, pos2, vec2};

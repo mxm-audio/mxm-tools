@@ -4,7 +4,7 @@
 //!
 //! Against a **set** (the reference's round robins), a difference counts as established only when it
 //! exceeds both its threshold and the set's spread and its sign holds against most of the takes: one
-//! strike per layer is noise (`docs/drum-model-fitting.md` §7).
+//! strike per layer is noise (`docs/drum-model-fitting.md` §7, in mxm-drum-machine).
 
 use crate::audibility::{Kind, Threshold, Thresholds, Vocabulary};
 use crate::reading::{Reading, Report, Unit, Validity};

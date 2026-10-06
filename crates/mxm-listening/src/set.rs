@@ -3,8 +3,9 @@
 //! two sounds means nothing (the plan's §3) — together with the velocity map the layers' loudness gives,
 //! and the late lines that recur across a set: the room or the kit ringing along, not the drum.
 //!
-//! Sources: `docs/drum-model-fitting.md` §7 ("soft to hard over every round robin … one strike per layer
-//! is noise"; "map velocity from the recordings' loudness"; "tell the drum from the room").
+//! Sources: `docs/drum-model-fitting.md` (in mxm-drum-machine) §7 ("soft to hard over every round
+//! robin … one strike per layer is noise"; "map velocity from the recordings' loudness"; "tell the
+//! drum from the room").
 
 use crate::reading::{Report, Unit, Validity};
 use crate::repr::spectrum;

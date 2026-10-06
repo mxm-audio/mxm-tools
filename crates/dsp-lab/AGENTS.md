@@ -4,7 +4,8 @@ Parent: [`../../AGENTS.md`](../../AGENTS.md)
 
 # Purpose
 
-Measurement harnesses for the `docs/` references. **This crate ships nothing.**
+Measurement harnesses for the `docs/` references, which are mxm-kit's since the split. **This crate
+ships nothing.**
 
 It exists so the evidence behind the long-form references lives *in the repository* and can be
 reproduced from a clone, rather than in a scratch project on one machine. Every measured number in
@@ -27,7 +28,9 @@ Does **not** own the shipped DSP, or anything that verifies it. `mono_01_filter_
 
 ## This is not a shared-DSP crate
 
-The root contract says `crates/<plugin>-dsp` stays per-plugin "until a second instrument
+The root contract (the monorepo's; now *Don't pre-generalise* in mxm-kit's
+[`docs/collection-rules.md`](https://github.com/mxm-audio/mxm-kit/blob/main/docs/collection-rules.md))
+says `crates/<plugin>-dsp` stays per-plugin "until a second instrument
 demonstrates a genuinely shared API" and warns against pre-generalising. **That rule is untouched
 by this crate and this crate is not an exception to it.** No shipped DSP lives here and none may.
 `oscillator.rs` and `filter.rs` stay in `mxm-mono-01-dsp` until a second instrument exists to shape a
@@ -60,7 +63,9 @@ override.
 ## Not in `default-members`
 
 A plain `cargo build` must not build the harnesses. They are run deliberately, in release, when a
-reference's numbers need regenerating.
+reference's numbers need regenerating. *Since the split (2026-10-06):* mxm-tools' workspace has no
+`default-members`, so a plain `cargo build` here does build this crate; the rule held in the
+monorepo and is not enforced in this repository.
 
 ## Shared code, and the line it is drawn on
 
@@ -102,9 +107,9 @@ movement was in cost columns, by the few percent they already drift between sess
 - **Every number a reference quotes must come from a section here**, and the reference names which.
   If a chapter needs a figure this crate does not produce, add the measurement rather than
   estimating.
-- **Record the run.** `docs/*/measurements-run.txt` holds the verbatim output the documents quote,
+- **Record the run.** `docs/*/measurements-run.txt` (in mxm-kit) holds the verbatim output the documents quote,
   so a fresh run can be diffed rather than eyeballed. Regenerate it whenever the numbers move.
-- **A recorded run belongs to the machine that produced it.** `docs/oscillators/` now holds two,
+- **A recorded run belongs to the machine that produced it.** mxm-kit's `docs/oscillators/` holds two,
   because §9f was measured years of hardware later than the rest and the cost columns move about 2x
   between them. Record a new machine's run as its own file rather than overwriting a run other
   chapters still quote, and say at the claim which one a figure came from.

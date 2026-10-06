@@ -9,9 +9,9 @@
 //!
 //! The awkward cases are here on purpose. An 808 glides its pitch down over the first few hundred
 //! milliseconds, and a bass phrase does not start on its key — those are what
-//! `plugins/mxm-creative-sampler/examples/measure_root.rs` found the detector failing on against a
-//! real pack, and a synthetic case that reproduces a real failure is what lets a fix be checked
-//! without the pack.
+//! `plugins/mxm-creative-sampler/examples/measure_root.rs` (in mxm-creative-sampler) found the
+//! detector failing on against a real pack, and a synthetic case that reproduces a real failure is
+//! what lets a fix be checked without the pack.
 
 use mxm_creative_sampler_dsp::{Sample, detect_root};
 use mxm_mono_01_dsp::oscillator::{MixLevels, Oscillator, SubShape};

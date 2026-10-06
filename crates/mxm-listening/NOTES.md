@@ -2,18 +2,23 @@
 
 The detail behind this folder's AGENTS.md: history, measurements, rationale and worked examples. AGENTS.md is the contract; this file is the reference it links to.
 
-**References.** `plans/plan-mxm-listening.md`, `plans/plan-mxm-listener-hud.md`,
-`scripts/merge_gate.py`, `docs/drum-model-fitting.md` (the guide) and
-`crates/mxm-drum-machine-dsp/tools/ab_metrics.py` are paths in the monorepo this crate came
-from; they now live only in the private archive (`archive/01-mxm-collection/`), not in this
-repository. A `research:<path>` citation names a page in MXM's private research repository.
+**References.** `plans/plan-mxm-listening.md`, `plans/plan-mxm-listener-hud.md` and
+`scripts/merge_gate.py` are paths in the monorepo this crate came from; they now live only in the
+private archive (`archive/01-mxm-collection/`), not in this repository. `docs/drum-model-fitting.md`
+(the guide) and `crates/mxm-drum-machine-dsp/tools/ab_metrics.py` were monorepo paths too and are
+now public in the mxm-drum-machine repository:
+[`docs/drum-model-fitting.md`](https://github.com/mxm-audio/mxm-drum-machine/blob/main/docs/drum-model-fitting.md)
+and
+[`crates/mxm-drum-machine-dsp/tools/ab_metrics.py`](https://github.com/mxm-audio/mxm-drum-machine/blob/main/crates/mxm-drum-machine-dsp/tools/ab_metrics.py).
+There is no merge gate since the split (2026-10-06). A `research:<path>` citation names a page in
+MXM's private research repository.
 
 ## Why the listener exists, and how it was built
 
 It exists because the owner hears a difference between a render and a recording at once and the
 agents that tune the collection cannot listen: fine-tuning had become the owner describing sounds
 ("washy", "rings a little long", "higher pitched") and an agent hunting for the measurement behind
-each phrase. The product plan is `../../plans/plan-mxm-listening.md` (`plans/plan-mxm-listening.md` in the private archive);
+each phrase. The product plan is `plans/plan-mxm-listening.md` (in the private archive);
 its order is the owner's: **percussion first, other physically modelled sounds second**, then synth
 voices and effects, which the owner called for with "finish the listener" (the plan's revision 29).
 
@@ -94,7 +99,8 @@ Each contract as it was written, with its reasons and measurements.
   owner's deferred decision, and the leak check forces it first.
   `mxm-classic-verb-fit` is a normal dependency too, for its analyser alone (`analyse`): an impulse
   response is read as a space the way that crate reads one, never fitted here.
-  `mxm-measure/AGENTS.md`'s leak check covers both names.
+  `mxm-measure/AGENTS.md`'s leak check (mxm-kit's `crates/mxm-measure/AGENTS.md`; the check itself
+  runs in the product repositories since the split) covers both names.
 - **No external crate.** The owner chose hand-rolled numerics (the plan's revision 1). JSON is
   written by hand, and read only as far as an A/B site's flat mapping needs; data files are plain
   TSV. The internal crates bring their own pinned dependencies (hound, symphonia through
@@ -524,4 +530,6 @@ Each contract as it was written, with its reasons and measurements.
   that uses it. No existing implementation is opened (the Timbre Toolbox, Audio Commons, ViSQOL,
   Zimtohrli, PEAQ, the ISO or ECMA reference code).
 - **Windows is the platform this is verified on.** Linux and macOS are unverified; nothing here may
-  be Windows-only.
+  be Windows-only. *Since the split (2026-10-06):* the fast tier is checked on Windows and on Linux
+  in WSL before a push, and CI runs it on Windows, macOS and Linux on `v*` release tags or when
+  started by hand; the `release gate` suites stay a manual run.

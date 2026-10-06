@@ -140,7 +140,8 @@ Each chosen constant is marked where it is defined; better evidence replaces it,
 list: [NOTES.md § Chosen, not read](NOTES.md#chosen-not-read).
 
 ## Boundaries of the crate
-- Zero dependencies, MSRV 1.87, `publish = false`, a workspace member but **not** a default member,
+- Zero dependencies, MSRV 1.87, `publish = false`, a workspace member (**not** a default member in
+  the monorepo; this workspace has no `default-members`, so a plain `cargo build` builds it),
   built optimised in the dev profile (`[profile.dev.package.mxm-room-ir]` in the root `Cargo.toml`).
 - Renders, the examples' output and the render cache live under ignored `target/`; only
   `catalogue -- release` writes `impulses/`. **Nothing depends on this crate.**
@@ -169,7 +170,7 @@ cargo fmt -p mxm-room-ir -- --check
 cargo +1.87.0 check -p mxm-room-ir --all-targets
 cargo run -p mxm-room-ir --release --example render_church
 cargo run -p mxm-room-ir --release --example render_small_room
-cargo run -p mxm-room-ir --release --example bras_benchmark   # needs the research checkout
+cargo run -p mxm-room-ir --release --example bras_benchmark   # needs the research checkout: MXM_RESEARCH_DIR
 cargo run -p mxm-room-ir --release --bin catalogue -- geometry        # every room as OBJ, for looking at
 python crates/mxm-room-ir/viewer/pack_rooms.py recital-hall rock-cave  # repack the viewer's rooms.js
 cargo run -p mxm-room-ir --release --bin catalogue -- render  # the far positions, about 96 minutes; resumes

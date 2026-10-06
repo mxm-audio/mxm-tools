@@ -5,6 +5,11 @@ The detail behind this folder's AGENTS.md: history, measurements, rationale and 
 **References.** `plans/plan-mxm-room-ir.md` (its revisions and §4.5) was the monorepo's plan;
 *root* below means the monorepo's root `AGENTS.md` (*Don't open existing implementations*,
 the crate rules), which now lives only in the private archive (`archive/01-mxm-collection/`).
+*Since the split (2026-10-06):* the rules it held are public: *Don't open existing
+implementations* and *Don't pre-generalise* in mxm-kit's
+[`docs/collection-rules.md`](https://github.com/mxm-audio/mxm-kit/blob/main/docs/collection-rules.md),
+and the crate rules in mxm-kit's root
+[`AGENTS.md`](https://github.com/mxm-audio/mxm-kit/blob/main/AGENTS.md), *The crates*.
 `plugins/mxm-fx-convolution/AGENTS.md` and `crates/mxm-fx-convolution-dsp` are in the
 mxm-fx-convolution repository. A `research:<path>` citation names a page in MXM's private
 research repository.
@@ -495,6 +500,8 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
 ### Boundaries of the crate
 
 - Zero dependencies, MSRV 1.87, `publish = false`, a workspace member but **not** a default member.
+  *Since the split (2026-10-06):* mxm-tools' workspace has no `default-members`, so a plain
+  `cargo build` builds it.
 - The workspace builds this crate optimised in the dev profile (root `Cargo.toml`,
   `[profile.dev.package.mxm-room-ir]`), because its tests trace hundreds of thousands of rays and run
   the wave solver.

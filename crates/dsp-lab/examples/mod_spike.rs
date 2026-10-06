@@ -1,12 +1,14 @@
 //! Modulation spike: what the LFO and the envelope actually do.
 //!
 //! The companion to `osc_spike.rs`, and the evidence source for
-//! [`docs/modulation/`](../../../docs/modulation/README.md). It measures the **shipped**
-//! `lfo.rs` and `envelope.rs` through their public API.
+//! [`docs/modulation/`](https://github.com/mxm-audio/mxm-kit/blob/main/docs/modulation/README.md)
+//! in mxm-kit. It measures the **shipped** `lfo.rs` and `envelope.rs` (mxm-mono-01's) through
+//! their public API.
 //!
 //! One thing here is *not* shipped code and is labelled wherever it appears: the parameter
-//! smoothing in §4. Smoothing belongs to the plugin (`plugins/AGENTS.md` owns parameters,
-//! ranges and smoothing; `crates/mxm-mono-01-dsp/AGENTS.md` explicitly disclaims them), and this
+//! smoothing in §4. Smoothing belongs to the plugin (the plugin conventions own parameters,
+//! ranges and smoothing: once `plugins/AGENTS.md`, now mxm-kit's `docs/plugin-conventions.md`;
+//! `crates/mxm-mono-01-dsp/AGENTS.md` in mxm-mono-01 explicitly disclaims them), and this
 //! crate has no dependencies, so an example here cannot reach the shipped path. §4 measures a
 //! generic one-pole model of it. Treat those numbers as being about the technique, never as
 //! validation of mxm-mono-01.

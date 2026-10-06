@@ -1,8 +1,9 @@
 //! The attack: how the hit starts, how fast it rises, which way it moves first, how its level falls
 //! away over the first 100 ms, and how bright its first 20 ms are.
 //!
-//! Sources: `docs/drum-model-fitting.md` §3–§4 and §7 (*Acoustic drum models in particular*),
-//! `ab_metrics.py` (`jump`, `pk ms`, `cent early`) and `ab_residuals.py` (early windows, roll-off).
+//! Sources: `docs/drum-model-fitting.md` (in mxm-drum-machine) §3–§4 and §7 (*Acoustic drum models
+//! in particular*), `ab_metrics.py` (`jump`, `pk ms`, `cent early`) and `ab_residuals.py` (early
+//! windows, roll-off).
 
 use super::Context;
 use crate::reading::{Reading, Section, Unit};

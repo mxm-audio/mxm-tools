@@ -1,5 +1,6 @@
-//! Zero-phase Butterworth band-passes: the band filter every one of the snare's band measurements used
-//! (`docs/drum-model-fitting.md` §7, a fourth-order Butterworth run forward and backward).
+//! Zero-phase Butterworth band-passes: the band filter every one of the snare's band measurements
+//! used (`docs/drum-model-fitting.md` §7 in mxm-drum-machine, a fourth-order Butterworth run
+//! forward and backward).
 //!
 //! **Technique:** the analogue Butterworth low-pass prototype (poles on the unit circle's left half),
 //! the low-pass to band-pass transformation `s → (s² + ω₀²)/(B·s)`, and the bilinear transform with

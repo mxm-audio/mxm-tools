@@ -1,5 +1,5 @@
 //! The level: the peak, and the K-weighted body loudness two sounds are matched on
-//! (`docs/drum-model-fitting.md` §2, `prep::body_rms`).
+//! (`docs/drum-model-fitting.md` §2 in mxm-drum-machine, `prep::body_rms`).
 
 use super::Context;
 use crate::reading::{Reading, Section, Unit};

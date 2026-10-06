@@ -122,7 +122,8 @@ egui-baseview from their MXM forks (`[patch.crates-io]`).
 ## Windows, Linux and macOS — all three, always
 
 **An absolute requirement.** Everything here runs on all three; a change that works on one and
-breaks another is a broken change. CI builds and tests on all three.
+breaks another is a broken change. CI builds and tests on all three, on `v*` release tags or when
+started by hand (the owner, 2026-10-06); before a push, check on Windows and on Linux in WSL.
 
 - **Anything platform-specific is `cfg`-gated with every arm implemented**, never one arm and a
   silent nothing elsewhere.
@@ -136,7 +137,7 @@ breaks another is a broken change. CI builds and tests on all three.
 |---|---|---|
 | `crates/mxm-listening` | **1.87** | No external crate of its own; `mxm-measure`, `mxm-audio-file` and `mxm-audio-file-decode` all build there, so a DSP crate's harness can dev-depend on it. **Verified on 1.87**, library, tests and the `listen` binary |
 | `crates/mxm-room-ir` | **1.87** | Zero dependencies and no GUI; an offline tool whose product is impulse-response content, not a plugin's DSP |
-| `apps/mxm-listener-hud` | **1.95** | eframe + egui; unshipped, not a default member. `mxm-listening` below it stays at 1.87 |
+| `apps/mxm-listener-hud` | **1.95** | eframe + egui; unshipped (not a default member in the monorepo; this workspace has no `default-members`). `mxm-listening` below it stays at 1.87 |
 
 ## Licensing
 
@@ -163,7 +164,9 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test
 ```
 
-CI runs the same on Windows, macOS and Linux.
+CI runs the same on Windows, macOS and Linux, but only on `v*` release tags or when started by hand
+(the owner, 2026-10-06). Before a push, run them on Windows and the same on Linux in WSL; only CI
+reaches macOS. The listener's `release gate` suites run by hand: `crates/mxm-listening/AGENTS.md`.
 
 # Child DOX Index
 

@@ -1,9 +1,9 @@
 //! The decay: how fast the hit falls, whether it falls in one stage or two (a fast first stage and a
 //! long ring, the "gated snare" fault), how loud it still is late, and how the file ends.
 //!
-//! Sources: `docs/drum-model-fitting.md` §4 (`t20`/`t40`) and §7; `ab_metrics.py`, `ab_residuals.py`
-//! (the −20 to −40 dB fall) and the late-ring measures the corpus fit gained in the model-drums plan's
-//! revision 19.
+//! Sources: `docs/drum-model-fitting.md` §4 (`t20`/`t40`) and §7, in mxm-drum-machine, with its
+//! `tools/` `ab_metrics.py`, `ab_residuals.py` (the −20 to −40 dB fall) and the late-ring measures
+//! the corpus fit gained in the model-drums plan's revision 19.
 
 use super::Context;
 use crate::reading::{Reading, Resolution, Section, Unit};

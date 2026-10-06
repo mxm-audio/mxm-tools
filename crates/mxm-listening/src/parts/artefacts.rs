@@ -1,6 +1,7 @@
-//! Artefacts: a click at the onset, the noise floor, and mains hum — each reported as the file's, not
-//! the sound's (the plan's §2 item 1; `docs/drum-model-fitting.md` §2 on clicks, and its traps on
-//! hum, floors and a chain's warts: "never fit the recording's floor, hum or other warts").
+//! Artefacts: a click at the onset, the noise floor, and mains hum — each reported as the file's,
+//! not the sound's (the plan's §2 item 1; `docs/drum-model-fitting.md` in mxm-drum-machine, §2 on
+//! clicks, and its traps on hum, floors and a chain's warts: "never fit the recording's floor, hum
+//! or other warts").
 
 use super::Context;
 use crate::reading::{Reading, Section, Unit};

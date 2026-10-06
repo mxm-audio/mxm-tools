@@ -774,7 +774,8 @@ impl Hud {
     }
 
     /// What the name claims, and — once there is a report — whether the listener hears the same.
-    /// Words, not colour, say which (root *User Preferences*).
+    /// Words, not colour, say which (the owner's working preference: readable without red/green
+    /// discrimination, because the owner is red-green colour-blind).
     fn claims(&self, ui: &mut Ui, current: &Current) -> Option<Action> {
         let claims = &current.claims;
         if claims.is_empty() {

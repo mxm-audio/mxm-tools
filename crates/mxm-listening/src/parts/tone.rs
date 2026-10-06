@@ -1,9 +1,9 @@
 //! Tone over time: which octaves carry the sound when, how bright each stage is, and where its
 //! resonance sits and how narrow it is.
 //!
-//! Sources: `docs/drum-model-fitting.md` §4 (centroids), §5 and §7 (the resonance profile,
-//! `ab_resonance.py`), and §7 *Acoustic drum models in particular* (octave-band envelopes at fixed
-//! times, the measure that showed which band was wrong when).
+//! Sources: `docs/drum-model-fitting.md` (in mxm-drum-machine) §4 (centroids), §5 and §7 (the
+//! resonance profile, `ab_resonance.py`), and §7 *Acoustic drum models in particular* (octave-band
+//! envelopes at fixed times, the measure that showed which band was wrong when).
 
 use super::Context;
 use crate::reading::{Reading, Resolution, Section, Unit};

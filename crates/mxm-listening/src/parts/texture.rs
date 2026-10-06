@@ -2,13 +2,13 @@
 //! their slaps come in clusters, how sharp each slap is, the slow rhythm of the buzz, and a fast
 //! periodicity in the attack's envelope.
 //!
-//! Sources: the snare's fine-tuning (`docs/drum-model-fitting.md` §7, *Acoustic drum models in
-//! particular*: "the original has a longer wire decay", "the slapping is … a little too pronounced")
-//! and `ab_residuals.py`'s envelope periodicity. Every texture measure of one render is a **sample**:
-//! a single draw of a random quantity, which the guide found spanning 0.3–1.1 dB as one setting moved.
-//! For reference, steady noise of the same band reads a swing near 1.7 dB, autocorrelations near 0,
-//! kurtosis 2.75 ± 0.07 (not 3: dividing out the 5 ms envelope takes some of it) and a median 2 ms
-//! crest near 2.5.
+//! Sources: the snare's fine-tuning (`docs/drum-model-fitting.md` in mxm-drum-machine, §7,
+//! *Acoustic drum models in particular*: "the original has a longer wire decay", "the slapping is …
+//! a little too pronounced") and `ab_residuals.py`'s envelope periodicity. Every texture measure of
+//! one render is a **sample**: a single draw of a random quantity, which the guide found spanning
+//! 0.3–1.1 dB as one setting moved. For reference, steady noise of the same band reads a swing near
+//! 1.7 dB, autocorrelations near 0, kurtosis 2.75 ± 0.07 (not 3: dividing out the 5 ms envelope
+//! takes some of it) and a median 2 ms crest near 2.5.
 
 use super::Context;
 use crate::reading::{Reading, Section, Unit};

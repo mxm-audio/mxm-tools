@@ -1,11 +1,12 @@
 //! Pitch and partials: the hit's modes in four windows after the contact, the rest pitch, the attack's
 //! pitch against it, the glide, and how clearly pitched the ring is.
 //!
-//! Sources: the mode analysis is `repr::modes` (`research:listening/modal-estimation.md`); the rest-pitch
-//! rule (the **lowest** partial within 12 dB of the strongest, not the loudest one), partials per window
-//! and the owner's phrases "higher pitched", "the tone of the drum skin" and "the attack is lower
-//! pitched than the tail" are `docs/drum-model-fitting.md` §6 and §7; pitch salience and head share are
-//! the corpus fit's clarity measures (the model-drums plan's revision 18).
+//! Sources: the mode analysis is `repr::modes` (`research:listening/modal-estimation.md`); the
+//! rest-pitch rule (the **lowest** partial within 12 dB of the strongest, not the loudest one),
+//! partials per window and the owner's phrases "higher pitched", "the tone of the drum skin" and
+//! "the attack is lower pitched than the tail" are `docs/drum-model-fitting.md` §6 and §7 (in
+//! mxm-drum-machine); pitch salience and head share are the corpus fit's clarity measures (the
+//! model-drums plan's revision 18).
 
 use super::Context;
 use crate::reading::{Reading, Section, Table, Unit};

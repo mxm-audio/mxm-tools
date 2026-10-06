@@ -253,9 +253,10 @@ fn reports_serialise_without_nan() {
     assert!(md.contains("## Decay") && md.contains("Octave levels"));
 }
 
-/// A reading made in stages (`plans/plan-mxm-listener-hud.md` §2.3): the first stage holds every
-/// part but the perceptual models, and the second adds exactly those — a held note's fluctuation
-/// strength in its place, the `perception` section last — leaving every other reading as it was.
+/// A reading made in stages (`plans/plan-mxm-listener-hud.md` §2.3, in the private archive): the
+/// first stage holds every part but the perceptual models, and the second adds exactly those — a
+/// held note's fluctuation strength in its place, the `perception` section last — leaving every
+/// other reading as it was.
 #[test]
 #[ignore = "release gate (`scripts/merge_gate.py --full`): over 30 s in the merge gate"]
 fn a_reading_in_stages_adds_only_the_perceptual_models() {

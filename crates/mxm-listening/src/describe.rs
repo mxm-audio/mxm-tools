@@ -49,10 +49,10 @@ pub fn describe_with(sound: &Sound, options: &Options) -> Report {
     }
 }
 
-/// A reading made in two stages (`plans/plan-mxm-listener-hud.md` §2.3): every part but the
-/// perceptual models first, then the models, which cost about as much as everything else together.
-/// A window shows the first stage while the second runs; `describe_with` runs both, so a reading
-/// made in stages is the reading made at once, reading for reading.
+/// A reading made in two stages (`plans/plan-mxm-listener-hud.md` §2.3, in the private archive):
+/// every part but the perceptual models first, then the models, which cost about as much as
+/// everything else together. A window shows the first stage while the second runs; `describe_with`
+/// runs both, so a reading made in stages is the reading made at once, reading for reading.
 #[derive(Clone, Debug)]
 pub struct Staged {
     report: Report,

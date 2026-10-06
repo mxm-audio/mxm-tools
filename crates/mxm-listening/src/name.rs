@@ -4,7 +4,7 @@
 //! **claims, never readings**. A claim is shown beside what the listener hears and never replaces it,
 //! and [`check`] says whether the two agree. A name that turns out wrong is worth knowing too: the drum
 //! A/B mapping found a set whose "tom" and "conga" names were likely swapped, and a reference an octave
-//! from its model (`docs/drum-model-fitting.md` §1).
+//! from its model (`docs/drum-model-fitting.md` §1, in mxm-drum-machine).
 //!
 //! A claim is read from the name's words. A note is a letter, an optional sharp or flat, and an octave
 //! (`C4`, `F#3`, `Bb2`, `Cs4`), equal-tempered with A4 = 440 Hz; two notes run together are a run's

@@ -2,10 +2,10 @@
 
 use mxm_listener_hud::Hud;
 
-/// The player's backends (`apps/mxm-player/src/main.rs`): Direct3D 12, Vulkan and Metal, never
-/// wgpu's own GL. Nothing here shares a process with a plugin editor, so the player's reason does not
-/// bind this window — but one set of backends across the collection's apps is one set to verify
-/// (the plan's H4 names this set for its bloom pass).
+/// The player's backends (`apps/mxm-player/src/main.rs` in mxm-player): Direct3D 12, Vulkan and
+/// Metal, never wgpu's own GL. Nothing here shares a process with a plugin editor, so the player's
+/// reason does not bind this window — but one set of backends across the collection's apps is one
+/// set to verify (the plan's H4 names this set for its bloom pass).
 const BACKENDS: eframe::wgpu::Backends = eframe::wgpu::Backends::DX12
     .union(eframe::wgpu::Backends::VULKAN)
     .union(eframe::wgpu::Backends::METAL);

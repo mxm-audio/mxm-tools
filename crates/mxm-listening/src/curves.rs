@@ -1,8 +1,9 @@
-//! What a window draws, as the listener computes it (`plans/plan-mxm-listener-hud.md` §2.3): the decay
-//! envelope, the spectrum and a spectrogram, read out of what the analysis already builds, under the
-//! readings' contracts — every value finite or absent, never NaN; every curve saying its window,
-//! resolution and source. None of it is a new measurement, and none carries a threshold or a verdict.
-//! The modes, the partials and the perceptual curves are tables in the report already.
+//! What a window draws, as the listener computes it (`plans/plan-mxm-listener-hud.md` §2.3, in the
+//! private archive): the decay envelope, the spectrum and a spectrogram, read out of what the
+//! analysis already builds, under the readings' contracts — every value finite or absent, never
+//! NaN; every curve saying its window, resolution and source. None of it is a new measurement, and
+//! none carries a threshold or a verdict. The modes, the partials and the perceptual curves are
+//! tables in the report already.
 
 use crate::parts::Context;
 use crate::reading::{Resolution, Unit};

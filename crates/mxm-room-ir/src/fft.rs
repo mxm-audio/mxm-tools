@@ -4,8 +4,10 @@
 //! minimum-phase design depends on this convention: folding the real cepstrum yields a causal
 //! (minimum-phase) response only when the forward transform uses the negative exponent.
 //!
-//! Private to this crate on purpose: `crates/mxm-fx-convolution-dsp` has its own, and the root
-//! contract says a shared FFT waits for a second shipped consumer to shape its API.
+//! Private to this crate on purpose: `crates/mxm-fx-convolution-dsp` (in mxm-fx-convolution) has
+//! its own, and the root contract (the monorepo's; now *Don't pre-generalise* in mxm-kit's
+//! `docs/collection-rules.md`) says a shared FFT waits for a second shipped consumer to shape its
+//! API.
 
 use std::f64::consts::PI;
 

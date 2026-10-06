@@ -48,7 +48,7 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
   estimators stay here.
 - **Never in a shipped graph.** Every other crate takes this one as a dev-dependency, except the
   unshipped `apps/mxm-listener-hud`; shipping that is the owner's deferred decision, and the leak
-  check in `mxm-measure/AGENTS.md` (which covers both names) forces it first. `mxm-measure` and
+  check in mxm-kit's `crates/mxm-measure/AGENTS.md` (which covers both names) forces it first. `mxm-measure` and
   `mxm-classic-verb-fit` (its `analyse` only: an impulse response is never fitted here) are normal
   dependencies.
 - **No external crate** (the owner's choice): hand-rolled numerics, hand-written JSON, plain TSV.
@@ -130,14 +130,16 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
   checkout; recording-backed runs are local and manual.
 - Every technique is written from its paper or standard and cited at the top of its file; no
   existing implementation is opened.
-- Verified on Windows only; nothing here may be Windows-only.
+- Verified on Windows; since the split also checked on Linux in WSL before a push, and by CI on all
+  three on `v*` release tags. Nothing here may be Windows-only.
 
 # Work Guidance
 
 - Measure with this crate before asking the owner what a sound does, and read the whole report: a
   difference the owner heard is usually already in it. On an A/B page, run `listen site` before the
-  owner listens. The guide's traps (`docs/drum-model-fitting.md`) are why the readings carry windows,
-  resolutions and validity.
+  owner listens. The guide's traps (`docs/drum-model-fitting.md` in the
+  [mxm-drum-machine](https://github.com/mxm-audio/mxm-drum-machine/blob/main/docs/drum-model-fitting.md)
+  repository) are why the readings carry windows, resolutions and validity.
 - A new reading, table or curve takes its row in `data/glossary.tsv` in the same change: what it
   tells the owner about the sound, in plain words.
 - When the owner uses a new phrase, add it to `data/vocabulary.tsv` and to the guide's §7 table, and
@@ -176,15 +178,17 @@ cargo run -p mxm-listening --release --bin listen -- respond target/stim/sweep.s
 in the merge gate — `sweep`, `note`, `respond`, `compare`, `voice`, `describe`, `parts_l1`,
 `glossary`, `resynth`, `perception` (the owner, 2026-10-05) — are ignored with the reason
 `release gate`, so a merge runs only the listener's quick tests. `scripts/merge_gate.py --full` (the
-monorepo's, now in the private archive) ran them; to run them while changing what they cover:
+monorepo's, now in the private archive) ran them. Since the split there is no merge gate: a plain
+`cargo test` runs the quick tests, and these run by hand before a release or while changing what
+they cover:
 
 ```bash
 cargo test -p mxm-listening --release --test <suite> -- --ignored
 ```
 
 The page equivalence is re-proved whenever `src/prep.rs` changes: render
-`drum_machine_ab_page` into a scratch folder before and after with the same mapping and compare every
-file's hash.
+`drum_machine_ab_page` (an example of `mxm-drum-machine-dsp`, run in the mxm-drum-machine repository)
+into a scratch folder before and after with the same mapping and compare every file's hash.
 
 # Child DOX Index
 

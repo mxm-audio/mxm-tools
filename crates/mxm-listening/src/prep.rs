@@ -1,11 +1,12 @@
 //! Preparation: decoding to mono, the onset, the trim, and the K-weighted body loudness two sounds
 //! are level-matched on.
 //!
-//! **These are the drum A/B page's own definitions** (`docs/drum-model-fitting.md` §2), moved here
-//! operation for operation so the page and every report read a sound the same way. The plan's first
-//! migration stage (`plans/plan-mxm-listening.md` §1) requires the page to render bit-identically
-//! through them, so the arithmetic, its order and its `f32`/`f64` boundaries are part of the contract:
-//! a change here is a correction to every page and report, measured and approved, never a tidy-up.
+//! **These are the drum A/B page's own definitions** (`docs/drum-model-fitting.md` §2, in
+//! mxm-drum-machine), moved here operation for operation so the page and every report read a sound
+//! the same way. The plan's first migration stage (`plans/plan-mxm-listening.md` §1, in the private
+//! archive) requires the page to render bit-identically through them, so the arithmetic, its order
+//! and its `f32`/`f64` boundaries are part of the contract: a change here is a correction to every
+//! page and report, measured and approved, never a tidy-up.
 
 use std::path::Path;
 

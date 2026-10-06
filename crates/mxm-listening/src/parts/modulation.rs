@@ -1,11 +1,11 @@
 //! Modulation: whether the ring wobbles or is a steady, "too clean" tone, how wide its line is, what
 //! share of the tail it carries, which close modes beat, and how rough each octave is.
 //!
-//! Sources: `docs/drum-model-fitting.md` §7 ("the skin rings a little long": not the decay but a ring
-//! that is a steady tone where the recording's wobbles — 2 % against 9 % over 15–300 Hz; "the tail's
-//! pitch is too clean"; "there is a grrrr sound": modulation depth across 15–300 Hz per band). The
-//! wobble and roughness of one render are **samples**, as the guide measured 5.7–16.7 % for one cell
-//! across noise realisations.
+//! Sources: `docs/drum-model-fitting.md` (in mxm-drum-machine) §7 ("the skin rings a little long":
+//! not the decay but a ring that is a steady tone where the recording's wobbles — 2 % against 9 %
+//! over 15–300 Hz; "the tail's pitch is too clean"; "there is a grrrr sound": modulation depth
+//! across 15–300 Hz per band). The wobble and roughness of one render are **samples**, as the guide
+//! measured 5.7–16.7 % for one cell across noise realisations.
 
 use super::Context;
 use crate::reading::{Reading, Section, Table, Unit};

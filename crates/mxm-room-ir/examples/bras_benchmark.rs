@@ -28,10 +28,11 @@
 //! cargo run -p mxm-room-ir --release --example bras_benchmark
 //! ```
 //!
-//! Set `MXM_RESEARCH_DIR` when the research checkout is not beside this repository. The report
-//! goes to `target/mxm-room-ir/bras-benchmark.md`; the process exits 1 if a gate fails.
-//! `BRAS_ONLY=RS5` runs only the groups whose name starts with it, and `BRAS_DIFFRACTION=0`
-//! renders without edge diffraction, to bisect a mechanism.
+//! Set `MXM_RESEARCH_DIR` when the research checkout is not beside this repository; since the split
+//! (2026-10-06) it is kept in the private archive, not beside mxm-tools. The report goes to
+//! `target/mxm-room-ir/bras-benchmark.md`; the process exits 1 if a gate fails. `BRAS_ONLY=RS5`
+//! runs only the groups whose name starts with it, and `BRAS_DIFFRACTION=0` renders without edge
+//! diffraction, to bisect a mechanism.
 
 use std::error::Error;
 use std::f64::consts::PI;

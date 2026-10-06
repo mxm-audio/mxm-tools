@@ -201,7 +201,7 @@ pub const RELIEF_SHARE: f64 = 0.25;
 /// **Chosen by measurement, not read** (2026-09-16): renders of ten spaces set against their recorded
 /// impulse responses were too specular — early fields too sparse and early decays well short of the
 /// late — and this share over every surface corrected both where walls were flat. The measurement is
-/// in this crate's `AGENTS.md`, with the one space it made worse.
+/// in this crate's `NOTES.md`, with the one space it made worse.
 pub const DETAIL_SCATTERING: f64 = 0.5;
 
 /// The depth rule's bounds, which the combined scattering also keeps under.

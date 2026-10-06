@@ -8,7 +8,8 @@ use mxm_listening::parts::note::nearest_note;
 use mxm_listening::reading::{Reading, Report, Table, Unit, Validity};
 
 /// The group a part belongs to. Each has one colour and one shape, fixed everywhere, so a colour is
-/// never the only cue (root *User Preferences*).
+/// never the only cue (the owner's working preference: readable without red/green discrimination,
+/// because the owner is red-green colour-blind).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Role {
     /// The attack, the level and the fall: triangles.
