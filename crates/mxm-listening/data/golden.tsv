@@ -1,0 +1,35 @@
+# Golden cases: what the owner heard, and what an approved sound is known to keep, as the listener
+# should report it. Committed without recordings: sounds are logical names, and a local file (never
+# committed) maps each name to a file — see the crate's AGENTS.md, "Golden cases".
+#
+# Columns, tab-separated:
+#   case     a short name
+#   date     when the owner said it or approved it
+#   source   where it is recorded
+#   kind     phrase     the owner's words: an expected reading must land in the top three
+#            deviation  a recorded difference of an approved sound: it must be among the audible ones
+#            approved   the owner approved the pair: every audible difference is a false alarm
+#   pairs    reference>candidate logical names, comma-separated
+#   expect   the readings that mean it, any of them: id, @band's lower edge in Hz, :+ or :- for the
+#            candidate's side; alternatives separated by |
+#   phrase   the owner's words, or the deviation as recorded
+#
+# The Frankensnare 14-inch Szpaderski, the finished model (plan-mxm-model-drums revision 21, items
+# 18-22): rows 61-63 of the snare page.
+higher-pitched	2026-09-26	plan-mxm-model-drums rev 21 (9); heard on an earlier state, whose missing line the finished rows keep	phrase	frankensnare-14s vl2 rr1>finished-14s soft, frankensnare-14s vl5 rr1>finished-14s medium, frankensnare-14s vl9 rr1>finished-14s hard	pitch.rest:+	It sounds much better now. But the model seems higher pitched? higher means the tone of the drum skin
+slapping-pronounced	2026-09-26	plan-mxm-model-drums rev 21 (19)	phrase	frankensnare-14s vl2 rr1>finished-14s soft, frankensnare-14s vl5 rr1>finished-14s medium, frankensnare-14s vl9 rr1>finished-14s hard	tone.band_level@6400:+ | tone.band_level@12800:+ | texture.rhythm:+ | texture.burst_swing:+	The slapping is really great but a little too pronounced
+ring-too-strong	2026-09-26	plan-mxm-model-drums rev 21 (22), known to differ	deviation	frankensnare-14s vl2 rr1>finished-14s soft, frankensnare-14s vl5 rr1>finished-14s medium, frankensnare-14s vl9 rr1>finished-14s hard	modulation.ring_share:+	the skin rings the same share at every velocity where the recording's soft hit barely rings
+ring-no-wobble	2026-09-26	plan-mxm-model-drums rev 21 (22), known to differ	deviation	frankensnare-14s vl2 rr1>finished-14s soft, frankensnare-14s vl5 rr1>finished-14s medium, frankensnare-14s vl9 rr1>finished-14s hard	modulation.ring_wobble:- | modulation.roughness:-	the ring has no wobble (about 1 % against up to 9 %)
+hard-peak-early	2026-09-26	plan-mxm-model-drums rev 21 (22), known to differ	deviation	frankensnare-14s vl9 rr1>finished-14s hard	attack.peak_time:-	the hard hit peaks at 2-3 ms against 8 ms
+body-bright	2026-09-26	plan-mxm-model-drums rev 21 (22), known to differ	deviation	frankensnare-14s vl2 rr1>finished-14s soft, frankensnare-14s vl5 rr1>finished-14s medium, frankensnare-14s vl9 rr1>finished-14s hard	tone.centroid:+	the body centroid runs 90-150 Hz bright
+buzz-over-6k4	2026-09-26	plan-mxm-model-drums rev 21 (22), known to differ	deviation	frankensnare-14s vl2 rr1>finished-14s soft, frankensnare-14s vl5 rr1>finished-14s medium, frankensnare-14s vl9 rr1>finished-14s hard	tone.band_level@6400:+ | tone.band_level@12800:+	above 6.4 kHz the buzz runs over the recording (kept: the model keeps its full band)
+rattle-white-noise	2026-09-27	the owner, on the finished snare page	phrase	frankensnare-14s vl2 rr1>finished-14s soft, frankensnare-14s vl5 rr1>finished-14s medium, frankensnare-14s vl9 rr1>finished-14s hard	texture.rattle:- | texture.slap_kurtosis:- | tonality.tonal_share:+	The rattle from the springs are a little more pronounced on the original. The original sounds a little more like white noise.
+#
+# Earlier states of the model-drums snare (revisions 19-21). Their renders were not kept; a case
+# counts once its sounds are mapped, rendered again from the revision's recorded settings.
+rings-longer	2026-09-25	plan-mxm-model-drums rev 19	phrase	corpus-snare real>rev19 fitted snare	decay.late_level:- | decay.late_slope:- | pitch.rest_t60:-	The snare sounds like a gated snare in a mix. Not like a real snare. The drumskin rings a lot longer on the real snares.
+pitch-difference	2026-09-25	plan-mxm-model-drums rev 20	phrase	frankensnare-14s vl5 rr1>rev20 spectrogram-fitted 14s	pitch.rest | pitch.strongest	There is clearly a pitch difference here ... also the overtones and ringing
+attack-washy	2026-09-25	plan-mxm-model-drums rev 20	phrase	frankensnare-14s vl5 rr1>rev20 spectrogram-fitted 14s	attack.early_centroid:+ | attack.early_rolloff:+ | texture.buzz_share:+	The attack is also too washy
+attack-too-soft	2026-09-25	plan-mxm-model-drums rev 20	phrase	frankensnare-14s vl5 rr1>rev20 spectrogram-fitted 14s	attack.rise_time:+ | attack.window_level:-	It is too soft. The attack
+tail-too-clean	2026-09-25	plan-mxm-model-drums rev 20	phrase	frankensnare-14s vl5 rr1>rev20 spectrogram-fitted 14s	modulation.ring_wobble:- | pitch.salience:+ | tonality.tonal_share:+	the tail's pitch is also too clean
+ringing-long	2026-09-26	plan-mxm-model-drums rev 21 (10)	phrase	frankensnare-14s vl5 rr1>rev21 (10) 14s medium	decay.late_level:+ | modulation.ring_share:+ | pitch.rest_t60:+	the skin seems to be ringing a little long

@@ -1,0 +1,630 @@
+<title>Rooms Behind the Impulses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #e9ecef;
+    --panel: #fbfcfd;
+    --panel-2: #f1f4f6;
+    --ink: #161a1e;
+    --muted: #5c6670;
+    --line: #ccd3d9;
+    --line-strong: #aab4bd;
+    --accent: #b0561a;
+    --accent-soft: #f0e2d6;
+    --source: #c1352c;
+    --receiver: #2a63a8;
+    --canvas-ground: #dfe4e8;
+    --shade: 0 1px 2px rgba(20, 28, 36, .07), 0 6px 18px rgba(20, 28, 36, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101418;
+      --panel: #171c21;
+      --panel-2: #1d232a;
+      --ink: #e7ecf0;
+      --muted: #99a4ae;
+      --line: #2b333b;
+      --line-strong: #3b454e;
+      --accent: #dd8b45;
+      --accent-soft: #33261a;
+      --source: #e2645a;
+      --receiver: #6b9fe0;
+      --canvas-ground: #0c0f12;
+      --shade: 0 1px 2px rgba(0, 0, 0, .5), 0 8px 22px rgba(0, 0, 0, .35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101418;
+    --panel: #171c21;
+    --panel-2: #1d232a;
+    --ink: #e7ecf0;
+    --muted: #99a4ae;
+    --line: #2b333b;
+    --line-strong: #3b454e;
+    --accent: #dd8b45;
+    --accent-soft: #33261a;
+    --source: #e2645a;
+    --receiver: #6b9fe0;
+    --canvas-ground: #0c0f12;
+    --shade: 0 1px 2px rgba(0, 0, 0, .5), 0 8px 22px rgba(0, 0, 0, .35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 28px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  header h1 {
+    font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+    font-weight: 700;
+    font-size: clamp(26px, 4.2vw, 38px);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+
+  header p {
+    margin: 0;
+    max-width: 68ch;
+    color: var(--muted);
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rooms h2, .legend h2, .facts h2 {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 4px;
+  }
+
+  .room-btn {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 10px;
+    align-items: baseline;
+    text-align: left;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-left: 3px solid transparent;
+    border-radius: 3px;
+    background: var(--panel);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .room-btn:hover { border-color: var(--line-strong); }
+  .room-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .room-btn[aria-pressed="true"] {
+    border-left-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .room-btn .name {
+    font-family: "IBM Plex Sans Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .room-btn .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  .room-btn .fam {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .viewport {
+    position: relative;
+    background: var(--canvas-ground);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shade);
+    overflow: hidden;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: clamp(320px, 52vh, 520px);
+    touch-action: none;
+    cursor: grab;
+  }
+
+  canvas.dragging { cursor: grabbing; }
+
+  .hint {
+    position: absolute;
+    right: 10px;
+    bottom: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: color-mix(in srgb, var(--panel) 80%, transparent);
+    padding: 2px 7px;
+    border-radius: 3px;
+    pointer-events: none;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .controls button, .toggle {
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .controls button:hover, .toggle:hover { border-color: var(--line-strong); }
+  .controls button:focus-visible, .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .toggle[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+
+  .under {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .facts dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 14px;
+  }
+
+  .facts dt { color: var(--muted); font-size: 13px; }
+
+  .facts dd {
+    margin: 0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legend ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .legend li {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .swatch {
+    width: 22px;
+    height: 11px;
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    flex: none;
+  }
+
+  .dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    color: var(--muted);
+    font-size: 13px;
+    max-width: 74ch;
+  }
+
+  footer code {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    background: var(--panel-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 800px) {
+    .board { grid-template-columns: 1fr; }
+    .under { grid-template-columns: 1fr; }
+    .rooms { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+    .room-btn { min-width: 168px; }
+    .rooms h2 { display: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">mxm-room-ir · catalogue geometry</p>
+    <h1>Rooms Behind the Impulses</h1>
+    <p>Every impulse response in the catalogue comes from a room built as code: watertight polygons, one published absorption blend per surface, a source and two receivers. These are fifteen of the hundred, exactly as the solver sees them — pews, furniture, bars and boulders included. Drag to turn a room over; scroll to move closer.</p>
+  </header>
+
+  <div class="board">
+    <nav class="rooms" id="rooms" aria-label="Rooms">
+      <h2>Room</h2>
+    </nav>
+
+    <div class="stage">
+      <div class="viewport">
+        <canvas id="view" aria-label="Three-dimensional view of the selected room"></canvas>
+        <div class="hint" id="hint">drag to turn · scroll to zoom</div>
+      </div>
+
+      <div class="controls">
+        <button type="button" data-view="stalls">From the stalls</button>
+        <button type="button" data-view="above">From above</button>
+        <button type="button" data-view="stage">From the stage</button>
+        <button type="button" data-view="corner">Reset</button>
+        <button type="button" class="toggle" id="marks" aria-pressed="true">Source and receivers</button>
+      </div>
+
+      <div class="under">
+        <section class="facts">
+          <h2>Measured off the model</h2>
+          <dl id="facts"></dl>
+        </section>
+        <section class="legend">
+          <h2>Surfaces</h2>
+          <ul id="legend"></ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Geometry is generic — no archetype copies a real building. A surface that stands for geometry left out of the model (coffers, piers, window recesses) carries that depth as scattering instead; where the shape matters acoustically it is built as a solid, which is why the stage, the galleries, the halls' pilasters and ribs, a church's pew rows, a pub's bar and a cave's boulders are here as real faces.</p>
+    <p>Written by <code>catalogue -- geometry &lt;slug&gt;</code>, which exports any of the hundred rooms as a Wavefront OBJ into <code>target\mxm-room-ir\geometry\</code>.</p>
+  </footer>
+</div>
+
+<script src="rooms.js"></script>
+<script>
+  (function () {
+    var rooms = window.ROOMS || [];
+    var canvas = document.getElementById("view");
+    var ctx = canvas.getContext("2d");
+    var factsEl = document.getElementById("facts");
+    var legendEl = document.getElementById("legend");
+    var roomsEl = document.getElementById("rooms");
+    var marksBtn = document.getElementById("marks");
+
+    var SURFACE_HUES = [208, 28, 96, 268, 172, 46, 320, 128];
+    var state = { idx: 0, theta: 0.85, phi: 0.34, dist: 1, marks: true, drag: null };
+
+    function css(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function isDark() {
+      var c = css("--canvas-ground");
+      return c === "#0c0f12";
+    }
+
+    function prep(room) {
+      if (room.prepped) return room;
+      var lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+      room.v.forEach(function (p) {
+        for (var k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], p[k]); hi[k] = Math.max(hi[k], p[k]); }
+      });
+      room.lo = lo; room.hi = hi;
+      room.centre = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
+      room.span = Math.max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]);
+      room.groups = [];
+      room.f.forEach(function (face) {
+        if (room.groups.indexOf(face.g) < 0) room.groups.push(face.g);
+      });
+      room.prepped = true;
+      return room;
+    }
+
+    function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+    function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+    function cross(a, b) {
+      return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+    }
+    function norm(a) {
+      var l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    }
+
+    function camera(room, w, h) {
+      var c = room.centre, d = state.dist * room.span;
+      var eye = [
+        c[0] + d * Math.cos(state.phi) * Math.sin(state.theta),
+        c[1] + d * Math.sin(state.phi),
+        c[2] + d * Math.cos(state.phi) * Math.cos(state.theta)
+      ];
+      var fwd = norm(sub(c, eye));
+      var right = norm(cross(fwd, [0, 1, 0]));
+      var up = cross(right, fwd);
+      var focal = (Math.min(w, h) / 2) / Math.tan(0.42);
+      return { eye: eye, fwd: fwd, right: right, up: up, focal: focal, w: w, h: h };
+    }
+
+    function project(cam, p) {
+      var d = sub(p, cam.eye);
+      var z = dot(d, cam.fwd);
+      if (z < 0.06) return null;
+      var s = cam.focal / z;
+      return [cam.w / 2 + dot(d, cam.right) * s, cam.h / 2 - dot(d, cam.up) * s, z];
+    }
+
+    function surfaceColour(room, g, shade, dark) {
+      var hue = SURFACE_HUES[room.groups.indexOf(g) % SURFACE_HUES.length];
+      var light = dark ? 44 + shade * 22 : 52 + shade * 24;
+      return "hsl(" + hue + " 26% " + light.toFixed(0) + "%)";
+    }
+
+    function draw() {
+      var room = prep(rooms[state.idx]);
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      var dark = isDark();
+      var cam = camera(room, w, h);
+      var drawn = [];
+
+      room.f.forEach(function (face) {
+        var pts = [], ok = true, depth = 0;
+        for (var i = 0; i < face.i.length; i++) {
+          var p = project(cam, room.v[face.i[i]]);
+          if (!p) { ok = false; break; }
+          pts.push(p); depth += p[2];
+        }
+        if (!ok || pts.length < 3) return;
+        var a = room.v[face.i[0]], b = room.v[face.i[1]], c = room.v[face.i[2]];
+        var n = norm(cross(sub(b, a), sub(c, a)));
+        drawn.push({ pts: pts, depth: depth / pts.length, g: face.g, facing: Math.abs(dot(n, cam.fwd)) });
+      });
+
+      drawn.sort(function (x, y) { return y.depth - x.depth; });
+
+      ctx.lineJoin = "round";
+      drawn.forEach(function (face) {
+        ctx.beginPath();
+        face.pts.forEach(function (p, i) { i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); });
+        ctx.closePath();
+        ctx.globalAlpha = 0.34;
+        ctx.fillStyle = surfaceColour(room, face.g, face.facing, dark);
+        ctx.fill();
+        ctx.globalAlpha = 0.85;
+        ctx.strokeStyle = dark ? "rgba(228,236,242,.42)" : "rgba(26,34,42,.42)";
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+
+      if (state.marks) {
+        var mark = function (p, colour, label) {
+          var s = project(cam, p);
+          if (!s) return;
+          ctx.beginPath();
+          ctx.arc(s[0], s[1], 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = colour;
+          ctx.fill();
+          ctx.strokeStyle = dark ? "rgba(12,15,18,.9)" : "rgba(255,255,255,.9)";
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+          ctx.font = '500 11px "IBM Plex Mono", monospace';
+          ctx.fillStyle = css("--ink");
+          ctx.fillText(label, s[0] + 9, s[1] + 4);
+        };
+        mark(room.src[0], css("--source"), "source");
+        room.rec.forEach(function (r, i) {
+          mark(r, css("--receiver"), room.rec.length === 2 ? (i === 0 ? "near" : "far") : "receiver");
+        });
+      }
+
+      var bar = project(cam, room.centre), bar2 = project(cam, [room.centre[0] + 5, room.centre[1], room.centre[2]]);
+      if (bar && bar2) {
+        var px = Math.abs(bar2[0] - bar[0]);
+        if (px > 12 && px < w - 40) {
+          ctx.strokeStyle = css("--muted");
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(14, h - 16); ctx.lineTo(14 + px, h - 16);
+          ctx.moveTo(14, h - 20); ctx.lineTo(14, h - 12);
+          ctx.moveTo(14 + px, h - 20); ctx.lineTo(14 + px, h - 12);
+          ctx.stroke();
+          ctx.font = '400 11px "IBM Plex Mono", monospace';
+          ctx.fillStyle = css("--muted");
+          ctx.fillText("5 m", 14 + px + 6, h - 12);
+        }
+      }
+    }
+
+    function metres(x) { return x.toFixed(1).replace(/\.0$/, "") + " m"; }
+
+    function showRoom() {
+      var room = prep(rooms[state.idx]);
+      var size = [room.hi[0] - room.lo[0], room.hi[2] - room.lo[2], room.hi[1] - room.lo[1]];
+      factsEl.innerHTML = "";
+      [
+        ["Volume", Math.round(room.volume).toLocaleString("en-GB") + " m³"],
+        ["Surface", Math.round(room.area).toLocaleString("en-GB") + " m²"],
+        ["Size (w × l × h)", metres(size[0]) + " × " + metres(size[1]) + " × " + metres(size[2])],
+        ["Faces", String(room.faces)],
+        ["Receivers", room.rec.length === 2 ? "near and far" : String(room.rec.length)]
+      ].forEach(function (row) {
+        var dt = document.createElement("dt"); dt.textContent = row[0];
+        var dd = document.createElement("dd"); dd.textContent = row[1];
+        factsEl.append(dt, dd);
+      });
+
+      legendEl.innerHTML = "";
+      room.groups.forEach(function (g) {
+        if (g === "sources_and_receivers") return;
+        var li = document.createElement("li");
+        var sw = document.createElement("span");
+        sw.className = "swatch";
+        sw.style.background = surfaceColour(room, g, 0.6, isDark());
+        var txt = document.createElement("span");
+        txt.textContent = g.replace(/_/g, " ");
+        li.append(sw, txt);
+        legendEl.append(li);
+      });
+      if (state.marks) {
+        [["--source", "source"], ["--receiver", "receivers"]].forEach(function (pair) {
+          var li = document.createElement("li");
+          var d = document.createElement("span");
+          d.className = "dot";
+          d.style.background = css(pair[0]);
+          var t = document.createElement("span");
+          t.textContent = pair[1];
+          li.append(d, t);
+          legendEl.append(li);
+        });
+      }
+
+      Array.prototype.forEach.call(roomsEl.querySelectorAll(".room-btn"), function (b, i) {
+        b.setAttribute("aria-pressed", String(i === state.idx));
+      });
+      draw();
+    }
+
+    rooms.forEach(function (room, i) {
+      prep(room);
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "room-btn";
+      b.id = "room-" + room.slug;
+      b.setAttribute("aria-pressed", String(i === 0));
+      b.innerHTML = '<span class="name"></span><span class="num"></span><span class="fam"></span>';
+      b.querySelector(".name").textContent = room.name;
+      b.querySelector(".num").textContent = Math.round(room.volume).toLocaleString("en-GB") + " m³";
+      b.querySelector(".fam").textContent = room.family + " · " + room.faces + " faces";
+      b.addEventListener("click", function () {
+        state.idx = i;
+        state.dist = 1;
+        showRoom();
+      });
+      roomsEl.append(b);
+    });
+
+    var VIEWS = {
+      stalls: { theta: 0, phi: 0.12, dist: 0.62 },
+      above: { theta: 0.001, phi: 1.5, dist: 1.05 },
+      stage: { theta: Math.PI, phi: 0.16, dist: 0.6 },
+      corner: { theta: 0.85, phi: 0.34, dist: 1 }
+    };
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-view]"), function (b) {
+      b.addEventListener("click", function () {
+        var v = VIEWS[b.dataset.view];
+        state.theta = v.theta; state.phi = v.phi; state.dist = v.dist;
+        draw();
+      });
+    });
+
+    marksBtn.addEventListener("click", function () {
+      state.marks = !state.marks;
+      marksBtn.setAttribute("aria-pressed", String(state.marks));
+      showRoom();
+    });
+
+    canvas.addEventListener("pointerdown", function (e) {
+      state.drag = { x: e.clientX, y: e.clientY };
+      canvas.classList.add("dragging");
+      canvas.setPointerCapture(e.pointerId);
+    });
+
+    canvas.addEventListener("pointermove", function (e) {
+      if (!state.drag) return;
+      state.theta -= (e.clientX - state.drag.x) * 0.008;
+      state.phi = Math.max(-1.45, Math.min(1.45, state.phi + (e.clientY - state.drag.y) * 0.006));
+      state.drag = { x: e.clientX, y: e.clientY };
+      draw();
+    });
+
+    ["pointerup", "pointercancel"].forEach(function (ev) {
+      canvas.addEventListener(ev, function () {
+        state.drag = null;
+        canvas.classList.remove("dragging");
+      });
+    });
+
+    canvas.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      state.dist = Math.max(0.12, Math.min(3, state.dist * (1 + Math.sign(e.deltaY) * 0.12)));
+      draw();
+    }, { passive: false });
+
+    window.addEventListener("resize", draw);
+    if (window.matchMedia) {
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      if (mq.addEventListener) mq.addEventListener("change", showRoom);
+    }
+
+    showRoom();
+  })();
+</script>

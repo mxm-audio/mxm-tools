@@ -1,0 +1,196 @@
+# What each reading, table and curve means, in plain words: id<TAB>meaning. The reading's own label names
+# it; this says what it tells you about the sound and when it matters. Every reading, table or curve id in
+# the listener's source has a row, and every row an id the source holds (tests/glossary.rs).
+# Numbers that belong to a definition (a band, a window) live in the reading's label and source.
+#
+attack.first_step	How big the very first sample is against the peak. A sound that starts with a jump rather than rising from zero clicks.
+attack.peak_time	How long the sound takes from its onset to its loudest sample. Short for a hard stick on a tight head, long for a soft mallet or a slow swell.
+attack.polarity	Which way the first half-cycle goes: up (+1) or down (−1). Two otherwise equal hits of opposite polarity can sound different when layered or mixed with a room.
+attack.window_level	How loud each early window is against the sound's peak: the shape of the first milliseconds.
+attack.early_centroid	How bright the attack is: where the energy of the first moments sits (its spectral centroid). Higher means a clickier, harder strike.
+attack.early_rolloff	The frequency under which 85 % of the attack's power lies: how far up the strike's energy reaches.
+attack.worst_step	The largest jump between two neighbouring samples, against the peak: a click or a cut anywhere in the attack.
+attack.rise_time	How long the level takes to rise from 10 % to 90 % of its peak: the attack's speed as the ear feels it.
+level.peak	The loudest sample, against digital full scale. Near 0 dBFS risks clipping.
+level.body_loudness	How loud the body of the sound is, weighted the way loudness meters are (K-weighting). The level two sounds are matched on before they are compared.
+level.crest	The peak over the body loudness: how much sharper the loudest moment is than the rest. A high crest is a spiky, punchy sound; a low one is dense or squashed.
+decay.t20	How long, from the loudest moment, until the sound stays 20 dB quieter: how quickly it falls away at first.
+decay.t40	How long until it stays 40 dB quieter: how long the ring lasts before it has dropped well down.
+decay.fall_20_40	The time from 20 dB down to 40 dB down: how the tail behaves once the first thump is gone.
+decay.early_slope	How fast the first stage of the decay falls, in dB a second.
+decay.late_level	How loud the late part of the ring still is, against the peak.
+decay.late_slope	How fast the late ring falls, in dB a second. A slower late slope rings longer.
+decay.end_level	How loud the file's last 10 ms are: a file that ends while the sound still rings has been cut.
+decay.digital_silence	When the samples become exactly zero: a gate, a fade or an edit, not the sound dying naturally.
+pitch.rest	The pitch the drum settles to: the lowest steady resonance within 12 dB of the strongest. What you would tune a drum to.
+pitch.strongest	The strongest resonance of the ring, which is not always the rest pitch.
+pitch.rest_t60	How long the rest pitch takes to fall 60 dB: how long the drum's note rings.
+pitch.attack	The strongest resonance during the attack, before the pitch settles.
+pitch.attack_against_rest	How far the attack's pitch sits above or below the rest pitch, in cents: a drum whose pitch drops after the strike reads positive.
+pitch.glide	How far the rest pitch's line sits here from where it settles, in cents: a tom's or a kick's downward glide.
+pitch.salience	How clearly a pitch stands out of the spectrum (its peak over the median): high for a tuned tom, low for a noisy snare.
+pitch.head_share	Energy near the pitch against energy above it: body against brightness.
+pitch.modes	Table: every resonance found in one time window — its frequency, level and decay. The drum's modes, window by window.
+tone.centroid	How bright the sound is in a window: where its energy sits on average (the spectral centroid).
+tone.median	Where the energy sits as the ear weights it (A-weighted median frequency): half the heard energy is above, half below.
+tone.resonance	The strongest resonance in the smoothed spectrum: a body, a shell or a filter peak.
+tone.q	How sharp that resonance is: its frequency over its width. High Q rings narrowly; low Q is broad.
+tone.window_level	How loud a window is against the sound's peak.
+tone.band_level	One octave's level against the whole sound at that moment: the spectral shape, octave by octave.
+tonality.tonal_share	How much of the energy sits in steady, predictable lines rather than noise: tone against hiss.
+tonality.peaks	What the spectral peaks are between 20 and 200 ms: clean lines (1), resonant noise (0) or a mix (0.5).
+texture.rattle	The share of the sound between 1.6 and 6.4 kHz: a snare's springs rattling.
+texture.buzz_share	Buzz above 1.6 kHz against body below 400 Hz: how much of the snare is wires against drum.
+texture.late_wire_level	How loud the wire band still is late in the sound: wires that keep sizzling after the drum.
+texture.burst_swing	How much the wire band's level swings from millisecond to millisecond: a smooth sizzle against a spitty one. One render's draw: compare several.
+texture.burst_autocorrelation	Whether the wire bursts cluster in time: a rattle that comes in clumps. One render's draw: compare several.
+texture.slap_kurtosis	How peaky the sound's fine detail is (kurtosis): sharp slaps of the wires against a smooth sizzle.
+texture.slap_crest	The same slap sharpness as the typical 2 ms crest: its peaks against its average.
+texture.rhythm	How strongly the wire level is modulated: the buzz's own rhythm, which reads as slapping when it is too pronounced.
+texture.envelope_periodicity	Whether the envelope repeats between 1 and 20 ms: a rattle with a regular beat.
+modulation.ring_wobble	How much the ring's level wobbles (envelope modulation above 15 Hz): an unsteady, warbling ring. One render's draw.
+modulation.ring_width_3	How wide the ring's line is 3 dB down: a steady line is narrow, a wobbling or beating one wide.
+modulation.ring_width_10	How wide the ring's line is 10 dB down: the same, lower on its skirts.
+modulation.ring_share	How much of the sound is the ring, against the rest.
+modulation.roughness	How strongly the envelope moves between 15 and 300 Hz, as a share: a buzzy or rough sound. One render's draw.
+modulation.beats	Table: pairs of resonances close enough to beat at their difference — the wah-wah of two nearly equal modes.
+artefacts.click	How much high-frequency energy the first 2 ms hold against the next 10: a click at the onset.
+artefacts.noise_floor	How loud the quietest 50 ms are: the recording's noise floor.
+artefacts.pre_onset	How loud the file is before the sound starts: noise, bleed or a previous note.
+artefacts.hum_50	Mains hum at 50 Hz and its harmonics: the recording chain, not the sound.
+artefacts.hum_60	Mains hum at 60 Hz and its harmonics: the recording chain, not the sound.
+perception.loudness_peak	How loud the sound is at its loudest, in sone, from a model of hearing (ECMA-418-2). Twice the sone is twice as loud to the ear.
+perception.loudness_peak_at	When the sound is loudest to the ear, from the onset.
+perception.loud_for	How long the sound stays at least half as loud as its peak, to the ear: its heard length.
+perception.loudness	How loud a window sounds, in sone.
+perception.sharpness	How sharp a window sounds (acum): its high-frequency weight as the ear hears it. Sharp is bright and cutting.
+perception.tonality	How tonal a window sounds (tu): how much the ear hears pitch rather than noise.
+perception.roughness	How rough a window sounds (asper): fast beating heard as grit.
+perception.curve	Table: loudness, sharpness, tonality and roughness through the sound, from the onset.
+words.boominess	Boominess: how much of the loudness sits under 280 Hz.
+words.brightness	Brightness: the energy above 3 kHz against the whole.
+words.bright_centroid	Where the bright energy above 3 kHz sits: higher is airier.
+words.depth	Depth: the energy between 30 and 200 Hz against the whole.
+words.depth_centroid	Where that deep energy sits: lower is deeper.
+words.warmth	Warmth: the energy from 150 to 600 Hz against 600 Hz to 6 kHz.
+words.hardness	Hardness: how steep the attack's rise is, as the time a rise that steep would take to reach the peak. Shorter is harder.
+words.hard_centroid	Hardness as brightness: where the first 10 ms's energy sits.
+note.fundamental	The note's fundamental frequency: its lowest strong partial, the one a string's or a bar's pitch is named from.
+note.tuning	How far the note sits from equal temperament (A = 440 Hz), in cents.
+note.virtual_pitch	The pitch the ear takes, formed from several partials: for a bell it can differ from the fundamental.
+note.virtual_tuning	How far the heard (virtual) pitch sits from equal temperament, in cents.
+note.t60	How long the fundamental takes to fall 60 dB: how long the note rings.
+note.decay_law	How the decay changes with frequency: 0 means every partial dies together; negative means the high partials die faster, as in most real materials.
+note.tilt	How the partials' levels fall with frequency at the strike, in dB an octave: dark notes tilt steeply, bright ones gently.
+note.partials	Table: every partial within 40 dB of the strongest — frequency, ratio to the fundamental, level and decay.
+note.ideal_cents	How far the partials sit from the nearest ideal object (a string, a bar, a membrane…): near zero means the note behaves like that object.
+note.split	How far apart the two lines of a split fundamental are: two strings of a unison, or a bar and its resonator, a little out of tune.
+note.two_stage	How much slower the fundamental's second decay stage is than its first: a piano's long aftersound.
+note.release_at	When a damper comes down on the note (note-off), from the onset.
+note.release_t60	How fast the note dies once damped.
+note.beat_rate	How fast the fundamental's level swings: two polarisations of a string, or a bar and its resonator, beating.
+note.beat_depth	How far the fundamental's level swings while it beats.
+note.onsets	How many onsets start the note: one for a pluck, several for a strum.
+note.onset_spread	The time from the first onset to the last: how slow the strum is.
+note.harmonics	How many harmonics of a series were found: a string or a tube.
+note.inharmonicity	How far a stiff string's overtones are stretched above whole multiples (B): a piano's bass has more than a guitar's.
+note.h2	The second harmonic against the first.
+note.h3	The third harmonic against the first.
+note.even_odd	Even harmonics against odd: a clarinet is odd-heavy, a pickup's nonlinearity adds even.
+note.deficit	How many harmonics among the first twelve are missing or sunk under the series: the holes a pluck point or a closed tube leaves.
+note.excitation_position	Where the string was plucked or struck, as a share of its length: near the end is bright, near the middle hollow.
+note.partial_level	A partial's level at the strike against the fundamental, when two notes are compared partial by partial.
+note.partial_t60	A partial's decay time, when two notes are compared partial by partial.
+note.partial_tuning	A partial's ratio to the fundamental against the reference's, in cents, when two notes are compared partial by partial.
+sustain.settle	How long a held note takes before its pitch holds.
+sustain.drift	How far the held pitch wanders, in cents a second.
+sustain.vibrato_rate	How fast the vibrato swings.
+sustain.vibrato_depth	How far the vibrato swings, in cents.
+sustain.jitter	The pitch's small restlessness once the drift and the vibrato are taken out.
+sustain.tremolo_rate	How fast the level swings (tremolo).
+sustain.tremolo_depth	How far the level swings, in dB.
+sustain.hnr	The harmonics against the noise between them: a clean tone against a breathy or scratchy one.
+sustain.held	How long the note is held steady.
+sustain.fluctuation	How strongly the ear hears slow level or pitch swings (fluctuation strength, vacil): a vibrato or tremolo's heard size.
+voice.aliasing	Energy off the harmonic grid against on it: partials a digital oscillator folds back from above half the sample rate into the heard band.
+voice.alias_audible	Whether the worst aliasing is heard: above zero it pokes out of the harmonics' masking, below zero it hides under them.
+voice.line_hz	A line off the harmonic series: a filter singing on its own, or a second oscillator.
+voice.thd	Harmonic distortion: orders 2 to 10 against the fundamental.
+voice.peak_hz	Where a peak stands on the harmonic series: a resonant filter's cutoff.
+voice.peak_db	How far that peak stands over the series' line: the filter's resonance.
+voice.dc	A constant offset in the signal: no sound, but it moves the waveform off centre.
+voice.attack	The envelope's attack time.
+voice.decay	The envelope's decay time to the sustain level.
+voice.sustain	The sustain level against the peak.
+voice.release	The release: from note-off until 60 dB down.
+voice.on_click	A click at note-on, over the held sound's own texture.
+voice.off_click	A click at note-off, over the held sound's own texture.
+voice.zipper_hz	The rate of a stepped control in the envelope: parameter changes heard as zipper noise.
+voice.zipper	How loud the zipper's sidebands are against the envelope.
+voice.unison_beat	How fast a detuned unison beats.
+voice.unison_detune	How far apart a unison's voices are tuned.
+voice.orders	Table: every harmonic's level against the fundamental.
+response.coherence	How linear and steady the device is under noise: 1 means a filter or delay, lower means it is moving or distorting (a chorus reads about 0.5).
+response.latency	When the response's first arrival peaks: the device's delay.
+response.gain	The response's gain at 1 kHz.
+response.peak_hz	Where the frequency response peaks.
+response.peak_db	How far that peak stands over the passband.
+response.q	How sharp that peak is.
+response.low_edge	The low edge: where the response is 3 dB under its passband.
+response.high_edge	The high edge: where the response is 3 dB under its passband.
+response.thirds	Table: the frequency response at third-octave centres.
+delay.taps	Table: discrete echoes standing out of the response.
+delay.first	The first echo.
+delay.time	The delay time: the spacing of evenly spaced repeats.
+delay.repeats	Table: the evenly spaced repeats.
+delay.feedback	Each repeat's level against the one before: the feedback setting.
+delay.darkening	How each repeat changes its highs against its lows: a darkening tape or bucket-brigade echo.
+space.t30	The reverberation time: how long the space takes to fall 60 dB, judged from its fall between −5 and −35 dB.
+space.edt	The early decay time: how fast the first 10 dB fall, scaled to 60 dB. It follows how reverberant a space sounds more closely than the T30.
+space.pre_delay	The gap between the direct sound and the first reflection.
+space.drr	The direct sound against the reverberation: close or far.
+space.mixing_time	When the echoes become dense enough to sound like a smooth tail.
+space.iacc	How alike the two ears' late reverberation is: low is wide and enveloping.
+space.confidence	How far the space analysis trusts itself, from 0 to 1.
+effect.gain	The effect's gain at the test tone.
+effect.thd	Total harmonic distortion: harmonics 2 to 10 against the tone.
+effect.h2	The second harmonic against the tone: warm, even distortion.
+effect.h3	The third harmonic against the tone: harder, odd distortion.
+effect.dc	A constant offset the effect adds.
+effect.orders	Table: every harmonic's level against the tone.
+effect.pitch_wobble_rate	How fast the tone's pitch wobbles: a chorus, a vibrato, or tape flutter.
+effect.pitch_wobble	How far the tone's pitch wobbles.
+effect.level_wobble_rate	How fast the tone's level wobbles: a tremolo.
+effect.level_wobble	How far the tone's level wobbles.
+effect.imd2	Second-order intermodulation: new tones at the sum and difference of two input tones.
+effect.imd3	Third-order intermodulation: new tones close beside the input tones, the most audible kind.
+effect.imd	Intermodulation distortion measured the SMPTE way.
+effect.threshold	A compressor's threshold: the level where its gain starts to fall.
+effect.ratio	A compressor's ratio: input dB per output dB above the threshold.
+effect.makeup	The gain below the threshold.
+effect.attack	A compressor's attack: how fast its gain moves after a step up.
+effect.release	A compressor's release: how fast its gain recovers after a step down.
+effect.curve	Table: the static curve, output level against input level.
+effect.noise_floor	The effect's own noise with silence in.
+effect.runaway	How fast the level grows or dies on silence: a feedback loop running away reads positive.
+effect.line_hz	A steady line on silence: self-oscillation or hum.
+effect.line_level	How loud that line is.
+effect.burst_gain	The effect's typical gain during a burst.
+effect.burst_first	The first burst's gain against the rest: an effect that changes after it wakes.
+effect.hangover	How long the effect keeps sounding after a burst ends, until it stays 40 dB under it.
+effect.mod_rate	How fast a moving delay sweeps: a chorus or flanger's rate.
+effect.mod_depth	How far the delay sweeps.
+effect.mod_delay	The swept delay's mean: short for a flanger, longer for a chorus.
+effect.mod_shape	The sweep's shape: its third harmonic against its first. A triangle sweep reads about −19 dB, a sine far lower.
+effect.mod_phase	The right channel's sweep against the left's: how the chorus spreads.
+stereo.correlation	How alike left and right are: 1 is mono, 0 unrelated, −1 opposed.
+stereo.width	The side against the mid: how wide the sound is.
+stereo.balance	Left against right: how the sound leans.
+stereo.cross_left	How much of the left input reaches the right output, against the left output.
+stereo.cross_right	How much of the right input reaches the left output, against the right output.
+stereo.inputs	The left input's paths against the right input's: whether the two inputs are treated alike.
+stereo.matrix	Table: every input-to-output path of a true-stereo device, against the strongest.
+respond.settings	Table: the readings of several responses against the setting that changed between them.
+curve.envelope	The sound's level over time, against its loudest moment: the line its attack, decay and ring are read from.
+curve.spectrum	The whole sound's level against frequency, against its loudest band: where its energy sits.
+curve.spectrogram	The sound's level over time and frequency at once, in bands spaced as the ear spaces them: which parts ring, which die, and when.

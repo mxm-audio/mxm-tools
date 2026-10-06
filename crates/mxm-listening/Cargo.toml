@@ -1,0 +1,25 @@
+[package]
+name = "mxm-listening"
+description = "Listens to a sound and says what it does, part by part. A tool for the people and agents who tune the collection's instruments. Ships nothing."
+version.workspace = true
+edition.workspace = true
+# Framework-free and no external crate of its own: it does NOT inherit the 1.95 GUI floor, so any
+# DSP crate's harness can dev-depend on it. Verified, not asserted (see AGENTS.md).
+rust-version = "1.87"
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+# The rulers (the FFT, A-weighting, the step finder). A normal dependency here, as in `dsp-lab`,
+# because this crate is measurement and has no shipped graph to protect.
+mxm-measure.workspace = true
+mxm-audio-file.workspace = true
+mxm-audio-file-decode.workspace = true
+# Impulse-response descriptors (the plan's §2 item 9): its analyser, read as it reads a space.
+mxm-classic-verb-fit.workspace = true
+
+[[bin]]
+name = "listen"
+path = "src/bin/listen/main.rs"

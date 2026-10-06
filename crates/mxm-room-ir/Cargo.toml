@@ -1,0 +1,13 @@
+[package]
+name = "mxm-room-ir"
+description = "Offline room-acoustics simulation that writes impulse-response WAVs. Ships nothing into a plugin."
+version.workspace = true
+edition.workspace = true
+# No dependencies at all, and no GUI: it does NOT inherit the 1.95 GUI floor.
+rust-version = "1.87"
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]

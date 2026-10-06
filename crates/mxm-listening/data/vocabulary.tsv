@@ -1,0 +1,162 @@
+# The owner's vocabulary: which phrase a difference is, in the words the owner used for it. A row
+# matches a reading id, optionally a window start (ms) and a band's lower edge (Hz) (`*` for any),
+# and the direction of candidate minus reference (`+` or `-`). The most specific matching row wins.
+# Phrases describe the candidate (the model) against the reference (the recording).
+#
+# Sources: docs/drum-model-fitting.md §7 (the phrase tables, "Acoustic drum models in particular"),
+# the model-drums plan's revisions 18-21, and the drum machine's plan. New phrases are added when the
+# owner uses one (the plan's §4).
+#
+# id	window	band	dir	phrase	source
+level.body_loudness	*	*	+	louder (a fader can do this)	guide §2
+level.body_loudness	*	*	-	quieter (a fader can do this)	guide §2
+attack.peak_time	*	*	-	the strike peaks too early	model-drums rev 21
+attack.peak_time	*	*	+	the strike peaks too late	guide §4
+attack.rise_time	*	*	-	the attack is too sharp	model-drums rev 17
+attack.rise_time	*	*	+	the attack is too soft	model-drums rev 21
+attack.window_level	30	*	+	the attack is too soft: the body follows it too closely	guide §7
+attack.window_level	30	*	-	the attack stands out too much from the body	guide §7
+attack.window_level	0	*	-	the attack is too soft	guide §7
+attack.early_centroid	*	*	+	the attack is brighter	guide §4
+attack.early_centroid	*	*	-	the attack is duller	guide §4
+attack.early_rolloff	*	*	+	the attack is brighter	ab_residuals.py
+attack.early_rolloff	*	*	-	the attack is darker	ab_residuals.py
+attack.first_step	*	*	+	the sound starts with a step (a click)	guide §2
+attack.polarity	*	*	*	the first swing goes the other way	guide §3
+decay.t20	*	*	+	the hit decays slower	guide §4
+decay.t20	*	*	-	the hit decays faster	guide §4
+decay.t40	*	*	+	the tail lasts longer	guide §4
+decay.t40	*	*	-	the tail is shorter	guide §4
+decay.fall_20_40	*	*	-	the tail drops off abruptly	ab_residuals.py
+decay.early_slope	*	*	-	the first stage falls faster (gated)	model-drums rev 19
+decay.early_slope	*	*	+	the first stage falls slower	model-drums rev 19
+decay.late_level	*	*	+	the skin rings too long	model-drums rev 21
+decay.late_level	*	*	-	the ring dies too early (a gated sound)	model-drums rev 19
+decay.late_slope	*	*	+	the ring lasts longer	model-drums rev 19
+decay.late_slope	*	*	-	the ring dies faster	model-drums rev 19
+decay.digital_silence	*	*	-	the sound stops dead	guide §4
+pitch.rest	*	*	+	higher pitched (the tone of the drum skin)	model-drums rev 21
+pitch.rest	*	*	-	lower pitched	model-drums rev 21
+pitch.attack_against_rest	*	*	-	the attack is lower pitched than the tail	model-drums rev 21
+pitch.attack_against_rest	*	*	+	the attack is higher pitched than the tail	model-drums rev 21
+pitch.glide	*	*	+	the pitch glides down more at the start	guide §7
+pitch.glide	*	*	-	the pitch glides down less at the start	guide §7
+pitch.salience	*	*	+	the tail's pitch is too clean	model-drums rev 21
+pitch.salience	*	*	-	the pitch is less clear	model-drums rev 18
+pitch.rest_t60	*	*	+	the skin rings too long	model-drums rev 21
+pitch.rest_t60	*	*	-	the skin rings too short	model-drums rev 21
+tone.band_level	*	6400	+	the top is brighter (an EQ can do this)	model-drums rev 21
+tone.band_level	*	12800	+	the top is brighter (an EQ can do this)	model-drums rev 21
+tone.band_level	5	*	+	the attack is washy: more noise in the first milliseconds	model-drums rev 21
+tone.band_level	*	*	+	more energy in this band	guide §7
+tone.band_level	*	*	-	less energy in this band	guide §7
+tone.centroid	*	*	+	brighter	guide §4
+tone.centroid	*	*	-	darker	guide §4
+tone.median	*	*	+	the resonance sits higher	guide §5
+tone.median	*	*	-	the resonance sits lower	guide §5
+tone.resonance	*	*	+	the resonance sits higher	guide §5
+tone.resonance	*	*	-	the resonance sits lower	guide §5
+tone.q	*	*	+	a narrower resonance	guide §5
+tone.q	*	*	-	a wider resonance	guide §5
+texture.buzz_share	*	*	+	more buzz against the body	model-drums rev 21
+texture.buzz_share	*	*	-	less buzz against the body	model-drums rev 21
+texture.rattle	*	*	-	the rattle from the springs is less pronounced	the owner, 2026-09-27
+texture.rattle	*	*	+	the rattle from the springs is more pronounced	the owner, 2026-09-27
+texture.late_wire_level	*	*	-	the wire decay is shorter	model-drums rev 21
+texture.late_wire_level	*	*	+	the wires ring on longer	model-drums rev 21
+texture.burst_autocorrelation	*	*	+	the wires' slaps cluster more	model-drums rev 21
+texture.burst_autocorrelation	*	*	-	the wires' slaps cluster less (a smooth hiss)	model-drums rev 21
+texture.rhythm	*	4	+	the slapping is too pronounced	model-drums rev 21
+texture.rhythm	*	*	+	the buzz pulses more	model-drums rev 21
+texture.slap_kurtosis	*	*	+	the slaps are sharper: a more distinct rattle	model-drums rev 21
+texture.slap_kurtosis	*	*	-	the rattle is smoother: fewer distinct slaps, more of a plain hiss	the owner, 2026-09-27
+tonality.tonal_share	*	*	+	more tonal here: clean lines where the original is noise (the original sounds more like white noise)	owner, plan rev 11
+tonality.tonal_share	*	*	-	noisier here: resonant noise where the reference has lines	owner, plan rev 11
+modulation.ring_wobble	*	*	-	the ring is too steady: the tail's pitch is too clean	model-drums rev 21
+modulation.ring_wobble	*	*	+	the ring wobbles more	model-drums rev 21
+modulation.ring_share	*	*	+	the skin rings too much	model-drums rev 21
+modulation.ring_share	*	*	-	the skin rings too little	model-drums rev 21
+modulation.roughness	*	*	+	there is a grrrr sound	guide §7
+artefacts.click	*	*	+	a click at the start	guide §2
+perception.loudness_peak	*	*	+	louder at its loudest, at the same body level	ECMA-418-2 loudness
+perception.loudness_peak	*	*	-	quieter at its loudest, at the same body level	ECMA-418-2 loudness
+perception.loudness	0	*	+	the strike sounds louder	ECMA-418-2 loudness
+perception.loudness	0	*	-	the strike sounds softer	ECMA-418-2 loudness
+perception.loudness	*	*	+	louder here	ECMA-418-2 loudness
+perception.loudness	*	*	-	quieter here	ECMA-418-2 loudness
+perception.loud_for	*	*	+	it stays loud longer	ECMA-418-2 loudness
+perception.loud_for	*	*	-	it stops sounding loud sooner	ECMA-418-2 loudness
+perception.sharpness	*	*	+	sharper	sharpness (DIN 45692 weighting)
+perception.sharpness	*	*	-	duller	sharpness (DIN 45692 weighting)
+perception.tonality	*	*	+	more tonal: more of a pitched tone here	ECMA-418-2 tonality
+perception.tonality	*	*	-	less tonal: more of a noise here	ECMA-418-2 tonality
+perception.roughness	*	*	+	rougher (there is a grrrr sound)	guide §7 and ECMA-418-2 roughness
+perception.roughness	*	*	-	smoother	ECMA-418-2 roughness
+note.tuning	*	*	+	the note is tuned sharper	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.tuning	*	*	-	the note is tuned flatter	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.t60	*	*	+	the note rings longer	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.t60	*	*	-	the note dies sooner	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.decay_law	*	*	+	the overtones ring on against the fundamental: more metal or glass, less wood (Material up)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.decay_law	*	*	-	the overtones die sooner against the fundamental: more wood (Material down)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.tilt	*	*	+	brighter at the strike: the overtones louder, as from a harder mallet (Tone up)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.tilt	*	*	-	darker at the strike: the overtones softer, as from a softer mallet (Tone down)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partials	*	*	+	more overtones	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partials	*	*	-	fewer overtones	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.ideal_cents	*	*	+	the overtones sit further from the object's ideal ratios	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.ideal_cents	*	*	-	the overtones sit nearer the object's ideal ratios	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.split	*	*	+	the fundamental beats faster (its two lines further apart)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.split	*	*	-	the fundamental beats slower	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partial_level	*	*	+	an overtone is louder at the strike	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partial_level	*	*	-	an overtone is softer at the strike	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partial_t60	*	*	+	an overtone rings longer	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partial_t60	*	*	-	an overtone dies sooner	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partial_tuning	*	*	+	an overtone sits sharper against the fundamental	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.partial_tuning	*	*	-	an overtone sits flatter against the fundamental	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.virtual_tuning	*	*	+	the note is heard sharper	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.virtual_tuning	*	*	-	the note is heard flatter	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.harmonics	*	*	+	more harmonics	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.harmonics	*	*	-	fewer harmonics	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.inharmonicity	*	*	+	the string is stiffer: its harmonics are stretched more (Inharm up)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.inharmonicity	*	*	-	the string is suppler: its harmonics sit truer (Inharm down)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.excitation_position	*	*	+	plucked or struck nearer the middle: rounder	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.excitation_position	*	*	-	plucked or struck nearer the end: brighter, thinner	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.two_stage	*	*	+	the aftersound hangs on longer after the first fall	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.two_stage	*	*	-	the aftersound fades sooner after the first fall	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.release_at	*	*	+	the note is let go later	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.release_at	*	*	-	the note is let go sooner	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.release_t60	*	*	+	the damper stops it more slowly (Release up)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.release_t60	*	*	-	the damper stops it faster (Release down)	L5a; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+sustain.settle	*	*	+	the pitch takes longer to settle	L5c; not yet the owner's
+sustain.settle	*	*	-	the pitch settles sooner	L5c; not yet the owner's
+sustain.drift	*	*	+	the pitch creeps up while held	L5c; not yet the owner's
+sustain.drift	*	*	-	the pitch sags while held	L5c; not yet the owner's
+sustain.vibrato_rate	*	*	+	a faster vibrato	L5c; not yet the owner's
+sustain.vibrato_rate	*	*	-	a slower vibrato	L5c; not yet the owner's
+sustain.vibrato_depth	*	*	+	a wider vibrato	L5c; not yet the owner's
+sustain.vibrato_depth	*	*	-	a narrower vibrato	L5c; not yet the owner's
+sustain.jitter	*	*	+	the pitch wavers more	L5c; not yet the owner's
+sustain.jitter	*	*	-	the pitch is steadier	L5c; not yet the owner's
+sustain.tremolo_rate	*	*	+	a faster pulse in the level	L5c; not yet the owner's
+sustain.tremolo_rate	*	*	-	a slower pulse in the level	L5c; not yet the owner's
+sustain.tremolo_depth	*	*	+	a deeper pulse in the level	L5c; not yet the owner's
+sustain.tremolo_depth	*	*	-	a shallower pulse in the level	L5c; not yet the owner's
+sustain.hnr	*	*	+	cleaner: less breath or bow noise	L5c; not yet the owner's
+sustain.hnr	*	*	-	breathier or scratchier	L5c; not yet the owner's
+note.beat_rate	*	*	+	the note beats faster (its two polarisations further apart)	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.beat_rate	*	*	-	the note beats slower	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.beat_depth	*	*	+	the note beats deeper	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.beat_depth	*	*	-	the note beats shallower	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.onsets	*	*	+	more strings strummed	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.onsets	*	*	-	fewer strings strummed	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.onset_spread	*	*	+	a slower strum	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.onset_spread	*	*	-	a quicker strum	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.h2	*	*	+	more second harmonic: the pickup less symmetric	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.h2	*	*	-	less second harmonic	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.h3	*	*	+	more third harmonic: the pickup driven harder	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.h3	*	*	-	less third harmonic	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.even_odd	*	*	+	fuller, rounder: more even harmonics	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+note.even_odd	*	*	-	hollower: more odd harmonics	L5b; AAS's control names (research:physical-modelling/aas-modeling-collection.md), not yet the owner's
+sustain.fluctuation	*	*	+	it wavers more slowly and more strongly (fluctuation)	L5c; not yet the owner's
+sustain.fluctuation	*	*	-	it is steadier	L5c; not yet the owner's
+note.deficit	*	*	+	hollower: more harmonics missing from the series	the plan's §2 item 3; not yet the owner's
+note.deficit	*	*	-	fuller: fewer harmonics missing	the plan's §2 item 3; not yet the owner's

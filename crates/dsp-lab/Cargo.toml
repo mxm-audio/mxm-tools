@@ -1,0 +1,26 @@
+[package]
+name = "dsp-lab"
+description = "Measurement harnesses for the docs/ references. Not shipped."
+version.workspace = true
+edition.workspace = true
+# Not shipped and not portable-by-contract, so it takes the workspace floor rather
+# than overriding downward the way `mxm-mono-01-dsp` does.
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+# The measurement rulers, and the numeric core these harnesses used to own. A **normal**
+# dependency here, unlike everywhere else, because this crate has no shipped graph to
+# protect and its harnesses are measurement.
+mxm-measure = { workspace = true }
+# The harnesses measure the shipped DSP through its real public API. The dependency
+# runs lab -> dsp and never the other way, so nothing is added to `mxm-mono-01-dsp`'s
+# runtime graph — which is what earns its MSRV override.
+mxm-mono-01-dsp = { workspace = true }
+# Same direction: the lab measures the sampler's pitch detector against tones the
+# collection's own oscillator renders, so the ground truth is a real antialiased
+# waveform at an exactly known pitch rather than a textbook sine.
+mxm-creative-sampler-dsp = { workspace = true }

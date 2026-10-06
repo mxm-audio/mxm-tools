@@ -1,0 +1,88 @@
+# The listener's audibility thresholds: how large a difference in each reading must be before it is
+# worth reporting. One row per reading id, or per unit as a fallback (id `*`). `rel` thresholds are a
+# fraction of the reference's value; `abs` ones are in the reading's unit. The owner's own thresholds,
+# from calibration (plan L3), override these rows and stay local.
+#
+# Sources: research:listening/audibility-thresholds.md (level about 0.5-1 dB; rise and decay time about
+# 25 %; spectral centroid 4-5 % with pitch fixed; pitch a fraction of a percent, worse for short
+# sounds). Rows marked `chosen` have no published threshold and are set against the guide's
+# measurements (docs/drum-model-fitting.md); calibration replaces them. A `context` (a sound family's
+# name) limits a row to that family; a `floor` is the smallest value a relative threshold treats as
+# perceived at all.
+#
+# id	kind	value	source	context	floor
+*:dB	abs	1.0	research:listening/audibility-thresholds.md (level)
+*:dBFS	abs	1.0	research:listening/audibility-thresholds.md (level)
+*:dB/s	rel	0.25	research:listening/audibility-thresholds.md (decay time)
+*:s	rel	0.25	research:listening/audibility-thresholds.md (decay time): a space's reverberation time
+*:ms	rel	0.25	research:listening/audibility-thresholds.md (rise and decay time)
+*:Hz	rel	0.045	research:listening/audibility-thresholds.md (spectral centroid, pitch fixed)
+*:c	abs	10	research:listening/audibility-thresholds.md (pitch, short sounds): chosen at the short-sound end
+*:%	abs	2	chosen: the guide read a steady ring at 2 % and a wobbling one at 9 %
+*:	abs	0.1	chosen
+*:×	abs	0.2	chosen
+*:±	abs	1	a flipped first swing
+decay.late_level	abs	3	chosen: late in a decay the ear judges its rate (25 %), which moves a late level by several dB; 1 dB flagged a 10 % change
+tone.band_level	abs	1.5	chosen: compared as the spectrum's shape at that moment (each band against the moment's total), about a spectral-envelope step
+pitch.rest	rel	0.006	research:listening/audibility-thresholds.md (pitch): 10 c at a decaying drum's short-sound end
+pitch.strongest	rel	0.006	as pitch.rest
+pitch.attack	rel	0.006	as pitch.rest
+tonality.tonal_share	abs	15	chosen: a band a sixth more tonal or noisy
+pitch.salience	abs	2	chosen: the corpus fit's clarity spread between round robins
+pitch.head_share	abs	1.5	chosen
+tone.q	rel	0.25	chosen: the guide found a Q meaningful only within its smoothing span
+attack.first_step	abs	0.2	chosen: the guide's missing-rise trap reads near 1
+attack.worst_step	abs	6	chosen
+texture.burst_swing	abs	0.4	chosen: steady noise 1.7 dB, the recording 2.3-2.5 dB
+texture.burst_autocorrelation	abs	0.12	chosen: steady noise about 0, the recording +0.1 to +0.4
+texture.slap_kurtosis	abs	0.2	chosen: three times the spread one render of white noise shows (2.75 ± 0.07)
+texture.slap_crest	abs	0.1	chosen: steady noise about 2.5
+texture.rhythm	abs	0.2	chosen: the guide's slapping read 0.5-0.75 dB against 0.2-0.5
+texture.envelope_periodicity	abs	0.12	ab_residuals.py's flag
+modulation.roughness	abs	10	chosen
+modulation.ring_width_3	rel	0.25	chosen
+modulation.ring_width_10	rel	0.25	chosen
+artefacts.click	abs	3	chosen
+artefacts.noise_floor	abs	6	chosen: the file's, not the sound's
+artefacts.pre_onset	abs	6	chosen: the file's, not the sound's
+artefacts.hum_50	abs	6	chosen: the file's, not the sound's
+artefacts.hum_60	abs	6	chosen: the file's, not the sound's
+note.tuning	abs	5	research:listening/audibility-thresholds.md (pitch): a steady tone's DLF is 0.2-0.3 % (3.5-5 c) from 0.5 to 2 kHz; the upper end, a struck note decaying
+note.virtual_tuning	abs	5	as note.tuning
+note.t60	rel	0.25	research:listening/audibility-thresholds.md (decay time); research:listening/percussion-perception.md §4.4 finds wider tolerance (75-140 % transparent on a guitar model)
+note.decay_law	abs	0.15	chosen: moves the T60 of a partial two octaves up by about 25 %, the decay-time threshold (research:listening/percussion-perception.md §4.1: damping across frequency is the main cue to material)
+note.tilt	abs	1	chosen: moves a partial two octaves up by 2 dB against the fundamental, about two level steps
+note.partials	abs	2	chosen
+note.ideal_cents	abs	15	chosen: the partials' pattern, which also moves the pitch through its dominant partials (research:listening/percussion-perception.md §9 item 5); no threshold for a struck bar's in a document read
+note.partial_level	abs	1.5	chosen: one partial against the fundamental, about a spectral-envelope step (as tone.band_level); salience fades with the partial's level
+note.partial_t60	rel	0.25	research:listening/audibility-thresholds.md (decay time)
+note.partial_tuning	abs	15	chosen: as note.ideal_cents
+note.harmonics	abs	3	chosen
+note.inharmonicity	rel	0.3	chosen: research:listening/percussion-perception.md §5.2 finds the timbre threshold on B spanning three decades with f0, so a share of the reference's B rather than one value
+note.excitation_position	abs	0.02	chosen: research:listening/percussion-perception.md §6 found no perceptual threshold for the excitation position
+note.two_stage	rel	0.3	chosen: research:listening/percussion-perception.md §4.4, a two-stage decay needed significant deviations to be heard (Järveläinen & Karjalainen via Jarv2003)
+note.release_at	rel	0.25	research:listening/audibility-thresholds.md (decay time)
+note.release_t60	rel	0.25	research:listening/audibility-thresholds.md (decay time)
+sustain.settle	rel	0.25	research:listening/audibility-thresholds.md (rise time)
+sustain.drift	abs	5	chosen: five cents a second
+sustain.vibrato_rate	abs	0.5	chosen
+sustain.vibrato_depth	rel	0.25	chosen
+sustain.jitter	abs	3	chosen
+sustain.tremolo_rate	abs	0.5	chosen
+sustain.tremolo_depth	abs	1	research:listening/audibility-thresholds.md (level)
+sustain.hnr	abs	3	chosen
+sustain.held	rel	0.25	chosen
+note.beat_rate	rel	0.25	chosen
+note.beat_depth	abs	2	chosen: research:listening/percussion-perception.md §4.4, dual-polarisation effects needed significant deviations to be heard
+note.onsets	abs	1	one string more or fewer
+note.onset_spread	rel	0.25	research:listening/audibility-thresholds.md (onset asynchrony and gaps, §7): chosen at the rise-time step
+note.deficit	abs	1	one harmonic more or fewer missing, as note.onsets
+note.h2	abs	1.5	chosen: as note.partial_level
+note.h3	abs	1.5	chosen: as note.partial_level
+note.even_odd	abs	1.5	chosen: as note.partial_level
+note.split	rel	0.25	chosen: the rate its two lines beat at
+*:sone	rel	0.07	research:listening/audibility-thresholds.md (loudness: 7 %, the 1 dB level step restated in sones); floor 0.01 sone, ECMA-418-2's audibility line		0.01
+*:acum	rel	0.045	chosen: no sharpness threshold in a document read; the spectral centroid's 4.5 %, sharpness being a weighted centroid
+*:tu	abs	0.1	chosen: a quarter of ECMA-418-2's 0.4 tu_HMS prominence line
+*:vacil	rel	0.17	chosen: as roughness (research:listening/audibility-thresholds.md); floor 0.05 vacil, a quarter of ECMA-418-2's 0.2 vacil prominence line		0.05
+*:asper	rel	0.17	research:listening/audibility-thresholds.md (roughness); floor 0.07 asper, under which roughness is not perceived		0.07

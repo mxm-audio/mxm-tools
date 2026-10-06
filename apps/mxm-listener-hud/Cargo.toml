@@ -1,0 +1,42 @@
+[package]
+name = "mxm-listener-hud"
+description = "Drop a sound and see what the listener hears in it. A bench: it ships nothing (yet)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "mxm_listener_hud"
+path = "src/lib.rs"
+
+[[bin]]
+name = "mxm-listener-hud"
+path = "src/main.rs"
+
+[dependencies]
+# wgpu, and it MUST match the player's features. Features unify across one build graph: asking for
+# `glow` here would switch eframe's `glow` feature on for `mxm-player` too, which the layout lab
+# learned by breaking `cargo build --workspace` (apps/mxm-layout-lab/Cargo.toml).
+# `x11` and `wayland` are winit's Linux backends, without which it does not compile there.
+eframe = { version = "=0.36.1", default-features = false, features = ["wgpu", "default_fonts", "x11", "wayland"] }
+egui = { workspace = true }
+# A normal dependency here and nowhere else that ships: this app is unshipped (AGENTS.md). Shipping
+# it means adding it to the leak check's list in crates/mxm-measure/AGENTS.md, which then fails.
+mxm-listening = { workspace = true }
+# Playback (the plan's H3): the player's pins, so the tree gains nothing it did not already resolve.
+# `realtime` promotes the audio thread, as in the player.
+cpal = { version = "=0.18.2", features = ["realtime"] }
+# The lock-free queues between the window and the audio callback.
+rtrb = "=0.3.5"
+
+[dev-dependencies]
+# wgpu: the tests render nothing, but `examples/listener_hud_shot.rs` renders the HUD to a PNG so its
+# look can be reviewed without opening the window. `image` at the version eframe already resolves.
+egui_kittest = { version = "=0.36.1", features = ["wgpu"] }
+image = { version = "=0.25.9", default-features = false, features = ["png"] }
+# Tests write their own synthetic sounds; no recording is ever read.
+mxm-audio-file = { workspace = true }

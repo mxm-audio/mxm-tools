@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Listening session</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --bg: #f6f5f2; --fg: #1d1c1a; --muted: #6b6760; --card: #ffffff; --line: #d9d5cc;
+          --accent: #2f5d8a; --good: #2e7d4f; --bad: #b3412e; --play: #e6eef6; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161615; --fg: #ecebe8; --muted: #a09c94; --card: #201f1d; --line: #3a3834;
+            --accent: #7fb0e0; --good: #6cc592; --bad: #e48a78; --play: #243140; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  p.lead { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  label { display: block; font-size: .9rem; color: var(--muted); margin-bottom: 6px; }
+  input { width: 100%; padding: 8px 10px; font: inherit; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); }
+  button { font: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; background: var(--card); color: var(--fg); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  button:disabled { opacity: .45; cursor: default; }
+  .intervals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+  .interval { display: flex; flex-direction: column; gap: 8px; }
+  .interval .n { font-size: 2rem; text-align: center; padding: 18px 0; border-radius: 10px; border: 2px solid var(--line); transition: background .1s; }
+  .interval .n.playing { background: var(--play); border-color: var(--accent); }
+  .interval .n.good { border-color: var(--good); color: var(--good); }
+  .interval .n.bad { border-color: var(--bad); color: var(--bad); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .status { color: var(--muted); font-size: .9rem; }
+  #summary li { margin-bottom: 4px; }
+  kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-size: .85rem; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Which one is different?</h1>
+  <p class="lead">Three sounds play in turn. Two are the same; pick the one that is not. Guess when you
+    are not sure — every answer counts. Some trials are easy on purpose.</p>
+
+  <section class="card" id="start">
+    <label for="device">What are you listening on?</label>
+    <input id="device" value="headphones">
+    <div class="row" style="margin-top: 12px">
+      <button class="primary" id="go">Start</button>
+      <span class="status">Keys: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> answer, <kbd>R</kbd> replays.</span>
+    </div>
+  </section>
+
+  <section class="card" id="trial" hidden>
+    <div class="intervals">
+      <div class="interval"><div class="n" id="n0">1</div><button data-play="0">Play</button><button data-choose="0">It's 1</button></div>
+      <div class="interval"><div class="n" id="n1">2</div><button data-play="1">Play</button><button data-choose="1">It's 2</button></div>
+      <div class="interval"><div class="n" id="n2">3</div><button data-play="2">Play</button><button data-choose="2">It's 3</button></div>
+    </div>
+    <div class="row">
+      <button id="replay">Replay all</button>
+      <button id="stop">Stop the session</button>
+      <span class="status" id="progress"></span>
+    </div>
+    <p class="status">Can't hear it? Guess — that is how the test finds your limit. A wrong guess makes
+      the next one easier.</p>
+  </section>
+
+  <section class="card" id="done" hidden>
+    <h2 style="font-size: 1.1rem; margin-top: 0">Done — thank you</h2>
+    <ul id="summary"></ul>
+    <p class="status">The results stay on this computer. Run <code>listen calibrate</code> to turn them into
+      your thresholds.</p>
+  </section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let trial = null, audio = [], answered = false;
+// Every sequence carries a generation: a new trial, a replay or a single play cancels the one before,
+// so answering while the sounds still play never leaves the next trial silent.
+let generation = 0;
+
+async function post(path, data) {
+  const body = new URLSearchParams(data).toString();
+  const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+  return r.json();
+}
+
+function mark(i, cls) { $('n' + i).classList.add(cls); }
+function clear() { for (let i = 0; i < 3; i++) $('n' + i).className = 'n'; }
+
+function stopAll() {
+  for (const a of audio) { try { a.pause(); } catch (e) { /* not started */ } }
+  if (!answered) clear();
+}
+
+function playOne(i) {
+  return new Promise((resolve) => {
+    const a = audio[i];
+    if (!a) return resolve();
+    clear();
+    mark(i, 'playing');
+    a.currentTime = 0;
+    const end = () => { $('n' + i).classList.remove('playing'); a.onended = a.onpause = null; resolve(); };
+    a.onended = end;
+    a.onpause = end;
+    a.play().catch(end);
+  });
+}
+
+async function playAll() {
+  const mine = ++generation;
+  stopAll();
+  for (let i = 0; i < 3; i++) {
+    if (mine !== generation) return;
+    await playOne(i);
+    if (mine !== generation) return;
+    await new Promise((r) => setTimeout(r, 350));
+  }
+}
+
+async function playSingle(i) {
+  ++generation;
+  stopAll();
+  await playOne(i);
+}
+
+async function next() {
+  const r = await (await fetch('/next')).json();
+  if (r.done) return finish(r);
+  ++generation;
+  stopAll();
+  trial = r.trial;
+  answered = false;
+  clear();
+  $('progress').textContent = `${r.answered} answered · about ${r.left} to go · ${r.minutes_left} min left`;
+  audio = [0, 1, 2].map((i) => { const a = new Audio(`/audio/${i}.wav?t=${trial}`); a.preload = 'auto'; return a; });
+  await Promise.all(audio.map((a) => new Promise((res) => { a.oncanplaythrough = res; a.onerror = res; })));
+  await playAll();
+}
+
+async function choose(i) {
+  if (trial === null || answered) return;
+  answered = true;
+  ++generation;
+  stopAll();
+  const r = await post('/answer', { trial, choice: i });
+  mark(i, r.correct ? 'good' : 'bad');
+  setTimeout(next, 650);
+}
+
+function finish(r) {
+  $('trial').hidden = true;
+  $('done').hidden = false;
+  $('summary').innerHTML = '';
+  for (const line of r.summary || []) {
+    const li = document.createElement('li');
+    li.textContent = line;
+    $('summary').appendChild(li);
+  }
+}
+
+$('go').onclick = async () => {
+  await post('/device', { device: $('device').value });
+  $('start').hidden = true;
+  $('trial').hidden = false;
+  next();
+};
+$('replay').onclick = playAll;
+$('stop').onclick = async () => finish(await post('/stop', {}));
+document.querySelectorAll('[data-play]').forEach((b) => b.onclick = () => playSingle(+b.dataset.play));
+document.querySelectorAll('[data-choose]').forEach((b) => b.onclick = () => choose(+b.dataset.choose));
+document.addEventListener('keydown', (e) => {
+  if ($('trial').hidden) return;
+  if (e.key === '1' || e.key === '2' || e.key === '3') choose(+e.key - 1);
+  if (e.key === 'r' || e.key === 'R') playAll();
+});
+</script>
+</body>
+</html>
