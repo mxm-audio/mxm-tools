@@ -19,13 +19,13 @@ repository = "https://github.com/mxm-audio/mxm-tools"
 # Pinned exactly, as in every MXM repository; Cargo.lock is committed. Own crates by path,
 # the kit's from mxm-kit v0.3.0, another product's from its repository at v0.1.0.
 egui = "=0.36.1"
-mxm-audio-file = { git = "https://github.com/mxm-audio/mxm-kit", tag = "v0.3.0" }
-mxm-audio-file-decode = { git = "https://github.com/mxm-audio/mxm-kit", tag = "v0.3.0" }
-mxm-classic-verb-fit = { git = "https://github.com/mxm-audio/mxm-classic-verb", tag = "v0.1.0" }
-mxm-creative-sampler-dsp = { git = "https://github.com/mxm-audio/mxm-creative-sampler", tag = "v0.1.0" }
+mxm-audio-file = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
+mxm-audio-file-decode = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
+mxm-classic-verb-fit = { git = "https://github.com/mxm-audio/mxm-classic-verb", branch = "main" }
+mxm-creative-sampler-dsp = { git = "https://github.com/mxm-audio/mxm-creative-sampler", branch = "main" }
 mxm-listening = { path = "crates/mxm-listening" }
-mxm-measure = { git = "https://github.com/mxm-audio/mxm-kit", tag = "v0.3.0" }
-mxm-mono-01-dsp = { git = "https://github.com/mxm-audio/mxm-mono-01", tag = "v0.1.0" }
+mxm-measure = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
+mxm-mono-01-dsp = { git = "https://github.com/mxm-audio/mxm-mono-01", branch = "main" }
 
 [profile.release]
 lto = "thin"

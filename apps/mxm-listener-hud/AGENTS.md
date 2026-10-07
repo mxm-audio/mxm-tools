@@ -125,7 +125,7 @@ The owner's rulings (2026-09-28):
   owner's machine; no recording, derived audio, rendered picture of a recording or recording path is
   committed.
 - **Windows is verified; Linux and macOS are not.** Since the split its Linux and macOS
-  checks come later, together, as every repository's do, and CI runs them on `v*` tags;
+  checks come later, together, as every repository's do, and CI runs them when started by hand;
   the window itself has been looked at on Windows only.
 
 # Work Guidance

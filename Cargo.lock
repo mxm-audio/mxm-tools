@@ -1504,8 +1504,8 @@ dependencies = [
 
 [[package]]
 name = "mxm-audio-file"
-version = "0.3.0"
-source = "git+https://github.com/mxm-audio/mxm-kit?tag=v0.3.0#be374c7bd9849bca3d545dea0529b456308cd920"
+version = "0.4.1"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#1dcc278f8b3fdc7ad5d20ea2441f31474c309a9b"
 dependencies = [
  "aifc",
  "flacenc",
@@ -1514,8 +1514,8 @@ dependencies = [
 
 [[package]]
 name = "mxm-audio-file-decode"
-version = "0.3.0"
-source = "git+https://github.com/mxm-audio/mxm-kit?tag=v0.3.0#be374c7bd9849bca3d545dea0529b456308cd920"
+version = "0.4.1"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#1dcc278f8b3fdc7ad5d20ea2441f31474c309a9b"
 dependencies = [
  "symphonia",
 ]
@@ -1523,12 +1523,12 @@ dependencies = [
 [[package]]
 name = "mxm-classic-verb-dsp"
 version = "0.1.0"
-source = "git+https://github.com/mxm-audio/mxm-classic-verb?tag=v0.1.0#2948310906628b1613c6727903b679216bb4d05c"
+source = "git+https://github.com/mxm-audio/mxm-classic-verb?branch=main#938df1a58e746530aac19a5fa4917972f2812899"
 
 [[package]]
 name = "mxm-classic-verb-fit"
 version = "0.1.0"
-source = "git+https://github.com/mxm-audio/mxm-classic-verb?tag=v0.1.0#2948310906628b1613c6727903b679216bb4d05c"
+source = "git+https://github.com/mxm-audio/mxm-classic-verb?branch=main#938df1a58e746530aac19a5fa4917972f2812899"
 dependencies = [
  "mxm-classic-verb-dsp",
 ]
@@ -1536,9 +1536,9 @@ dependencies = [
 [[package]]
 name = "mxm-creative-sampler-dsp"
 version = "0.1.0"
-source = "git+https://github.com/mxm-audio/mxm-creative-sampler?tag=v0.1.0#ac5fe3cd97966f1f4ba0b709f75cd3aa4cb3bb6a"
+source = "git+https://github.com/mxm-audio/mxm-creative-sampler?branch=main#a7ae4c95b3587acacf1ef14d67c5b07d83c34131"
 dependencies = [
- "mxm-modulation",
+ "mxm-modulation 0.4.0",
 ]
 
 [[package]]
@@ -1567,20 +1567,25 @@ dependencies = [
 
 [[package]]
 name = "mxm-measure"
-version = "0.3.0"
-source = "git+https://github.com/mxm-audio/mxm-kit?tag=v0.3.0#be374c7bd9849bca3d545dea0529b456308cd920"
+version = "0.4.1"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#1dcc278f8b3fdc7ad5d20ea2441f31474c309a9b"
 
 [[package]]
 name = "mxm-modulation"
-version = "0.3.0"
-source = "git+https://github.com/mxm-audio/mxm-kit?tag=v0.3.0#be374c7bd9849bca3d545dea0529b456308cd920"
+version = "0.4.0"
+source = "git+https://github.com/mxm-audio/mxm-kit?tag=v0.4.0#06cbc3e373ccd4e5c7a7f992f7f6ffede2844324"
+
+[[package]]
+name = "mxm-modulation"
+version = "0.4.1"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#1dcc278f8b3fdc7ad5d20ea2441f31474c309a9b"
 
 [[package]]
 name = "mxm-mono-01-dsp"
 version = "0.1.0"
-source = "git+https://github.com/mxm-audio/mxm-mono-01?tag=v0.1.0#eab383a23ea4756f3f13c4dcba6d75a366eff3df"
+source = "git+https://github.com/mxm-audio/mxm-mono-01?branch=main#4094ffdef8a6320baaf1ca2c8dbd58c7bae6d1f9"
 dependencies = [
- "mxm-modulation",
+ "mxm-modulation 0.4.1",
 ]
 
 [[package]]

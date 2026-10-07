@@ -131,7 +131,7 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
 - Every technique is written from its paper or standard and cited at the top of its file; no
   existing implementation is opened.
 - Verified on Windows; Linux and macOS are checked later, together, and by CI on all
-  three on `v*` tags. Nothing here may be Windows-only.
+  three when started by hand. Nothing here may be Windows-only.
 
 # Work Guidance
 
