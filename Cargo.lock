@@ -1536,9 +1536,9 @@ dependencies = [
 [[package]]
 name = "mxm-creative-sampler-dsp"
 version = "0.1.0"
-source = "git+https://github.com/mxm-audio/mxm-creative-sampler?branch=main#a7ae4c95b3587acacf1ef14d67c5b07d83c34131"
+source = "git+https://github.com/mxm-audio/mxm-creative-sampler?branch=main#b8154a3ede5e8bb3370581b7ff6da90f9c46d9ee"
 dependencies = [
- "mxm-modulation 0.4.0",
+ "mxm-modulation",
 ]
 
 [[package]]
@@ -1572,11 +1572,6 @@ source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#1dcc278f8b3fdc7ad
 
 [[package]]
 name = "mxm-modulation"
-version = "0.4.0"
-source = "git+https://github.com/mxm-audio/mxm-kit?tag=v0.4.0#06cbc3e373ccd4e5c7a7f992f7f6ffede2844324"
-
-[[package]]
-name = "mxm-modulation"
 version = "0.4.1"
 source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#1dcc278f8b3fdc7ad5d20ea2441f31474c309a9b"
 
@@ -1585,7 +1580,7 @@ name = "mxm-mono-01-dsp"
 version = "0.1.0"
 source = "git+https://github.com/mxm-audio/mxm-mono-01?branch=main#4094ffdef8a6320baaf1ca2c8dbd58c7bae6d1f9"
 dependencies = [
- "mxm-modulation 0.4.1",
+ "mxm-modulation",
 ]
 
 [[package]]
