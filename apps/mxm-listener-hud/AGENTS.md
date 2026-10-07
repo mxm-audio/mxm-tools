@@ -124,8 +124,8 @@ The owner's rulings (2026-09-28):
 - **Tests use synthetic sounds only.** A recording is read only by the manual examples, on the
   owner's machine; no recording, derived audio, rendered picture of a recording or recording path is
   committed.
-- **Windows is verified; Linux and macOS are not.** Since the split its checks are run on Linux in
-  WSL before a push, as every repository's are, and CI runs them on all three on `v*` tags;
+- **Windows is verified; Linux and macOS are not.** Since the split its Linux and macOS
+  checks come later, together, as every repository's do, and CI runs them on `v*` tags;
   the window itself has been looked at on Windows only.
 
 # Work Guidance
