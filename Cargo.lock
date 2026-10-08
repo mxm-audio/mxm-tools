@@ -1505,7 +1505,7 @@ dependencies = [
 [[package]]
 name = "mxm-audio-file"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#d753359b45ecd92f0907dd5389b51e60b0cfc44d"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#a234a493667ba4766c883fa1b905832731e5c73b"
 dependencies = [
  "aifc",
  "flacenc",
@@ -1515,7 +1515,7 @@ dependencies = [
 [[package]]
 name = "mxm-audio-file-decode"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#d753359b45ecd92f0907dd5389b51e60b0cfc44d"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#a234a493667ba4766c883fa1b905832731e5c73b"
 dependencies = [
  "symphonia",
 ]
@@ -1568,12 +1568,12 @@ dependencies = [
 [[package]]
 name = "mxm-measure"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#d753359b45ecd92f0907dd5389b51e60b0cfc44d"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#a234a493667ba4766c883fa1b905832731e5c73b"
 
 [[package]]
 name = "mxm-modulation"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#d753359b45ecd92f0907dd5389b51e60b0cfc44d"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#a234a493667ba4766c883fa1b905832731e5c73b"
 
 [[package]]
 name = "mxm-mono-01-dsp"
