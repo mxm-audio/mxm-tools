@@ -24,6 +24,8 @@
 *:±	abs	1	a flipped first swing
 decay.late_level	abs	3	chosen: late in a decay the ear judges its rate (25 %), which moves a late level by several dB; 1 dB flagged a 10 % change
 tone.band_level	abs	1.5	chosen: compared as the spectrum's shape at that moment (each band against the moment's total), about a spectral-envelope step
+tone.ring_octave	abs	1.5	chosen: as tone.band_level, the octave against the ring's whole span
+tone.line_level	abs	2	chosen: one ringing line against the span, a little over a spectral-envelope step (a line beside noise reads less steadily than a partial of a note)
 pitch.rest	rel	0.006	research:listening/audibility-thresholds.md (pitch): 10 c at a decaying drum's short-sound end
 pitch.strongest	rel	0.006	as pitch.rest
 pitch.attack	rel	0.006	as pitch.rest

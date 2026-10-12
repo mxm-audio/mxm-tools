@@ -308,6 +308,15 @@ pub fn compare_to_set(
         }
         None => (references.to_vec(), candidate),
     };
+    // The ring's lines likewise, keyed by the first reference's strongest.
+    let lined = ring_lines(&references, candidate);
+    let (references, candidate): (Vec<&Report>, &Report) = match &lined {
+        Some((refs, cand, held)) => {
+            notes.extend(held.iter().cloned());
+            (refs.iter().collect(), cand)
+        }
+        None => (references, candidate),
+    };
     let references = references.as_slice();
     let static_colour = static_bands(references, candidate);
     let mut findings = Vec::new();
@@ -580,6 +589,121 @@ fn note_partials(
         notes.push(format!(
             "partials the candidate holds and the reference does not: {}",
             list(&extra)
+        ));
+    }
+    Some((refs, cand, notes))
+}
+
+/// The ring's lines compared: the first reference's strongest this many a span.
+pub const RING_SLOTS: usize = 24;
+/// Two lines are one when this close, Hz, or this share of their frequency, the larger: the spans'
+/// windows resolve about 1.5 Hz, and a cymbal's lines hold their pitch from strike to strike.
+pub const LINE_MATCH_HZ: f64 = 1.5;
+pub const LINE_MATCH: f64 = 0.002;
+
+/// A table's rows whose every value is present.
+fn rows(report: &Report, id: &str) -> Vec<Vec<f64>> {
+    report
+        .sections
+        .iter()
+        .flat_map(|s| &s.tables)
+        .filter(|t| t.id == id)
+        .flat_map(|t| &t.rows)
+        .filter_map(|row| row.iter().copied().collect::<Option<Vec<f64>>>())
+        .collect()
+}
+
+/// The first reference's strongest [`RING_SLOTS`] lines of each span (`tone.ring_lines`) as slots,
+/// and every report — the references and the candidate — with a reading for each: the level of its
+/// own line there, within [`LINE_MATCH_HZ`] or [`LINE_MATCH`], or where it holds none, its floor
+/// there (`tone.ring_floor`), what it does hold; keyed by the slot's span and band. A ring whose lines
+/// stand at the reference's pitches is told from one with as much in each octave at other pitches,
+/// which the octaves cannot (the owner, 2026-10-12: "the model is lower in pitch/resonance"). With a
+/// note on the reference's lines the candidate does not ring. `None` unless the first reference
+/// holds lines and the candidate a floor.
+fn ring_lines(
+    references: &[&Report],
+    candidate: &Report,
+) -> Option<(Vec<Report>, Report, Vec<String>)> {
+    use crate::parts::tone::floor_at;
+    use crate::reading::Section;
+    let first = rows(references.first()?, "tone.ring_lines");
+    if first.is_empty() || rows(candidate, "tone.ring_floor").is_empty() {
+        return None;
+    }
+    // (from, to, Hz, level), the strongest of each span.
+    let mut slots: Vec<(f64, f64, f64, f64)> = Vec::new();
+    let mut spans: Vec<(f64, f64)> = Vec::new();
+    for r in &first {
+        if !spans.iter().any(|s| s.0 == r[0] && s.1 == r[1]) {
+            spans.push((r[0], r[1]));
+        }
+    }
+    for &(a, b) in &spans {
+        let mut span: Vec<(f64, f64, f64, f64)> = first
+            .iter()
+            .filter(|r| r[0] == a && r[1] == b)
+            .map(|r| (a, b, r[2], r[3]))
+            .collect();
+        span.sort_by(|p, q| q.3.total_cmp(&p.3));
+        span.truncate(RING_SLOTS);
+        span.sort_by(|p, q| p.2.total_cmp(&q.2));
+        slots.extend(span);
+    }
+    let src = "the ring's lines (tone.ring_lines), matched by frequency within ±1.5 Hz or ±0.2 %; a line one sound lacks read as its floor there (tone.ring_floor)";
+    let with = |report: &Report| -> (Report, Vec<f64>) {
+        let lines = rows(report, "tone.ring_lines");
+        let floors = rows(report, "tone.ring_floor");
+        let mut readings = Vec::new();
+        let mut lacking = Vec::new();
+        for &(a, b, hz, level) in &slots {
+            let thirds: Vec<(f64, f64)> = floors
+                .iter()
+                .filter(|r| r[0] == a && r[1] == b)
+                .map(|r| (r[2], r[3]))
+                .collect();
+            if thirds.is_empty() {
+                continue;
+            }
+            let tolerance = LINE_MATCH_HZ.max(LINE_MATCH * hz);
+            let own = lines
+                .iter()
+                .filter(|r| r[0] == a && r[1] == b && (r[2] - hz).abs() <= tolerance)
+                .map(|r| r[3])
+                .fold(None, |m: Option<f64>, v| Some(m.map_or(v, |m| m.max(v))));
+            if own.is_none() {
+                lacking.push(hz);
+            }
+            let mut r = Reading::new(
+                "tone.line_level",
+                "A ringing line's level against the span",
+                own.or_else(|| floor_at(&thirds, hz)),
+                Unit::Decibels,
+                src,
+            )
+            .window(a, b)
+            .band(hz - tolerance, hz + tolerance);
+            r.level_db = Some(level);
+            readings.push(r);
+        }
+        let mut out = report.clone();
+        out.sections
+            .push(Section::new("tone", "The ring's lines, matched", readings));
+        (out, lacking)
+    };
+    let refs: Vec<Report> = references.iter().map(|r| with(r).0).collect();
+    let (cand, lacking) = with(candidate);
+    let mut notes = Vec::new();
+    if !lacking.is_empty() {
+        let mut hz = lacking;
+        hz.sort_by(f64::total_cmp);
+        hz.dedup_by(|a, b| (*a - *b).abs() < LINE_MATCH_HZ);
+        notes.push(format!(
+            "lines the reference rings and the candidate does not (Hz, read at the candidate's floor): {}",
+            hz.iter()
+                .map(|h| format!("{h:.0}"))
+                .collect::<Vec<_>>()
+                .join(", ")
         ));
     }
     Some((refs, cand, notes))

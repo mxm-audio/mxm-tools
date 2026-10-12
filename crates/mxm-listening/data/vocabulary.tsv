@@ -50,6 +50,10 @@ tone.band_level	*	12800	+	the top is brighter (an EQ can do this)	model-drums re
 tone.band_level	5	*	+	the attack is washy: more noise in the first milliseconds	model-drums rev 21
 tone.band_level	*	*	+	more energy in this band	guide §7
 tone.band_level	*	*	-	less energy in this band	guide §7
+tone.ring_octave	*	*	+	more energy in this band as it rings	guide §7
+tone.ring_octave	*	*	-	less energy in this band as it rings	guide §7
+tone.line_level	*	*	-	a ringing tone is weaker or missing: the ring sounds lower in pitch and resonance, its higher ringing tones gone	owner, 2026-10-12
+tone.line_level	*	*	+	a ringing tone is louder: it sticks out of the ring	model-drums 2026-10-12
 tone.centroid	*	*	+	brighter	guide §4
 tone.centroid	*	*	-	darker	guide §4
 tone.median	*	*	+	the resonance sits higher	guide §5

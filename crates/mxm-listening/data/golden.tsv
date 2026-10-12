@@ -33,3 +33,4 @@ attack-washy	2026-09-25	plan-mxm-model-drums rev 20	phrase	frankensnare-14s vl5 
 attack-too-soft	2026-09-25	plan-mxm-model-drums rev 20	phrase	frankensnare-14s vl5 rr1>rev20 spectrogram-fitted 14s	attack.rise_time:+ | attack.window_level:-	It is too soft. The attack
 tail-too-clean	2026-09-25	plan-mxm-model-drums rev 20	phrase	frankensnare-14s vl5 rr1>rev20 spectrogram-fitted 14s	modulation.ring_wobble:- | pitch.salience:+ | tonality.tonal_share:+	the tail's pitch is also too clean
 ringing-long	2026-09-26	plan-mxm-model-drums rev 21 (10)	phrase	frankensnare-14s vl5 rr1>rev21 (10) 14s medium	decay.late_level:+ | modulation.ring_share:+ | pitch.rest_t60:+	the skin seems to be ringing a little long
+cymbal-rings-lower	2026-10-12	model-drums cymbal review 2026-10-12	phrase	bigrusty-rcrash L1 rr1>metal9 rcrash L1	tone.line_level:-	Still a pitch/ressonance difference. THe model is lower. Only on the soft and middle hits

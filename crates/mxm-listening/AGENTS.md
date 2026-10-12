@@ -68,6 +68,10 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
 - Modes follow `research:listening/modal-estimation.md`: anticausal FIR filters only, at least 120
   samples per fit, a mode believed only when it recurs in another window; each filter stage spans at
   most `FILTER_SHARE` of its window, and each window's modes are refitted together (`modes::refit`).
+- **A ring's tone is read past the octaves' 0.7 s, line by line** (`tone::RING_MS`): each span's
+  lines and floor, compared at the first reference's strongest lines' pitches, a line one sound
+  lacks read as its floor there (`tone.line_level`). Octaves alone heard a cymbal's lines at the
+  wrong pitches as the same ring (the owner, 2026-10-12).
 - The rest pitch is the lowest believed mode within 12 dB of the strongest, **never a room line**
   (`--room`, or `set`). The glide is a line track. A line narrower than its window resolves is
   `Unresolved`. Definitions kept for continuity state their reach.

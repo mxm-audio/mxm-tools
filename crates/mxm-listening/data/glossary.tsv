@@ -37,6 +37,10 @@ tone.resonance	The strongest resonance in the smoothed spectrum: a body, a shell
 tone.q	How sharp that resonance is: its frequency over its width. High Q rings narrowly; low Q is broad.
 tone.window_level	How loud a window is against the sound's peak.
 tone.band_level	One octave's level against the whole sound at that moment: the spectral shape, octave by octave.
+tone.ring_octave	One octave's share of the ring from 0.3 to 1.5 s, or 1.5 to 3 s: the balance of the tone as it rings, past where the octave levels stop.
+tone.line_level	One of the reference's strongest ringing lines, against the whole span: the candidate's own line there, or its floor if it rings none. Its ringing tones at their pitches, which the octaves cannot tell from noise or from lines elsewhere.
+tone.ring_lines	Table: each ringing line from 0.3 to 1.5 s and 1.5 to 3 s standing 15 dB over the floor — frequency, level against the span and height over the floor.
+tone.ring_floor	Table: the ring's floor in each third octave from 0.3 to 1.5 s and 1.5 to 3 s, as a line there would read: what a sound holds where it rings no line.
 tonality.tonal_share	How much of the energy sits in steady, predictable lines rather than noise: tone against hiss.
 tonality.peaks	What the spectral peaks are between 20 and 200 ms: clean lines (1), resonant noise (0) or a mix (0.5).
 texture.rattle	The share of the sound between 1.6 and 6.4 kHz: a snare's springs rattling.
