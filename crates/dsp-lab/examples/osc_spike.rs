@@ -16,8 +16,9 @@
 //!
 //! Run with: `cargo run -p dsp-lab --release --example osc_spike`
 
+use mxm_dsp::blep::clamp_pulse_width;
 use mxm_measure::spectrum::{N, a_weight, fft, ifft, periods_for, princarg, spectral_flatness_db};
-use mxm_mono_01_dsp::oscillator::{DcBlocker, Phasor, clamp_pulse_width, pulse, saw};
+use mxm_mono_01_dsp::oscillator::{DcBlocker, Phasor, pulse, saw};
 use std::f64::consts::PI;
 use std::hint::black_box;
 use std::time::Instant;

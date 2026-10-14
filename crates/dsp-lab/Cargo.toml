@@ -16,6 +16,8 @@ publish = false
 # dependency here, unlike everywhere else, because this crate has no shipped graph to
 # protect and its harnesses are measurement.
 mxm-measure = { workspace = true }
+# The pulse clamp the synths share.
+mxm-dsp = { workspace = true }
 # The harnesses' noise: the generator the synths draw from.
 mxm-rng = { workspace = true }
 # The harnesses measure the shipped DSP through its real public API. The dependency

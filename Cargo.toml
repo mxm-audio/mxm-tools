@@ -24,6 +24,7 @@ mxm-audio-file-decode = { git = "https://github.com/mxm-audio/mxm-kit", branch =
 mxm-classic-verb-fit = { git = "https://github.com/mxm-audio/mxm-classic-verb", branch = "main" }
 mxm-creative-sampler-dsp = { git = "https://github.com/mxm-audio/mxm-creative-sampler", branch = "main" }
 mxm-listening = { path = "crates/mxm-listening" }
+mxm-dsp = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
 mxm-measure = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
 mxm-rng = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
 mxm-mono-01-dsp = { git = "https://github.com/mxm-audio/mxm-mono-01", branch = "main" }
