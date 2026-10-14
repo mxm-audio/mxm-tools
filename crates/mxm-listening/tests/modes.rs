@@ -20,16 +20,10 @@ fn modes(rate: f64, seconds: f64, spec: &[(f64, f64, f64, f64)], snr_db: Option<
     if let Some(snr) = snr_db {
         let power = x.iter().map(|v| v * v).sum::<f64>() / n as f64;
         let sigma = (power / 10f64.powf(snr / 10.0)).sqrt();
-        let mut state = 0x9E37_79B9_7F4A_7C15u64;
+        let mut state = mxm_rng::Xorshift64Star::from_state(0x9E37_79B9_7F4A_7C15);
         let mut gauss = || {
             // Box–Muller from xorshift64*.
-            let mut uniform = || {
-                state ^= state >> 12;
-                state ^= state << 25;
-                state ^= state >> 27;
-                ((state.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 + 0.5)
-                    / (1u64 << 53) as f64
-            };
+            let mut uniform = || ((state.next_u64() >> 11) as f64 + 0.5) / (1u64 << 53) as f64;
             let (a, b) = (uniform(), uniform());
             (-2.0 * a.ln()).sqrt() * (TAU * b).cos()
         };

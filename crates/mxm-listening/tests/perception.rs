@@ -32,15 +32,9 @@ fn a_1khz_tone_at_40_db_is_one_sone_and_one_tonality_unit() {
 #[test]
 #[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn noise_has_little_tonality_and_loudness_grows_with_level() {
-    let mut state = 0x2545_F491_4F6C_DD1Du64;
+    let mut state = mxm_rng::Xorshift64Star::from_state(0x2545_F491_4F6C_DD1D);
     let noise: Vec<f32> = (0..(2.0 * RATE) as usize)
-        .map(|_| {
-            state ^= state >> 12;
-            state ^= state << 25;
-            state ^= state >> 27;
-            (((state.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 52) as f64 - 1.0)
-                * 0.05) as f32
-        })
+        .map(|_| (state.bipolar_f64() * 0.05) as f32)
         .collect();
     let r = run(&Sound::new("noise", RATE as u32, noise));
     let t = r.single_tonality().unwrap();
@@ -88,14 +82,9 @@ fn a_1khz_tone_fully_modulated_at_70_hz_and_60_db_is_one_asper() {
 
 /// Band noise from `lo` to `hi` Hz at `db` dB SPL, 3 s.
 fn band_noise(lo: f64, hi: f64, db: f64) -> Sound {
-    let mut st = 0x2545_F491_4F6C_DD1Du64;
+    let mut st = mxm_rng::Xorshift64Star::from_state(0x2545_F491_4F6C_DD1D);
     let white: Vec<f64> = (0..(3.0 * RATE) as usize)
-        .map(|_| {
-            st ^= st >> 12;
-            st ^= st << 25;
-            st ^= st >> 27;
-            (st.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 52) as f64 - 1.0
-        })
+        .map(|_| st.bipolar_f64())
         .collect();
     let nb = mxm_listening::repr::bands::band(&white, RATE, lo, hi).unwrap();
     let rms = (nb.iter().map(|v| v * v).sum::<f64>() / nb.len() as f64).sqrt();
@@ -132,15 +121,11 @@ fn the_acum_reference_reads_one_acum_and_a_higher_band_reads_sharper() {
 fn a_gain_alone_changes_no_perceptual_reading() {
     use mxm_listening::describe::describe;
     // A drum: a ring and a noise burst, 1 s; then the same 6 dB down.
-    let mut st = 0x9E37_79B9_7F4A_7C15u64;
+    let mut st = mxm_rng::Xorshift64Star::from_state(0x9E37_79B9_7F4A_7C15);
     let x: Vec<f32> = (0..RATE as usize)
         .map(|i| {
             let t = i as f64 / RATE;
-            st ^= st >> 12;
-            st ^= st << 25;
-            st ^= st >> 27;
-            let white =
-                (st.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 52) as f64 - 1.0;
+            let white = st.bipolar_f64();
             (0.5 * (-t / 0.2).exp() * (std::f64::consts::TAU * 190.0 * t).sin()
                 + 0.2 * (-t / 0.03).exp() * white) as f32
         })

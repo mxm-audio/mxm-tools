@@ -475,13 +475,6 @@ fn cubic(x: &[f64], at: f64) -> f64 {
 
 /// Deterministic white noise, uniform in −1..1.
 fn white(n: usize) -> Vec<f64> {
-    let mut s = 0x9E37_79B9_7F4A_7C15u64;
-    (0..n)
-        .map(|_| {
-            s ^= s >> 12;
-            s ^= s << 25;
-            s ^= s >> 27;
-            (s.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 52) as f64 - 1.0
-        })
-        .collect()
+    let mut rng = mxm_rng::Xorshift64Star::from_state(0x9E37_79B9_7F4A_7C15);
+    (0..n).map(|_| rng.bipolar_f64()).collect()
 }

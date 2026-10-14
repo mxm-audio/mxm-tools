@@ -48,9 +48,9 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
   estimators stay here.
 - **Never in a shipped graph.** Every other crate takes this one as a dev-dependency, except the
   unshipped `apps/mxm-listener-hud`; shipping that is the owner's deferred decision, and the leak
-  check in mxm-kit's `crates/mxm-measure/AGENTS.md` (which covers both names) forces it first. `mxm-measure` and
-  `mxm-classic-verb-fit` (its `analyse` only: an impulse response is never fitted here) are normal
-  dependencies.
+  check in mxm-kit's `crates/mxm-measure/AGENTS.md` (which covers both names) forces it first. `mxm-measure`,
+  `mxm-rng` (the staircase's and the resynthesis' streams) and `mxm-classic-verb-fit` (its `analyse`
+  only: an impulse response is never fitted here) are normal dependencies.
 - **No external crate** (the owner's choice): hand-rolled numerics, hand-written JSON, plain TSV.
 - **The A/B page's definitions are part of the contract.** `prep.rs` is the page's decode, trim,
   K-weighting and body gating, and the page calls it. Changing it, or any reading's definition, is

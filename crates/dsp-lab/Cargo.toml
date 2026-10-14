@@ -16,6 +16,8 @@ publish = false
 # dependency here, unlike everywhere else, because this crate has no shipped graph to
 # protect and its harnesses are measurement.
 mxm-measure = { workspace = true }
+# The harnesses' noise: the generator the synths draw from.
+mxm-rng = { workspace = true }
 # The harnesses measure the shipped DSP through its real public API. The dependency
 # runs lab -> dsp and never the other way, so nothing is added to `mxm-mono-01-dsp`'s
 # runtime graph — which is what earns its MSRV override.

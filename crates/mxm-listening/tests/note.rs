@@ -78,12 +78,9 @@ fn struck(lines: &[(f64, f64, f64)]) -> Vec<f32> {
         }
     }
     // A floor 80 dB down, from a fixed pseudo-random sequence.
-    let mut seed = 0x2545_f491_4f6c_dd1du64;
+    let mut seed = mxm_rng::Xorshift64::from_state(0x2545_f491_4f6c_dd1d);
     for v in &mut x {
-        seed ^= seed << 13;
-        seed ^= seed >> 7;
-        seed ^= seed << 17;
-        *v += 3e-5 * ((seed >> 11) as f64 / (1u64 << 53) as f64 - 0.5);
+        *v += 3e-5 * (seed.unit_f64() - 0.5);
     }
     x.iter().map(|&v| v as f32).collect()
 }
@@ -368,13 +365,10 @@ fn a_bar_has_no_harmonic_series() {
 fn shaped(hz: f64, level: impl Fn(f64) -> f64) -> Vec<f32> {
     let len = (4.0 * RATE) as usize;
     let start = (0.02 * RATE) as usize;
-    let mut seed = 0x9e37_79b9_7f4a_7c15u64;
+    let mut seed = mxm_rng::Xorshift64::from_state(0x9e37_79b9_7f4a_7c15);
     (0..len)
         .map(|i| {
-            seed ^= seed << 13;
-            seed ^= seed >> 7;
-            seed ^= seed << 17;
-            let noise = 3e-5 * ((seed >> 11) as f64 / (1u64 << 53) as f64 - 0.5);
+            let noise = 3e-5 * (seed.unit_f64() - 0.5);
             let v = if i < start {
                 0.0
             } else {
@@ -470,7 +464,7 @@ fn a_set_of_notes_reveals_a_body_resonance_that_stays_put() {
 fn held(f0: f64, depth: f64, drift: f64) -> Vec<f32> {
     let len = (2.5 * RATE) as usize;
     let mut phase = 0.0f64;
-    let mut seed = 0x0123_4567_89ab_cdefu64;
+    let mut seed = mxm_rng::Xorshift64::from_state(0x0123_4567_89ab_cdef);
     (0..len)
         .map(|i| {
             let t = i as f64 / RATE;
@@ -481,10 +475,7 @@ fn held(f0: f64, depth: f64, drift: f64) -> Vec<f32> {
             let tone: f64 = (1..=10)
                 .map(|n| (f64::from(n) * phase).sin() / f64::from(n))
                 .sum();
-            seed ^= seed << 13;
-            seed ^= seed >> 7;
-            seed ^= seed << 17;
-            let breath = 0.01 * ((seed >> 11) as f64 / (1u64 << 53) as f64 - 0.5);
+            let breath = 0.01 * (seed.unit_f64() - 0.5);
             (0.2 * env * tone + env * breath) as f32
         })
         .collect()
@@ -569,7 +560,7 @@ fn a_string_reads_its_polarisations_beating_a_strum_and_a_pickups_harmonics() {
     // Three strings of a chord, 30 ms apart, each starting with its pick's 3 ms contact transient:
     // a pluck's broadband click is what parts a string's onset from the strings already sounding.
     let mut x = vec![0.0f32; (3.0 * RATE) as usize];
-    let mut seed = 0x5eed_u64;
+    let mut seed = mxm_rng::Xorshift64::from_state(0x5eed);
     for (k, hz) in [196.0f64, 247.0, 294.0].iter().enumerate() {
         let shift = (k as f64 * 0.03 * RATE) as usize;
         let string = struck(&[(*hz, 0.1, 2.0), (2.0 * hz, 0.05, 1.5)]);
@@ -580,10 +571,7 @@ fn a_string_reads_its_polarisations_beating_a_strum_and_a_pickups_harmonics() {
             }
         }
         for v in x.iter_mut().skip(pick).take((0.003 * RATE) as usize) {
-            seed ^= seed << 13;
-            seed ^= seed >> 7;
-            seed ^= seed << 17;
-            *v += 0.05 * ((seed >> 11) as f64 / (1u64 << 53) as f64 - 0.5) as f32;
+            *v += 0.05 * (seed.unit_f64() - 0.5) as f32;
         }
     }
     let r = describe(&Sound::new("strum", RATE as u32, x), Some(Family::Note));

@@ -12,16 +12,11 @@ const RATE: f64 = 48_000.0;
 /// Damped modes `(hz, amplitude, t60 seconds)` from sample 0, plus a noise burst of level `noise`
 /// decaying with a 20 ms time constant, 1.5 s long.
 fn drum(modes: &[(f64, f64, f64)], noise: f64) -> Vec<f64> {
-    let mut state = 0x2545_F491_4F6C_DD1Du64;
+    let mut state = mxm_rng::Xorshift64Star::from_state(0x2545_F491_4F6C_DD1D);
     (0..(1.5 * RATE) as usize)
         .map(|i| {
             let t = i as f64 / RATE;
-            state ^= state >> 12;
-            state ^= state << 25;
-            state ^= state >> 27;
-            let white = (state.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64
-                / (1u64 << 52) as f64
-                - 1.0;
+            let white = state.bipolar_f64();
             let body: f64 = modes
                 .iter()
                 .map(|&(hz, a, t60)| a * (-6.91 * t / t60).exp() * (TAU * hz * t).sin())

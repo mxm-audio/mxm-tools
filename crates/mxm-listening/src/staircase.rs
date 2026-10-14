@@ -12,6 +12,8 @@
 //! Weibull `W(p) = 1 − exp(−(p/α)^β)`, chance γ = 1/3 and lapses λ; it is built from the size it answers
 //! 70.7 % correct at, which is what the staircase must give back.
 
+use mxm_rng::Xorshift64Star;
+
 /// Reversals after which a staircase stops.
 pub const REVERSALS: usize = 8;
 /// Reversals averaged for the estimate (the last ones; an even number, so as many turns up as down).
@@ -109,22 +111,20 @@ impl Staircase {
     }
 }
 
-/// A deterministic random source (xorshift64*), so a simulated session can be replayed.
+/// A deterministic random source, so a simulated session can be replayed: `mxm-rng`'s xorshift64*
+/// with this crate's seeding rule (a zero seed is moved to one) and its bounded draw.
 #[derive(Clone, Debug)]
-pub struct Rng(u64);
+pub struct Rng(Xorshift64Star);
 
 impl Rng {
     #[must_use]
     pub fn new(seed: u64) -> Self {
-        Self(seed.max(1))
+        Self(Xorshift64Star::from_state(seed.max(1)))
     }
 
     /// Uniform in [0, 1).
     pub fn uniform(&mut self) -> f64 {
-        self.0 ^= self.0 >> 12;
-        self.0 ^= self.0 << 25;
-        self.0 ^= self.0 >> 27;
-        (self.0.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 53) as f64
+        self.0.unit_f64()
     }
 
     /// Uniform in `0..n`.

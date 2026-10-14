@@ -17,15 +17,11 @@ const RATE: f64 = 48_000.0;
 
 /// A snare-like hit: a ring, an overtone, and a noise burst in the wires' band.
 fn snare() -> Sound {
-    let mut state = 0x2545_F491_4F6C_DD1Du64;
+    let mut state = mxm_rng::Xorshift64Star::from_state(0x2545_F491_4F6C_DD1D);
     let mut x = vec![0.0f32; 240];
     x.extend((0..(1.2 * RATE) as usize).map(|i| {
         let t = i as f64 / RATE;
-        state ^= state >> 12;
-        state ^= state << 25;
-        state ^= state >> 27;
-        let white =
-            (state.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 52) as f64 - 1.0;
+        let white = state.bipolar_f64();
         let ring = 0.5 * (-t / 0.2).exp() * (TAU * 200.0 * t).sin()
             + 0.25 * (-t / 0.12).exp() * (TAU * 331.0 * t).sin();
         let wires = 0.25 * (-t / 0.05).exp() * white;

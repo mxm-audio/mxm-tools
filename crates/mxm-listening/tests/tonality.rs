@@ -9,15 +9,8 @@ const TAU: f64 = std::f64::consts::TAU;
 const RATE: f64 = 48_000.0;
 
 fn noise(n: usize, seed: u64) -> Vec<f64> {
-    let mut s = seed;
-    (0..n)
-        .map(|_| {
-            s ^= s >> 12;
-            s ^= s << 25;
-            s ^= s >> 27;
-            (s.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 52) as f64 - 1.0
-        })
-        .collect()
+    let mut s = mxm_rng::Xorshift64Star::from_state(seed);
+    (0..n).map(|_| s.bipolar_f64()).collect()
 }
 
 /// White noise through a resonance at `hz` with quality `q` (a second-order band-pass, twice).

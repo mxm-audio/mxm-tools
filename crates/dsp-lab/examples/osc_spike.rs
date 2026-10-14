@@ -688,7 +688,7 @@ struct GrainTrain {
     /// `POOL` slots — the obvious implementation, and the one §9e measures against.
     compact: bool,
     live: usize,
-    rng: mxm_mono_01_dsp::Rng,
+    rng: mxm_rng::Xorshift32,
 }
 
 impl GrainTrain {
@@ -710,7 +710,7 @@ impl GrainTrain {
             carrier: Carrier::Sin,
             compact: false,
             live: 0,
-            rng: mxm_mono_01_dsp::Rng::new(0x6772_6169),
+            rng: mxm_rng::Xorshift32::new(0x6772_6169),
         }
     }
 
@@ -803,7 +803,7 @@ impl Osc for GrainTrain {
         let period = self.fs / self.rate;
         while self.n >= self.next_onset {
             let at = if self.jitter > 0.0 {
-                self.next_onset + self.jitter * period * self.rng.next_bipolar() as f64
+                self.next_onset + self.jitter * period * self.rng.bipolar_f32() as f64
             } else {
                 self.next_onset
             };
@@ -1057,7 +1057,7 @@ struct GrainCloud {
     next_onset: f64,
     n: f64,
     dropped: usize,
-    rng: mxm_mono_01_dsp::Rng,
+    rng: mxm_rng::Xorshift32,
     /// `Walk::Block` renders ahead into these and hands out one frame per `next()`.
     block_l: Vec<f32>,
     block_r: Vec<f32>,
@@ -1088,7 +1088,7 @@ impl GrainCloud {
             next_onset: 0.0,
             n: 0.0,
             dropped: 0,
-            rng: mxm_mono_01_dsp::Rng::new(0x51ED_2701),
+            rng: mxm_rng::Xorshift32::new(0x51ED_2701),
             block_l: vec![0.0; GRAIN_BLOCK],
             block_r: vec![0.0; GRAIN_BLOCK],
             block_pos: 0,
@@ -1140,9 +1140,9 @@ impl GrainCloud {
         // and it is `mxm-grain-fx-dsp`'s `place()` in miniature.
         let travel = len as f32 * self.step.abs();
         let room = (frames as f32 - travel - (before + after) as f32 - 2.0).max(1.0);
-        let unit = (self.rng.next_bipolar() + 1.0) * 0.5;
+        let unit = (self.rng.bipolar_f32() + 1.0) * 0.5;
         let start = before as f32 + 1.0 + unit * room;
-        let angle = (self.rng.next_bipolar() + 1.0) * std::f32::consts::FRAC_PI_4;
+        let angle = (self.rng.bipolar_f32() + 1.0) * std::f32::consts::FRAC_PI_4;
         self.grains[slot] = SampleGrain {
             active: true,
             pos: start,
@@ -2267,7 +2267,7 @@ fn pvoc_stretch(
     let mut norm = vec![0.0f64; out_len + n_fft];
     let mut prev_phase = vec![0.0f64; n_fft / 2 + 1];
     let mut sum_phase = vec![0.0f64; n_fft / 2 + 1];
-    let mut rng = mxm_mono_01_dsp::Rng::new(0x5056_4f43);
+    let mut rng = mxm_rng::Xorshift32::new(0x5056_4f43);
 
     let mut frame = 0usize;
     loop {
@@ -2287,7 +2287,7 @@ fn pvoc_stretch(
 
             let out_phase = match mode {
                 PhaseMode::Keep => phase,
-                PhaseMode::Randomise => PI * rng.next_bipolar() as f64,
+                PhaseMode::Randomise => PI * rng.bipolar_f32() as f64,
                 PhaseMode::Propagate => {
                     // Expected advance for this bin over the analysis hop, then the
                     // deviation from it, which is the bin's true frequency offset.
@@ -2380,7 +2380,7 @@ enum NoiseColour {
 }
 
 struct ColouredNoise {
-    rng: mxm_mono_01_dsp::Rng,
+    rng: mxm_rng::Xorshift32,
     colour: NoiseColour,
     b0: f64,
     b1: f64,
@@ -2391,7 +2391,7 @@ struct ColouredNoise {
 impl ColouredNoise {
     fn new(colour: NoiseColour) -> Self {
         Self {
-            rng: mxm_mono_01_dsp::Rng::new(0x4e43_4c52),
+            rng: mxm_rng::Xorshift32::new(0x4e43_4c52),
             colour,
             b0: 0.0,
             b1: 0.0,
@@ -2403,7 +2403,7 @@ impl ColouredNoise {
 
 impl Osc for ColouredNoise {
     fn next(&mut self) -> f64 {
-        let w = self.rng.next_bipolar() as f64;
+        let w = self.rng.bipolar_f32() as f64;
         match self.colour {
             NoiseColour::White => w,
             NoiseColour::Pink => {
@@ -2729,7 +2729,7 @@ impl Supersaw {
     /// `periods` are the per-voice period counts in the analysis window; `power_norm`
     /// selects `1/√N` (power-preserving) over `1/N` (peak-safe).
     fn new(periods: &[usize], power_norm: bool, random_phase: bool) -> Self {
-        let mut rng = mxm_mono_01_dsp::Rng::new(0x5355_5045);
+        let mut rng = mxm_rng::Xorshift32::new(0x5355_5045);
         let voices = periods
             .iter()
             .map(|&p| {
@@ -2739,7 +2739,7 @@ impl Supersaw {
                     // Advance by a random part of a cycle so the voices do not all
                     // start at zero and sum to an N-times transient.
                     let steps =
-                        ((rng.next_bipolar() as f64 * 0.5 + 0.5) * (N as f64 / p as f64)) as usize;
+                        ((rng.bipolar_f32() as f64 * 0.5 + 0.5) * (N as f64 / p as f64)) as usize;
                     for _ in 0..steps {
                         ph.advance();
                     }
@@ -4723,9 +4723,9 @@ fn main() {
             .collect()
     };
     let noise: Vec<f64> = {
-        let mut rng = mxm_mono_01_dsp::Rng::new(0x4e4f_4953);
+        let mut rng = mxm_rng::Xorshift32::new(0x4e4f_4953);
         let raw: Vec<f64> = (0..src_len)
-            .map(|_| rng.next_bipolar() as f64 * 0.4)
+            .map(|_| rng.bipolar_f32() as f64 * 0.4)
             .collect();
         // Band-limit it so the flatness measure is not dominated by the very top.
         let taps = decimation_taps(1);

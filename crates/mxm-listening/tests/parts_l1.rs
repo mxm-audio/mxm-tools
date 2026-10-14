@@ -23,14 +23,14 @@ fn percussive(sound: &Sound) -> Report {
     )
 }
 
-/// A deterministic noise source (xorshift64*), uniform in −1..1.
-struct Noise(u64);
+/// A deterministic noise source (`mxm-rng`'s xorshift64*), uniform in −1..1.
+struct Noise(mxm_rng::Xorshift64Star);
 impl Noise {
+    fn new(seed: u64) -> Self {
+        Self(mxm_rng::Xorshift64Star::from_state(seed))
+    }
     fn next(&mut self) -> f64 {
-        self.0 ^= self.0 >> 12;
-        self.0 ^= self.0 << 25;
-        self.0 ^= self.0 >> 27;
-        (self.0.wrapping_mul(0x2545_F491_4F6C_DD1D) >> 11) as f64 / (1u64 << 52) as f64 - 1.0
+        self.0.bipolar_f64()
     }
 }
 
@@ -113,9 +113,9 @@ fn a_ring_s_wobble_scales_with_its_depth_and_a_steady_ring_is_clean() {
 #[test]
 #[ignore = "slow: run before a release with `cargo test -- --ignored`; over 30 s"]
 fn clustered_slaps_read_as_clustered_and_steady_noise_does_not() {
-    let mut n = Noise(0x1234_5678_9ABC_DEF1);
+    let mut n = Noise::new(0x1234_5678_9ABC_DEF1);
     let steady: Vec<f64> = (0..(1.0 * RATE) as usize).map(|_| n.next()).collect();
-    let mut n = Noise(0x0FED_CBA9_8765_4321);
+    let mut n = Noise::new(0x0FED_CBA9_8765_4321);
     // Bursts: noise gated on for 3 ms every 11 ms, so the 1 ms level is correlated over a few ms.
     let bursty: Vec<f64> = (0..(1.0 * RATE) as usize)
         .map(|i| {
@@ -220,9 +220,9 @@ fn random_wires_read_as_white_noise_a_rattle_above_it_and_the_rattle_share_follo
     // original". Plain random wires read white noise's kurtosis through this measure (2.75, not 3:
     // the 5 ms envelope is divided out); wires that rattle — distinct slaps, here a quarter of the
     // 1 ms steps four times louder — read above it; more wire energy raises the rattle's share.
-    let mut n = Noise(0x5DEE_CE66_D1CE_4E5B);
+    let mut n = Noise::new(0x5DEE_CE66_D1CE_4E5B);
     let random: Vec<f64> = (0..(1.0 * RATE) as usize).map(|_| n.next()).collect();
-    let mut n = Noise(0x2545_F491_4F6C_DD1D);
+    let mut n = Noise::new(0x2545_F491_4F6C_DD1D);
     let slaps: Vec<f64> = (0..1000)
         .map(|_| if n.next() > 0.5 { 4.0 } else { 1.0 })
         .collect();
