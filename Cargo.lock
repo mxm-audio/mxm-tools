@@ -1507,7 +1507,7 @@ dependencies = [
 [[package]]
 name = "mxm-audio-file"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#bc91bbc2f8cc0739068b5f1f3a6d0857746e7389"
 dependencies = [
  "aifc",
  "flacenc",
@@ -1517,7 +1517,7 @@ dependencies = [
 [[package]]
 name = "mxm-audio-file-decode"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#bc91bbc2f8cc0739068b5f1f3a6d0857746e7389"
 dependencies = [
  "symphonia",
 ]
@@ -1552,12 +1552,12 @@ dependencies = [
 [[package]]
 name = "mxm-dsp"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#bc91bbc2f8cc0739068b5f1f3a6d0857746e7389"
 
 [[package]]
 name = "mxm-fft"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#bc91bbc2f8cc0739068b5f1f3a6d0857746e7389"
 dependencies = [
  "realfft",
  "rustfft",
@@ -1591,7 +1591,7 @@ dependencies = [
 [[package]]
 name = "mxm-measure"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#bc91bbc2f8cc0739068b5f1f3a6d0857746e7389"
 dependencies = [
  "mxm-rng",
 ]
@@ -1599,7 +1599,7 @@ dependencies = [
 [[package]]
 name = "mxm-modulation"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#bc91bbc2f8cc0739068b5f1f3a6d0857746e7389"
 
 [[package]]
 name = "mxm-mono-01-dsp"
@@ -1614,7 +1614,7 @@ dependencies = [
 [[package]]
 name = "mxm-rng"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#bc91bbc2f8cc0739068b5f1f3a6d0857746e7389"
 
 [[package]]
 name = "mxm-room-ir"
