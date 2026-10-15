@@ -509,7 +509,9 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
   reader read (PCM 8 to 32 bits, float 32 and 64, plain and extensible, mono and stereo), the decoder
   gave its samples bit for bit. It is stricter: a zero RIFF size and a malformed `LIST` chunk are
   refused where the private reader read past them, and so is a non-finite sample, before
-  `consumer_check` would refuse it. The BRAS recordings V8 reads were not on the machine the move was
+  `consumer_check` would refuse it. Room-ir sets the decoder no channel ceiling, but symphonia reads
+  only the layouts it knows (26 plain channels read, 32 refused), so a file past them is refused by
+  the reader rather than by `consumer_check`. The BRAS recordings V8 reads were not on the machine the move was
   made on; V8 run there is the check.
   *Since the split (2026-10-06):* mxm-tools' workspace has no `default-members`, so a plain
   `cargo build` builds it.

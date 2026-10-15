@@ -7,7 +7,7 @@
 
 use std::io::Cursor;
 
-use mxm_audio_file_decode::{AtLimit, DEFAULT_MAX_SOURCE_CHANNELS, Keep, Limits};
+use mxm_audio_file_decode::{AtLimit, Keep, Limits};
 
 use std::io;
 use std::path::Path;
@@ -77,14 +77,15 @@ pub struct Decoded {
     pub sample_rate: u32,
 }
 
-/// The decoder's bounds for a file read here: nothing truncated and every channel kept, so
-/// `catalogue::consumer_check` still sees a long or many-channel file.
+/// The decoder's bounds for a file read here: nothing truncated and no channel ceiling of room-ir's
+/// own, so `catalogue::consumer_check` still sees a long or many-channel file. symphonia reads only
+/// the channel layouts it knows; a file beyond them is refused here.
 fn limits() -> Limits {
-    Limits::new(
-        usize::MAX,
-        AtLimit::Refuse,
-        Keep::AllUpTo(DEFAULT_MAX_SOURCE_CHANNELS),
-    )
+    let every_channel = usize::from(u16::MAX);
+    Limits {
+        max_source_channels: every_channel,
+        ..Limits::new(usize::MAX, AtLimit::Refuse, Keep::AllUpTo(every_channel))
+    }
 }
 
 fn deinterleave(decoded: mxm_audio_file_decode::Decoded) -> Decoded {
@@ -310,6 +311,19 @@ mod tests {
             ],
             [0.5, 1.0, -0.25, 0.125, 0.0, -1.0]
         );
+    }
+
+    /// A file with more channels than the consumer takes reaches its check, which refuses it in its
+    /// own words. Room-ir sets no channel ceiling; symphonia reads only the layouts it knows
+    /// (measured 2026-10-15: 26 plain channels read, 32 refused), and beyond them the reader refuses.
+    #[test]
+    fn a_many_channel_file_reaches_the_consumer_check() {
+        let decoded =
+            decode(&wav(1, 3, 16, false, &[0u8; 3 * 2 * 3])).expect("three channels read");
+        assert_eq!(decoded.channels.len(), 3);
+        assert_eq!(decoded.channels[2].len(), 3);
+        let why = crate::catalogue::consumer_check(&decoded).expect_err("the consumer takes two");
+        assert!(why.contains("3 channels"), "{why}");
     }
 
     #[test]
