@@ -1507,7 +1507,7 @@ dependencies = [
 [[package]]
 name = "mxm-audio-file"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#dda3ed7e725658338982350ac8b216e18012f032"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
 dependencies = [
  "aifc",
  "flacenc",
@@ -1517,7 +1517,7 @@ dependencies = [
 [[package]]
 name = "mxm-audio-file-decode"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#dda3ed7e725658338982350ac8b216e18012f032"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
 dependencies = [
  "symphonia",
 ]
@@ -1552,7 +1552,7 @@ dependencies = [
 [[package]]
 name = "mxm-dsp"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#dda3ed7e725658338982350ac8b216e18012f032"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
 
 [[package]]
 name = "mxm-listener-hud"
@@ -1582,7 +1582,7 @@ dependencies = [
 [[package]]
 name = "mxm-measure"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#dda3ed7e725658338982350ac8b216e18012f032"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
 dependencies = [
  "mxm-rng",
 ]
@@ -1590,7 +1590,7 @@ dependencies = [
 [[package]]
 name = "mxm-modulation"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#dda3ed7e725658338982350ac8b216e18012f032"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
 
 [[package]]
 name = "mxm-mono-01-dsp"
@@ -1605,12 +1605,13 @@ dependencies = [
 [[package]]
 name = "mxm-rng"
 version = "0.4.1"
-source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#dda3ed7e725658338982350ac8b216e18012f032"
+source = "git+https://github.com/mxm-audio/mxm-kit?branch=main#c5c57e0ab9dd5294c76887a165d89a616ba414e5"
 
 [[package]]
 name = "mxm-room-ir"
 version = "0.1.0"
 dependencies = [
+ "mxm-audio-file-decode",
  "mxm-rng",
 ]
 
