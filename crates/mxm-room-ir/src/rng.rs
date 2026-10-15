@@ -39,11 +39,20 @@ mod tests {
             ]
         );
         assert_eq!(s.unit_f64().to_bits(), 0x3fe6_c776_3bfd_3037);
-        assert_eq!(normal(&mut s).to_bits(), 0xbff1_f6ed_2b5b_0946);
-        assert_eq!(
-            normal(&mut SplitMix64::new(9)).to_bits(),
-            0x3f7b_15ad_c1d1_2bb4
-        );
+        // The normal goes through `ln` and `cos`, which each platform's maths library rounds its own
+        // way: Windows' bits are pinned, elsewhere within rounding (the root contract).
+        let pinned = [
+            (normal(&mut s), 0xbff1_f6ed_2b5b_0946u64),
+            (normal(&mut SplitMix64::new(9)), 0x3f7b_15ad_c1d1_2bb4),
+        ];
+        for (drawn, bits) in pinned {
+            if cfg!(windows) {
+                assert_eq!(drawn.to_bits(), bits);
+            } else {
+                let recorded = f64::from_bits(bits);
+                assert!((drawn - recorded).abs() <= 1e-12 * recorded.abs().max(1.0));
+            }
+        }
     }
 
     #[test]
