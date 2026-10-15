@@ -523,6 +523,9 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
   defined on its nine bands, 63 Hz to 16 kHz), and classic-verb-fit's seven Butterworth bands
   (125 Hz to 8 kHz, 16 kHz absent at 48 kHz) cannot stand in. Measured on the R3 living room before
   and after: the largest sample difference 4.7e-10 (−186 dB re peak), decay times within 0.02 %.
+  **The release was not redone.** The plan's last stage re-rendered the catalogue at epoch 5, and the
+  owner stopped it (2026-10-15): *"The impulses are done. If we render new ones they will be
+  different."* The released impulses stay epoch 4's, with their committed sidecars.
   *Since the split (2026-10-06):* mxm-tools' workspace has no `default-members`, so a plain
   `cargo build` builds it.
 - The workspace builds this crate optimised in the dev profile (root `Cargo.toml`,

@@ -103,8 +103,12 @@ Each section's reasons and measurements are under the same heading in
 - Each released file peaks at −1 dBFS; `reference_distance_m` records its gain. The direct sound is
   excluded; time zero stays at the earliest arrival. Committed files end by 10 s with a recorded
   fade; metrics come from the uncapped full-response render. 32-bit float WAV at 48 kHz.
-- **The WAVs are not committed**: rebuilt locally with `catalogue -- render` and `-- release`; the
-  sidecars and `manifest.json` are, so a release is reviewed as a diff.
+- **The WAVs are not committed**; the sidecars and `manifest.json` are, so a release is reviewed as a
+  diff. The WAVs were built locally with `catalogue -- render` and `-- release`.
+- **The released impulses are final** (the owner, 2026-10-15: *"The impulses are done. If we render
+  new ones they will be different."*). Never re-render or re-release them. They are `RECIPE_EPOCH` 4's
+  renders, which the committed sidecars describe; today's code (epoch 5, since O6) renders them
+  differently, by rounding.
 - When the plugins ship, a release is **installed, not bundled**: a versioned download installed
   under the platform's local data directory at `mxm/impulses/`; the plugin's reading of it is owned
   by `plugins/mxm-fx-convolution/AGENTS.md` in the mxm-fx-convolution repository.
