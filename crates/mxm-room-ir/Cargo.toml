@@ -11,7 +11,9 @@ repository.workspace = true
 publish = false
 
 [dependencies]
-# The collection's shared code (architecture audit O6): the generator and the WAV reader. The
-# writer stays this crate's (`src/wav.rs`).
+# The collection's shared code (architecture audit O6): the FFT, the generator, the decay reading
+# and the WAV reader. The writer stays this crate's (`src/wav.rs`).
 mxm-audio-file-decode.workspace = true
+mxm-classic-verb-fit.workspace = true
+mxm-fft.workspace = true
 mxm-rng.workspace = true

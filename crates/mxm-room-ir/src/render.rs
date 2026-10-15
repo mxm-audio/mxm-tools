@@ -63,13 +63,14 @@ use crate::complex::C64;
 use crate::diffraction::DiffractedPath;
 use crate::directivity::{Directivity, PlacedCapsule};
 use crate::error::Error;
-use crate::fft::{self, Complex};
+use crate::fft;
 use crate::geometry::Vec3;
 use crate::ism::{self, Arrival};
 use crate::late::{self, LateOptions};
 use crate::par::parallel_map;
 use crate::rays::Histogram;
 use crate::simulation::WaveField;
+use mxm_fft::Complex;
 
 /// Half-width of the windowed-sinc fractional-delay kernel, samples.
 pub const KERNEL_HALF_WIDTH: usize = 32;
@@ -1059,11 +1060,12 @@ fn arrival_kernel(filter: Option<&[f64]>, frac: f64, amplitude: f64) -> Vec<f64>
 mod tests {
     use super::*;
     use crate::directivity::{Array, Frame};
-    use crate::fft::{Complex, fft_in_place};
+    use crate::fft::fft_in_place;
     use crate::geometry::Room;
     use crate::ism::{ImageSourceOptions, image_sources};
     use crate::material::Material;
     use crate::scene::Scene;
+    use mxm_fft::Complex;
 
     fn anechoic_scene() -> Scene {
         let room = Room::shoebox(

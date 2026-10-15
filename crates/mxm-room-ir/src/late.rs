@@ -37,10 +37,11 @@ use crate::air::Air;
 use crate::analysis::band_weight;
 use crate::bands::{Bands, NUM_BANDS};
 use crate::directivity::PlacedCapsule;
-use crate::fft::{self, Complex};
+use crate::fft;
 use crate::geometry::Vec3;
 use crate::rays::{DIRECTION_CELLS, Histogram, sample_in_cell};
 use crate::rng;
+use mxm_fft::Complex;
 
 /// Half-width of the sinc that places a late event, samples.
 pub const EVENT_KERNEL_HALF_WIDTH: usize = 8;

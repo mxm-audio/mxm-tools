@@ -1,10 +1,10 @@
 //! ISO 3382 decay parameters of an impulse response, broadband and per octave.
 //!
-//! - **Decay curves** come from backward integration of the squared response (Schroeder 1965;
-//!   ISO 3382-1:2009 §3.3).
-//! - **Decay times** are least-squares fits over the ISO spans: EDT 0 to −10 dB, T20 −5 to
-//!   −25 dB, T30 −5 to −35 dB (ISO 3382-1 §3.5). The standard's own least-squares annex (ISO
-//!   3382-2 Annex C) was not in the preview read, so this is the ordinary fit, not a transcription.
+//! - **Decay curves and times are `mxm-classic-verb-fit`'s `decay_times`** (the architecture audit's
+//!   O6, 2026-10-15): backward integration of the squared response to its end (Schroeder 1965; ISO
+//!   3382-1:2009 §3.3, method A, right for a render with no noise floor) and least-squares fits over
+//!   the ISO spans, EDT 0 to −10 dB, T20 −5 to −25 dB, T30 −5 to −35 dB (ISO 3382-1 §3.5). Its
+//!   refusal of an unreservable curve makes the analysis absent.
 //! - **Energy ratios:** C50 and C80 = `10·lg(early/late)`, D50 = early fraction at 50 ms, Ts =
 //!   energy centroid. These follow the definitions as read in Masovic's lecture notes §6
 //!   (`research:effects/room-acoustics-simulation.md` §8).
@@ -23,7 +23,8 @@
 use std::f64::consts::PI;
 
 use crate::bands::{self, NUM_BANDS};
-use crate::fft::{Complex, fft_in_place};
+use crate::fft::fft_in_place;
+use mxm_fft::Complex;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct DecayMetrics {
@@ -45,7 +46,8 @@ pub struct Analysis {
     pub bands: [DecayMetrics; NUM_BANDS],
 }
 
-/// Analyses a single-channel response. `None` if it is silent.
+/// Analyses a single-channel response. `None` if it is silent, or if a decay curve's buffer cannot
+/// be reserved.
 pub fn analyse(ir: &[f32], sample_rate: f64) -> Option<Analysis> {
     let ir: Vec<f64> = ir.iter().map(|&v| f64::from(v)).collect();
     analyse_f64(&ir, sample_rate)
@@ -59,12 +61,13 @@ pub fn analyse_f64(ir: &[f64], sample_rate: f64) -> Option<Analysis> {
         return None;
     }
     let onset = energy.iter().position(|&e| e >= peak * 0.01)?;
-    let broadband = metrics(&energy[onset..], sample_rate);
+    let broadband = metrics(&energy[onset..], sample_rate)?;
     let split = band_split(ir, sample_rate);
-    let bands = std::array::from_fn(|k| {
-        let e: Vec<f64> = split[k][onset..].iter().map(|v| v * v).collect();
-        metrics(&e, sample_rate)
-    });
+    let mut bands = [DecayMetrics::default(); NUM_BANDS];
+    for (band, signal) in bands.iter_mut().zip(&split) {
+        let e: Vec<f64> = signal[onset..].iter().map(|v| v * v).collect();
+        *band = metrics(&e, sample_rate)?;
+    }
     Some(Analysis {
         sample_rate,
         onset_sample: onset,
@@ -128,7 +131,7 @@ pub fn band_split(ir: &[f64], sample_rate: f64) -> [Vec<f64>; NUM_BANDS] {
     }
     fft_in_place(&mut spectrum, false);
     std::array::from_fn(|k| {
-        let mut band: Vec<Complex> = spectrum
+        let mut band: Vec<Complex<f64>> = spectrum
             .iter()
             .enumerate()
             .map(|(i, c)| {
@@ -237,21 +240,14 @@ pub fn diffuse_correlation(band: usize, spacing_m: f64, speed: f64, sample_rate:
     num / den
 }
 
-fn metrics(energy: &[f64], sample_rate: f64) -> DecayMetrics {
+/// The parameters of one energy signal from its time zero; `None` only if its decay curve's buffer
+/// cannot be reserved.
+fn metrics(energy: &[f64], sample_rate: f64) -> Option<DecayMetrics> {
     let total: f64 = energy.iter().sum();
     if total.is_nan() || total <= 0.0 {
-        return DecayMetrics::default();
+        return Some(DecayMetrics::default());
     }
-    let mut edc_db = vec![0.0; energy.len()];
-    let mut tail = 0.0;
-    for i in (0..energy.len()).rev() {
-        tail += energy[i];
-        edc_db[i] = if tail > 0.0 {
-            10.0 * (tail / total).log10()
-        } else {
-            -400.0
-        };
-    }
+    let times = mxm_classic_verb_fit::decay_times(energy, sample_rate).ok()?;
     let ratio = |ms: f64| {
         let n = ((ms / 1000.0) * sample_rate).round() as usize;
         let early: f64 = energy.iter().take(n).sum();
@@ -268,39 +264,15 @@ fn metrics(energy: &[f64], sample_rate: f64) -> DecayMetrics {
         .map(|(i, e)| i as f64 / sample_rate * e)
         .sum::<f64>()
         / total;
-    DecayMetrics {
-        edt_s: decay_time(&edc_db, sample_rate, 0.0, -10.0),
-        t20_s: decay_time(&edc_db, sample_rate, -5.0, -25.0),
-        t30_s: decay_time(&edc_db, sample_rate, -5.0, -35.0),
+    Some(DecayMetrics {
+        edt_s: times.edt_s,
+        t20_s: times.t20_s,
+        t30_s: times.t30_s,
         c50_db: db(e50, l50),
         c80_db: db(e80, l80),
         d50: Some(e50 / total),
         ts_s: Some(centroid),
-    }
-}
-
-/// Least-squares decay time over the part of the curve between `from_db` and `to_db`.
-fn decay_time(edc_db: &[f64], sample_rate: f64, from_db: f64, to_db: f64) -> Option<f64> {
-    let start = edc_db.iter().position(|&d| d <= from_db)?;
-    let end = edc_db.iter().position(|&d| d <= to_db)?;
-    if end < start + 3 {
-        return None;
-    }
-    let n = (end - start + 1) as f64;
-    let (mut sx, mut sy, mut sxx, mut sxy) = (0.0, 0.0, 0.0, 0.0);
-    for (i, &y) in edc_db.iter().enumerate().take(end + 1).skip(start) {
-        let x = i as f64 / sample_rate;
-        sx += x;
-        sy += y;
-        sxx += x * x;
-        sxy += x * y;
-    }
-    let denom = n * sxx - sx * sx;
-    if denom.is_nan() || denom <= 0.0 {
-        return None;
-    }
-    let slope = (n * sxy - sx * sy) / denom;
-    (slope < 0.0).then(|| -60.0 / slope)
+    })
 }
 
 #[cfg(test)]

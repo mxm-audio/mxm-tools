@@ -28,8 +28,8 @@ Each path's full scope: [NOTES.md § Ownership, in full](NOTES.md#ownership-in-f
 | `src/fdtd.rs`, `src/diffraction.rs` | The wave solver; Biot–Tolstoy–Medwin edge diffraction |
 | `src/directivity.rs` | Source and capsule patterns, measured tables, arrays |
 | `src/render.rs`, `src/simulation.rs` | Rendering the parts and the crossover; the hybrid for one scene and a set |
-| `src/fft.rs`, `src/par.rs`, `src/rng.rs` | Private FFT and minimum-phase design; order-preserving parallel map; the seeding rule (`stream`) and normal draw on `mxm-rng`'s SplitMix64 |
-| `src/analysis.rs`, `src/wav.rs`, `src/sidecar.rs` | ISO 3382 parameters and the other analyses; float WAV writer, WAV reading through `mxm-audio-file-decode`, JSON sidecar |
+| `src/fft.rs`, `src/par.rs`, `src/rng.rs` | The minimum-phase design and every transform's call, on `mxm-fft`; order-preserving parallel map; the seeding rule (`stream`) and normal draw on `mxm-rng`'s SplitMix64 |
+| `src/analysis.rs`, `src/wav.rs`, `src/sidecar.rs` | ISO 3382 parameters (decay times from `mxm-classic-verb-fit`), the band split and the other analyses; float WAV writer, WAV reading through `mxm-audio-file-decode`, JSON sidecar |
 | `src/catalogue/` | The 100 archetypes (`mod.rs`), the material rows and blends (`materials.rs`), one module per family (`spaces/`) |
 | `src/bin/catalogue.rs` | `estimate`, `geometry`, `render`, `v9`, `release` |
 | `impulses/` | **Project-generated; never edited by hand.** Written only by `catalogue -- release`; sidecars and `manifest.json` committed, WAVs ignored |
@@ -140,8 +140,10 @@ Each chosen constant is marked where it is defined; better evidence replaces it,
 list: [NOTES.md § Chosen, not read](NOTES.md#chosen-not-read).
 
 ## Boundaries of the crate
-- Its dependencies are the collection's shared crates (architecture audit O6): `mxm-rng` (the
-  generator) and `mxm-audio-file-decode` (reading; symphonia, MPL-2.0, only through it). MSRV 1.87, `publish = false`, a workspace member (**not** a default member in
+- Its dependencies are the collection's shared code (architecture audit O6): `mxm-fft`, `mxm-rng`
+  (the generator), `mxm-classic-verb-fit` (`decay_times` only) and `mxm-audio-file-decode` (reading;
+  symphonia, MPL-2.0, only through it). **The band split stays room-ir's**: it is the simulation's
+  band crossover (`late.rs` builds on it, the materials use its nine bands). MSRV 1.87, `publish = false`, a workspace member (**not** a default member in
   the monorepo; this workspace has no `default-members`, so a plain `cargo build` builds it),
   built optimised in the dev profile (`[profile.dev.package.mxm-room-ir]` in the root `Cargo.toml`).
 - Renders, the examples' output and the render cache live under ignored `target/`; only
@@ -151,15 +153,14 @@ list: [NOTES.md § Chosen, not read](NOTES.md#chosen-not-read).
 
 # Work Guidance
 
-- **Trust the analyser only through its controls.** A change to `analysis.rs` re-runs its synthetic
-  decay tests first. A wrong analyser passes every room.
+- **Trust the analyser only through its controls.** A change to `analysis.rs`, or to
+  `mxm-classic-verb-fit`'s `decay_times`, re-runs its synthetic decay tests first. A wrong analyser
+  passes every room.
 - **A new mechanism proves itself against a closed form first** (the closed form each one uses:
   [NOTES.md § Work guidance](NOTES.md#work-guidance-as-written)).
 - **Change an estimator only with the no-double-counting test green.** **Test diffraction where it
   carries the field**: absorbing walls and a shadowed receiver.
 - **Small rooms need furnished materials.** The catalogue must give the solver the room.
-- **Keep the FFT private.** `mxm-fx-convolution-dsp` has its own; a shared one waits for a second
-  shipped consumer.
 
 # Verification
 

@@ -56,7 +56,7 @@ const RAYS: usize = 160_000;
 const IMAGE_SOURCE_ORDER: usize = 3;
 /// Bump when a change to the simulation or rendering code changes what a render produces. The
 /// render key covers the scenes and the options; it cannot see the library's code.
-const RECIPE_EPOCH: u32 = 4;
+const RECIPE_EPOCH: u32 = 5;
 
 fn crate_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -462,7 +462,7 @@ fn render_position(
         let rendered = render_set(&[sim], &mono, &full)?.remove(0);
         analyses.push(
             analyse(rendered.samples(), f64::from(rendered.sample_rate))
-                .ok_or("a full response is silent")?,
+                .ok_or("a full response is silent, or its analysis could not be reserved")?,
         );
         fulls.push(rendered);
     }

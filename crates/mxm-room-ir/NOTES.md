@@ -55,10 +55,10 @@ material library was used** (root *Don't open existing implementations*).
 | `src/directivity.rs` | First-order and band-dependent patterns, measured tables on a front-pole grid, frames, arrays (mono, spaced omni, near-coincident cardioids, Blumlein, mid-side, FOA) |
 | `src/render.rs` | Early (with phase-carrying walls), diffracted, late and wave parts; the crossover; time zero, lead, level, cap |
 | `src/simulation.rs` | The hybrid for one scene (time seam, frequency seam, wave field), and rendering a set through one array |
-| `src/fft.rs`, `src/par.rs` | Private FFT and minimum-phase design; order-preserving parallel map |
-| `src/analysis.rs` | ISO 3382 parameters, octave band energies, echo density, band correlation, diffuse-field correlation |
-| `src/wav.rs`, `src/sidecar.rs` | Float WAV writer, PCM and float WAV reader, JSON sidecar |
-| `src/rng.rs` | SplitMix64, with per-index streams |
+| `src/fft.rs`, `src/par.rs` | The minimum-phase design, and the one call every transform goes through (`mxm-fft`, one planner per thread); order-preserving parallel map |
+| `src/analysis.rs` | ISO 3382 parameters (the decay times `mxm-classic-verb-fit`'s), the octave band split and energies, echo density, band correlation, diffuse-field correlation |
+| `src/wav.rs`, `src/sidecar.rs` | Float WAV writer, reading through `mxm-audio-file-decode`, JSON sidecar |
+| `src/rng.rs` | The per-index streams and the normal draw, on `mxm-rng`'s SplitMix64 |
 | `src/catalogue/mod.rs` | The catalogue: `FAMILIES`, the 100 `ARCHETYPES`, the wave-solving limit, each space's sources, positions and class reference; V9 comparison; each file's normalizing reference distance, the sidecar level patch and the consumer check the release uses |
 | `src/catalogue/materials.rs` | The research page's absorption rows, further rows from its notes' full tables, and surfaces blended from them by area with the depth rule's scattering and the detail share combined into it |
 | `src/catalogue/spaces/` | `mod.rs`: the generators the spaces share (a box and its standard layout, a box holding solids, pilasters and ceiling ribs as solids, a swept cross-section, a domed polygon, a sloping ceiling). One module per family (`rooms`, `studios`, `chambers`, `vehicles`, `halls`, `venues`, `worship`, `industrial`, `transit`): each space's geometry, blends, sources, positions, reference and notes |
@@ -494,7 +494,8 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
   against, so the tests check structure and magnitude only.
 - **Analyser:** time zero is the first sample within 20 dB of the energy peak. Band filters are
   zero-phase, power-complementary octave weights, not IEC 61260. Decay times are ordinary least
-  squares over the ISO spans. A truncated response is not compensated. Band correlation divides
+  squares over the ISO spans, by `mxm-classic-verb-fit`'s `decay_times` since O6. A truncated response
+  is not compensated (method A: a render has no noise floor). Band correlation divides
   by a 50 ms common envelope so a decaying tail weighs evenly.
 
 ### Boundaries of the crate
@@ -513,6 +514,15 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
   only the layouts it knows (26 plain channels read, 32 refused), so a file past them is refused by
   the reader rather than by `consumer_check`. The BRAS recordings V8 reads were not on the machine the move was
   made on; V8 run there is the check.
+  Then the FFT and the decay times (RECIPE_EPOCH 5). Every transform goes through `mxm-fft`; the
+  minimum-phase design stays here, as room-ir's own. The decay times are `mxm-classic-verb-fit`'s
+  `decay_times`, the curve and fits its analyser reads, by method A; C50, C80, D50, Ts, echo density
+  and band correlation stay room-ir's. **The band split stays too**, though the audit counted it
+  among the collection's four octave-band filters: its power-complementary weights are the
+  simulation's band crossover (`late.rs` designs the late tail's filters from them, the materials are
+  defined on its nine bands, 63 Hz to 16 kHz), and classic-verb-fit's seven Butterworth bands
+  (125 Hz to 8 kHz, 16 kHz absent at 48 kHz) cannot stand in. Measured on the R3 living room before
+  and after: the largest sample difference 4.7e-10 (−186 dB re peak), decay times within 0.02 %.
   *Since the split (2026-10-06):* mxm-tools' workspace has no `default-members`, so a plain
   `cargo build` builds it.
 - The workspace builds this crate optimised in the dev profile (root `Cargo.toml`,
@@ -543,8 +553,6 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
 - **Small rooms need furnished materials.** Empty-room data gave a plaster living room T30 4.2 s at
   125 Hz against 0.52–0.62 s measured in furnished rooms. The solver is right about the materials it
   was given; the catalogue must give it the room (plan revision 11).
-- **Keep the FFT private.** `crates/mxm-fx-convolution-dsp` has its own, and a shared one waits for a
-  second shipped consumer (root *crate rules*).
 
 ## What the tests prove
 

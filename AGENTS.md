@@ -137,7 +137,7 @@ breaks another is a broken change. CI builds and tests on all three, when starte
 | Crate | MSRV | Why |
 |---|---|---|
 | `crates/mxm-listening` | **1.87** | No external crate of its own; `mxm-measure`, `mxm-audio-file` and `mxm-audio-file-decode` all build there, so a DSP crate's harness can dev-depend on it. **Verified on 1.87**, library, tests and the `listen` binary |
-| `crates/mxm-room-ir` | **1.87** | No GUI, and only dependencies that build on 1.87 (the kit's `mxm-rng` and `mxm-audio-file-decode`); an offline tool whose product is impulse-response content, not a plugin's DSP |
+| `crates/mxm-room-ir` | **1.87** | No GUI, and only dependencies that build on 1.87 (the kit's `mxm-fft`, `mxm-rng` and `mxm-audio-file-decode`, and `mxm-classic-verb-fit`); an offline tool whose product is impulse-response content, not a plugin's DSP |
 | `apps/mxm-listener-hud` | **1.95** | eframe + egui; unshipped (not a default member in the monorepo; this workspace has no `default-members`). `mxm-listening` below it stays at 1.87 |
 
 ## Licensing

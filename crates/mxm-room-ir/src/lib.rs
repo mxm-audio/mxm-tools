@@ -37,7 +37,7 @@
 //!   sources shares time zero, lead and length.
 //! - [`simulation`]: the hybrid for one scene, with its seam by image-source order.
 //! - [`analysis`]: ISO 3382 decay parameters from backward integration (Schroeder, JASA 37(3),
-//!   1965), echo density (Abel & Huang 2006) and band correlation. It is trusted only because its
+//!   1965; the decay times `mxm-classic-verb-fit`'s `decay_times`), echo density (Abel & Huang 2006) and band correlation. It is trusted only because its
 //!   tests reproduce known synthetic decays.
 //! - [`wav`] and [`sidecar`]: 32-bit float WAV writing, reading through `mxm-audio-file-decode`, and the JSON sidecar
 //!   that records how a file was made.

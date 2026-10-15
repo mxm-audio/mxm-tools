@@ -1,73 +1,32 @@
-//! A radix-2 complex FFT with the standard sign convention, and the minimum-phase design built on it.
+//! The minimum-phase design, built on the collection's FFT (`mxm-fft`), and the one call every
+//! transform here goes through.
 //!
-//! Forward: `X[k] = Σ x[n]·e^(−i2πkn/N)`. Inverse: `x[n] = (1/N)·Σ X[k]·e^(+i2πkn/N)`. The
-//! minimum-phase design depends on this convention: folding the real cepstrum yields a causal
-//! (minimum-phase) response only when the forward transform uses the negative exponent.
-//!
-//! Private to this crate on purpose: `crates/mxm-fx-convolution-dsp` (in mxm-fx-convolution) has
-//! its own, and the root contract (the monorepo's; now *Don't pre-generalise* in mxm-kit's
-//! `docs/collection-rules.md`) says a shared FFT waits for a second shipped consumer to shape its
-//! API.
+//! `mxm-fft`'s convention: forward `X[k] = Σ x[n]·e^(−i2πkn/N)`, inverse `x[n] = (1/N)·Σ
+//! X[k]·e^(+i2πkn/N)`. The minimum-phase design depends on it: folding the real cepstrum yields a
+//! causal (minimum-phase) response only when the forward transform uses the negative exponent.
+//! Until the architecture audit's O6 (2026-10-15) this crate had its own radix-2 FFT.
 
+use std::cell::RefCell;
 use std::f64::consts::PI;
 
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
-pub(crate) struct Complex {
-    pub re: f64,
-    pub im: f64,
+use mxm_fft::{Complex, Planner};
+
+thread_local! {
+    /// One planner per thread: it keeps every length's plan, and a thread's results do not depend on
+    /// which other threads planned what.
+    static PLANNER: RefCell<Planner<f64>> = RefCell::new(Planner::new());
 }
 
-/// In-place iterative FFT. `buf.len()` must be a power of two.
-pub(crate) fn fft_in_place(buf: &mut [Complex], inverse: bool) {
-    let n = buf.len();
-    assert!(n.is_power_of_two(), "FFT length must be a power of two");
-    let mut j = 0usize;
-    for i in 1..n {
-        let mut bit = n >> 1;
-        while j & bit != 0 {
-            j ^= bit;
-            bit >>= 1;
-        }
-        j |= bit;
-        if i < j {
-            buf.swap(i, j);
-        }
-    }
-    let sign = if inverse { 1.0 } else { -1.0 };
-    // One table of roots for the largest stage; stage `len` steps through it by `n / len`.
-    let table: Vec<(f64, f64)> = (0..n / 2)
-        .map(|k| (sign * 2.0 * PI * k as f64 / n as f64).sin_cos())
-        .collect();
-    let mut len = 2;
-    while len <= n {
-        let half = len / 2;
-        let step = n / len;
-        for start in (0..n).step_by(len) {
-            for k in 0..half {
-                let (s, c) = table[k * step];
-                let a = buf[start + k];
-                let b = buf[start + k + half];
-                let tr = b.re * c - b.im * s;
-                let ti = b.re * s + b.im * c;
-                buf[start + k] = Complex {
-                    re: a.re + tr,
-                    im: a.im + ti,
-                };
-                buf[start + k + half] = Complex {
-                    re: a.re - tr,
-                    im: a.im - ti,
-                };
-            }
-        }
-        len <<= 1;
-    }
-    if inverse {
-        let scale = 1.0 / n as f64;
-        for c in buf.iter_mut() {
-            c.re *= scale;
-            c.im *= scale;
-        }
-    }
+/// The transform of `buf` in place: forward unnormalised, inverse scaled by 1/N.
+pub(crate) fn fft_in_place(buf: &mut [Complex<f64>], inverse: bool) {
+    let fft = PLANNER.with(|planner| planner.borrow_mut().complex(buf.len()));
+    let mut scratch = fft.make_scratch();
+    let done = if inverse {
+        fft.inverse(buf, &mut scratch)
+    } else {
+        fft.forward(buf, &mut scratch)
+    };
+    done.expect("a plan of the buffer's own length, with its own scratch");
 }
 
 /// A minimum-phase FIR whose magnitude follows `magnitude(f)`, by folding the real cepstrum.
@@ -87,7 +46,7 @@ pub(crate) fn minimum_phase_fir(
 ) -> Vec<f64> {
     assert!(grid.is_power_of_two() && taps >= 2 && taps <= grid / 2);
     const FLOOR: f64 = 1e-10;
-    let mut buf = vec![Complex::default(); grid];
+    let mut buf = vec![Complex::<f64>::default(); grid];
     for (k, c) in buf.iter_mut().enumerate() {
         let bin = if k <= grid / 2 { k } else { grid - k };
         let f = bin as f64 * sample_rate / grid as f64;
@@ -131,7 +90,7 @@ mod tests {
     #[test]
     fn round_trip() {
         let n = 64;
-        let mut buf: Vec<Complex> = (0..n)
+        let mut buf: Vec<Complex<f64>> = (0..n)
             .map(|i| Complex {
                 re: (i as f64 * 0.37).sin(),
                 im: (i as f64 * 0.11).cos(),
