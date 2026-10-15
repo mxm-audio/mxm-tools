@@ -39,7 +39,7 @@
 //! - [`analysis`]: ISO 3382 decay parameters from backward integration (Schroeder, JASA 37(3),
 //!   1965), echo density (Abel & Huang 2006) and band correlation. It is trusted only because its
 //!   tests reproduce known synthetic decays.
-//! - [`wav`] and [`sidecar`]: 32-bit float WAV writing, PCM and float WAV reading, and the JSON sidecar
+//! - [`wav`] and [`sidecar`]: 32-bit float WAV writing, reading through `mxm-audio-file-decode`, and the JSON sidecar
 //!   that records how a file was made.
 //! - [`catalogue`]: the 21 generic archetypes, their surfaces blended from published rows, and the
 //!   checks the `catalogue` binary's release runs (class ranges, the collection level, the

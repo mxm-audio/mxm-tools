@@ -504,6 +504,13 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
   copies onto the collection's shared crates. The generator went first, to `mxm-rng`'s SplitMix64,
   bit-exact (a test pins the old copy's draws). `rng.rs` keeps room-ir's own seeding rule (`stream`)
   and Box–Muller normal, by O3's rule that a consumer keeps its seeds, seeding rule and mappings.
+  The reader followed, to `mxm-audio-file-decode` (the WAV writer stays: no ruling moved it, and it
+  writes the `fact` chunk the WAVE specification asks of float data). On every format the private
+  reader read (PCM 8 to 32 bits, float 32 and 64, plain and extensible, mono and stereo), the decoder
+  gave its samples bit for bit. It is stricter: a zero RIFF size and a malformed `LIST` chunk are
+  refused where the private reader read past them, and so is a non-finite sample, before
+  `consumer_check` would refuse it. The BRAS recordings V8 reads were not on the machine the move was
+  made on; V8 run there is the check.
   *Since the split (2026-10-06):* mxm-tools' workspace has no `default-members`, so a plain
   `cargo build` builds it.
 - The workspace builds this crate optimised in the dev profile (root `Cargo.toml`,

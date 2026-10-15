@@ -1,10 +1,13 @@
-//! 32-bit IEEE float WAV, written by hand, and a reader for the PCM and float WAVs measured
-//! benchmarks ship.
+//! 32-bit IEEE float WAV, written by hand; reading through the collection's decoder.
 //!
 //! RIFF/WAVE with a 18-byte `fmt ` chunk (format tag 3, `cbSize` 0), a `fact` chunk carrying the
 //! frame count as the WAVE specification asks of non-PCM data, and interleaved little-endian
-//! samples. No dependency: `mxm-fx-convolution` decodes it with `hound`, and the test below checks
-//! the header field by field.
+//! samples. The writer has no dependency: `mxm-fx-convolution` decodes it with `hound`, and the test
+//! below checks//! the header field by field.
+
+use std::io::Cursor;
+
+use mxm_audio_file_decode::{AtLimit, DEFAULT_MAX_SOURCE_CHANNELS, Keep, Limits};
 
 use std::io;
 use std::path::Path;
@@ -74,84 +77,160 @@ pub struct Decoded {
     pub sample_rate: u32,
 }
 
-/// Decodes a PCM (8, 16, 24 or 32 bit) or IEEE float (32 or 64 bit) WAV, plain or extensible.
-/// PCM is scaled to ±1; float is kept as written.
-pub fn decode(bytes: &[u8]) -> Result<Decoded, Error> {
-    let bad = |why: &str| Error::InvalidOption(format!("WAV: {why}"));
-    if bytes.len() < 12 || &bytes[0..4] != b"RIFF" || &bytes[8..12] != b"WAVE" {
-        return Err(bad("not a RIFF/WAVE file"));
-    }
-    let u16_at = |i: usize| u16::from_le_bytes([bytes[i], bytes[i + 1]]);
-    let u32_at =
-        |i: usize| u32::from_le_bytes([bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]]);
-    let mut format = None;
-    let mut data = None;
-    let mut i = 12;
-    while i + 8 <= bytes.len() {
-        let len = u32_at(i + 4) as usize;
-        let body = i + 8;
-        let end = body
-            .checked_add(len)
-            .filter(|&e| e <= bytes.len())
-            .ok_or_else(|| bad("a chunk runs past the end"))?;
-        match &bytes[i..i + 4] {
-            b"fmt " if len >= 16 => {
-                let mut tag = u16_at(body);
-                if tag == 0xFFFE && len >= 26 {
-                    tag = u16_at(body + 24);
-                }
-                format = Some((tag, u16_at(body + 2), u32_at(body + 4), u16_at(body + 14)));
-            }
-            b"data" => data = Some(&bytes[body..end]),
-            _ => {}
-        }
-        i = end + (len & 1);
-    }
-    let (tag, channels, sample_rate, bits) = format.ok_or_else(|| bad("no fmt chunk"))?;
-    let data = data.ok_or_else(|| bad("no data chunk"))?;
-    let (count, width) = (usize::from(channels), usize::from(bits / 8));
-    if count == 0 || sample_rate == 0 || width == 0 || bits % 8 != 0 {
-        return Err(bad("the format has no channels, rate or sample width"));
-    }
-    let sample: fn(&[u8]) -> f32 = match (tag, bits) {
-        (1, 8) => |b| (f32::from(b[0]) - 128.0) / 128.0,
-        (1, 16) => |b| f32::from(i16::from_le_bytes([b[0], b[1]])) / 32_768.0,
-        (1, 24) => |b| (i32::from_le_bytes([0, b[0], b[1], b[2]]) >> 8) as f32 / 8_388_608.0,
-        (1, 32) => {
-            |b| (f64::from(i32::from_le_bytes([b[0], b[1], b[2], b[3]])) / 2_147_483_648.0) as f32
-        }
-        (3, 32) => |b| f32::from_le_bytes([b[0], b[1], b[2], b[3]]),
-        (3, 64) => |b| f64::from_le_bytes([b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]]) as f32,
-        _ => {
-            return Err(bad(&format!(
-                "format {tag} at {bits} bits is not supported"
-            )));
-        }
-    };
-    let frame = count * width;
-    let frames = data.len() / frame;
-    let mut out = vec![Vec::with_capacity(frames); count];
-    for f in 0..frames {
-        for (c, channel) in out.iter_mut().enumerate() {
-            let at = f * frame + c * width;
-            channel.push(sample(&data[at..at + width]));
-        }
-    }
-    Ok(Decoded {
-        channels: out,
-        sample_rate,
-    })
+/// The decoder's bounds for a file read here: nothing truncated and every channel kept, so
+/// `catalogue::consumer_check` still sees a long or many-channel file.
+fn limits() -> Limits {
+    Limits::new(
+        usize::MAX,
+        AtLimit::Refuse,
+        Keep::AllUpTo(DEFAULT_MAX_SOURCE_CHANNELS),
+    )
 }
 
-/// Reads and decodes a WAV file.
+fn deinterleave(decoded: mxm_audio_file_decode::Decoded) -> Decoded {
+    let count = decoded.channels.max(1);
+    let channels = (0..count)
+        .map(|c| {
+            decoded
+                .interleaved
+                .iter()
+                .skip(c)
+                .step_by(count)
+                .copied()
+                .collect()
+        })
+        .collect();
+    Decoded {
+        channels,
+        sample_rate: decoded.sample_rate,
+    }
+}
+
+/// Decodes a PCM (8, 16, 24 or 32 bit) or IEEE float (32 or 64 bit) WAV, plain or extensible, through
+/// `mxm-audio-file-decode`. PCM is scaled to ±1; float is kept as written. A non-finite sample is
+/// refused here, before `catalogue::consumer_check` would refuse it.
+pub fn decode(bytes: &[u8]) -> Result<Decoded, Error> {
+    mxm_audio_file_decode::decode(
+        Box::new(Cursor::new(bytes.to_vec())),
+        Some("wav"),
+        &limits(),
+    )
+    .map(deinterleave)
+    .map_err(|e| Error::InvalidOption(format!("WAV: {e}")))
+}
+
+/// Reads and decodes a WAV file, as [`decode`].
 pub fn read(path: &Path) -> io::Result<Decoded> {
-    let bytes = std::fs::read(path)?;
-    decode(&bytes).map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))
+    mxm_audio_file_decode::decode_file(path, &limits())
+        .map(deinterleave)
+        .map_err(|e| match e {
+            mxm_audio_file_decode::Error::Io(e) => e,
+            e => io::Error::new(io::ErrorKind::InvalidData, e.to_string()),
+        })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A WAV of `tag` (1 PCM, 3 float) at `bits`, plain or extensible, holding `data`.
+    fn wav(tag: u16, channels: u16, bits: u16, extensible: bool, data: &[u8]) -> Vec<u8> {
+        let rate = 48_000u32;
+        let align = channels * bits / 8;
+        let mut fmt = Vec::new();
+        fmt.extend_from_slice(&(if extensible { 0xFFFE } else { tag }).to_le_bytes());
+        fmt.extend_from_slice(&channels.to_le_bytes());
+        fmt.extend_from_slice(&rate.to_le_bytes());
+        fmt.extend_from_slice(&(rate * u32::from(align)).to_le_bytes());
+        fmt.extend_from_slice(&align.to_le_bytes());
+        fmt.extend_from_slice(&bits.to_le_bytes());
+        if extensible {
+            fmt.extend_from_slice(&22u16.to_le_bytes());
+            fmt.extend_from_slice(&bits.to_le_bytes());
+            fmt.extend_from_slice(&((1u32 << channels) - 1).to_le_bytes());
+            fmt.extend_from_slice(&tag.to_le_bytes());
+            fmt.extend_from_slice(&[0, 0, 0, 0, 0x10, 0, 0x80, 0, 0, 0xAA, 0, 0x38, 0x9B, 0x71]);
+        }
+        let mut b = Vec::new();
+        b.extend_from_slice(b"RIFF");
+        b.extend_from_slice(&((4 + 8 + fmt.len() + 8 + data.len()) as u32).to_le_bytes());
+        b.extend_from_slice(b"WAVEfmt ");
+        b.extend_from_slice(&(fmt.len() as u32).to_le_bytes());
+        b.extend_from_slice(&fmt);
+        b.extend_from_slice(b"data");
+        b.extend_from_slice(&(data.len() as u32).to_le_bytes());
+        b.extend_from_slice(data);
+        b
+    }
+
+    /// Every format the crate reads, with each width's extremes: PCM scaled to ±1 by its full scale,
+    /// float kept as written, plain or extensible. These are the scalings the private reader used,
+    /// and the shared decoder gave its samples bit for bit on every format (O6's proof, 2026-10-15).
+    #[test]
+    fn reads_every_format_at_its_scaling() {
+        let pcm = |bits: u16, codes: &[i64]| -> Vec<u8> {
+            codes
+                .iter()
+                .flat_map(|&c| c.to_le_bytes()[..usize::from(bits / 8)].to_vec())
+                .collect()
+        };
+        let cases: [(u16, u16, Vec<u8>, Vec<f32>); 6] = [
+            (
+                1,
+                8,
+                vec![0, 128, 255, 64],
+                vec![-1.0, 0.0, 127.0 / 128.0, -0.5],
+            ),
+            (
+                1,
+                16,
+                pcm(16, &[-32_768, 0, 32_767, 16_384]),
+                vec![-1.0, 0.0, 32_767.0 / 32_768.0, 0.5],
+            ),
+            (
+                1,
+                24,
+                pcm(24, &[-8_388_608, 0, 8_388_607, 4_194_304]),
+                vec![-1.0, 0.0, 8_388_607.0 / 8_388_608.0, 0.5],
+            ),
+            (
+                1,
+                32,
+                pcm(32, &[-2_147_483_648, 0, 2_147_483_647, 1 << 30]),
+                vec![-1.0, 0.0, 1.0, 0.5],
+            ),
+            (
+                3,
+                32,
+                [-1.0f32, 0.0, 0.25, 1.5]
+                    .iter()
+                    .flat_map(|v| v.to_le_bytes())
+                    .collect(),
+                vec![-1.0, 0.0, 0.25, 1.5],
+            ),
+            (
+                3,
+                64,
+                [-1.0f64, 0.0, 0.1, 1.5]
+                    .iter()
+                    .flat_map(|v| v.to_le_bytes())
+                    .collect(),
+                vec![-1.0, 0.0, 0.1f64 as f32, 1.5],
+            ),
+        ];
+        for (tag, bits, data, expected) in cases {
+            for extensible in [false, true] {
+                let decoded = decode(&wav(tag, 1, bits, extensible, &data))
+                    .unwrap_or_else(|e| panic!("tag {tag} at {bits} bits: {e}"));
+                assert_eq!(decoded.sample_rate, 48_000);
+                assert_eq!(
+                    decoded.channels,
+                    vec![expected.clone()],
+                    "tag {tag} at {bits} bits, extensible {extensible}"
+                );
+            }
+        }
+    }
 
     #[test]
     fn decode_reads_back_float_and_pcm() {
@@ -160,7 +239,9 @@ mod tests {
         let decoded = decode(&encode_f32(&[&left, &right], 44_100).unwrap()).unwrap();
         assert_eq!(decoded.sample_rate, 44_100);
         assert_eq!(decoded.channels, vec![left.to_vec(), right.to_vec()]);
-        // A mono 16-bit PCM file with an odd-length chunk before its data.
+        // A mono 16-bit PCM file with an odd-length chunk, and its pad byte, before its data. (The
+        // shared decoder refuses a zero RIFF size and a malformed LIST chunk, which the private
+        // reader read past.)
         let mut b = Vec::new();
         b.extend_from_slice(b"RIFF");
         b.extend_from_slice(&0u32.to_le_bytes());
@@ -174,7 +255,7 @@ mod tests {
         for v in [2u16, 16] {
             b.extend_from_slice(&v.to_le_bytes());
         }
-        b.extend_from_slice(b"LIST");
+        b.extend_from_slice(b"JUNK");
         b.extend_from_slice(&3u32.to_le_bytes());
         b.extend_from_slice(&[1, 2, 3, 0]);
         b.extend_from_slice(b"data");
@@ -182,6 +263,8 @@ mod tests {
         for v in [16_384i16, -32_768] {
             b.extend_from_slice(&v.to_le_bytes());
         }
+        let riff = (b.len() - 8) as u32;
+        b[4..8].copy_from_slice(&riff.to_le_bytes());
         let pcm = decode(&b).unwrap();
         assert_eq!(pcm.channels, vec![vec![0.5f32, -1.0]]);
         assert!(decode(b"RIFF\0\0\0\0WAVE").is_err());
