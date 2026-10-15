@@ -306,7 +306,7 @@ fn decay_time(edc_db: &[f64], sample_rate: f64, from_db: f64, to_db: f64) -> Opt
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rng::SplitMix64;
+    use mxm_rng::SplitMix64;
 
     const FS: f64 = 48_000.0;
     /// `ln(10^6)`: energy falls 60 dB in T seconds as `e^(−k·t)` with `k = LN_1E6 / T`.
@@ -316,7 +316,7 @@ mod tests {
         let mut rng = SplitMix64::new(seed);
         let k = LN_1E6 / t60;
         (0..(seconds * FS) as usize)
-            .map(|i| rng.next_normal() * (-k * i as f64 / FS / 2.0).exp())
+            .map(|i| crate::rng::normal(&mut rng) * (-k * i as f64 / FS / 2.0).exp())
             .collect()
     }
 

@@ -864,8 +864,8 @@ mod tests {
             ],
         )
         .unwrap();
-        let mut rng = crate::rng::SplitMix64::new(5);
-        let excitation: Vec<f64> = (0..200).map(|_| rng.next_normal()).collect();
+        let mut rng = mxm_rng::SplitMix64::new(5);
+        let excitation: Vec<f64> = (0..200).map(|_| crate::rng::normal(&mut rng)).collect();
         let source = cell_centre(&grid, 4.2, 3.7, 2.9);
         let probe = cell_centre(&grid, 7.3, 5.6, 4.1);
         let out = run(&grid, source, &excitation, &[probe], 40_000, 3).unwrap();

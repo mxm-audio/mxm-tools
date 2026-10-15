@@ -661,8 +661,7 @@ pub fn render_parts(
                 continue;
             };
             let late_options = LateOptions {
-                seed: crate::rng::SplitMix64::stream(options.late.seed ^ field.seed, fi as u64)
-                    .next_u64(),
+                seed: crate::rng::stream(options.late.seed ^ field.seed, fi as u64).next_u64(),
                 ..options.late
             };
             let events = late::events(
@@ -1341,8 +1340,8 @@ mod tests {
     fn crossover_lowpass_and_complement_sum_to_the_input() {
         let fs = 48_000.0;
         let x = Crossover::design((141.0, 283.0), fs);
-        let mut rng = crate::rng::SplitMix64::new(9);
-        let signal: Vec<f64> = (0..20_000).map(|_| rng.next_normal()).collect();
+        let mut rng = mxm_rng::SplitMix64::new(9);
+        let signal: Vec<f64> = (0..20_000).map(|_| crate::rng::normal(&mut rng)).collect();
         let low = fft_convolve(&signal, &x.lowpass, signal.len());
         let high: Vec<f64> = signal.iter().zip(&low).map(|(s, l)| s - l).collect();
         let back: Vec<f64> = low.iter().zip(&high).map(|(l, h)| l + h).collect();

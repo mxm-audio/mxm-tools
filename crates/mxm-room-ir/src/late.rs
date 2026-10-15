@@ -40,7 +40,7 @@ use crate::directivity::PlacedCapsule;
 use crate::fft::{self, Complex};
 use crate::geometry::Vec3;
 use crate::rays::{DIRECTION_CELLS, Histogram, sample_in_cell};
-use crate::rng::SplitMix64;
+use crate::rng;
 
 /// Half-width of the sinc that places a late event, samples.
 pub const EVENT_KERNEL_HALF_WIDTH: usize = 8;
@@ -185,13 +185,13 @@ pub fn events(
     let end_time = env.end_bin as f64 * dt;
     let density = 4.0 * PI * speed.powi(3) / volume_m3;
     let rate = |t: f64| (density * t * t).clamp(options.min_rate_hz, options.max_rate_hz);
-    let mut rng = SplitMix64::stream(options.seed, 0x1a7e);
+    let mut rng = rng::stream(options.seed, 0x1a7e);
     let mut out = Vec::new();
     // Never before the earliest physical arrival: the smoothing window reaches a bin or two back.
     let mut t = (first as f64 * dt).max(histogram.earliest_s);
     loop {
         let mu = rate(t);
-        t += -(1.0 - rng.next_f64()).ln() / mu;
+        t += -(1.0 - rng.unit_f64()).ln() / mu;
         if t >= end_time {
             break;
         }
@@ -204,13 +204,13 @@ pub fn events(
         if total <= 0.0 {
             continue;
         }
-        let pick = rng.next_f64() * total;
+        let pick = rng.unit_f64() * total;
         let cell = cum.partition_point(|&c| c <= pick).min(DIRECTION_CELLS - 1);
         let p = (cum[cell] - if cell == 0 { 0.0 } else { cum[cell - 1] }) / total;
         if p <= 0.0 {
             continue;
         }
-        let direction = sample_in_cell(cell, rng.next_f64(), rng.next_f64());
+        let direction = sample_in_cell(cell, rng.unit_f64(), rng.unit_f64());
         let sign = if rng.next_u64() & 1 == 0 { 1.0 } else { -1.0 };
         let amplitude = std::array::from_fn(|k| {
             let at = |b: usize| env.energy[(b * DIRECTION_CELLS + cell) * NUM_BANDS + k];

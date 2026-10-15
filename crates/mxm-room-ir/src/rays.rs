@@ -71,8 +71,9 @@ use crate::bands::{Bands, NUM_BANDS};
 use crate::error::Error;
 use crate::geometry::Vec3;
 use crate::par::parallel_map;
-use crate::rng::SplitMix64;
+use crate::rng;
 use crate::scene::Scene;
+use mxm_rng::SplitMix64;
 
 pub const DIRECTION_ROWS: usize = 8;
 pub const DIRECTION_COLUMNS: usize = 16;
@@ -357,16 +358,16 @@ pub fn trace(
 }
 
 fn uniform_sphere(rng: &mut SplitMix64) -> Vec3 {
-    let z = 2.0 * rng.next_f64() - 1.0;
-    let azimuth = 2.0 * PI * rng.next_f64();
+    let z = 2.0 * rng.unit_f64() - 1.0;
+    let azimuth = 2.0 * PI * rng.unit_f64();
     let s = (1.0 - z * z).max(0.0).sqrt();
     Vec3::new(s * azimuth.cos(), s * azimuth.sin(), z)
 }
 
 /// A cosine-weighted direction about unit `normal`.
 fn lambert(normal: Vec3, rng: &mut SplitMix64) -> Vec3 {
-    let u1 = rng.next_f64();
-    let u2 = rng.next_f64();
+    let u1 = rng.unit_f64();
+    let u2 = rng.unit_f64();
     let r = u1.sqrt();
     let phi = 2.0 * PI * u2;
     let helper = if normal.x.abs() < 0.9 {
@@ -435,7 +436,7 @@ fn trace_ray(cx: &Context, index: usize, out: &mut BatchOut) {
     let scene = cx.scene;
     let room = &scene.room;
     let hybrid = cx.options.estimator == Estimator::Hybrid;
-    let mut rng = SplitMix64::stream(cx.seed, index as u64);
+    let mut rng = rng::stream(cx.seed, index as u64);
     let mut direction = uniform_sphere(&mut rng);
     let gain = scene.source_directivity.band_gains(direction);
     let mut energy: Bands = std::array::from_fn(|k| cx.start_energy * gain[k] * gain[k]);
@@ -495,7 +496,7 @@ fn trace_ray(cx: &Context, index: usize, out: &mut BatchOut) {
             }
         }
         let q = scatter_probability(material.scattering[strategy]);
-        let scatter = q >= 1.0 || (q > 0.0 && rng.next_f64() < q);
+        let scatter = q >= 1.0 || (q > 0.0 && rng.unit_f64() < q);
         for (k, &sk) in material.scattering.iter().enumerate() {
             let qk = scatter_probability(sk);
             if scatter {
@@ -541,7 +542,7 @@ fn trace_ray(cx: &Context, index: usize, out: &mut BatchOut) {
 fn discover_ray(cx: &Context, index: usize, out: &mut BatchOut) {
     let scene = cx.scene;
     let room = &scene.room;
-    let mut rng = SplitMix64::stream(cx.seed ^ 0x6469_7363_6f76_6572, index as u64);
+    let mut rng = rng::stream(cx.seed ^ 0x6469_7363_6f76_6572, index as u64);
     let mut direction = uniform_sphere(&mut rng);
     let gain = scene.source_directivity.band_gains(direction);
     let mut energy: Bands = gain.map(|g| g * g);
@@ -621,7 +622,7 @@ mod tests {
     fn direction_cells_round_trip() {
         let mut rng = SplitMix64::new(3);
         for cell in 0..DIRECTION_CELLS {
-            let d = sample_in_cell(cell, rng.next_f64(), rng.next_f64());
+            let d = sample_in_cell(cell, rng.unit_f64(), rng.unit_f64());
             assert!((d.length() - 1.0).abs() < 1e-12);
             assert_eq!(cell_of(d), cell);
         }

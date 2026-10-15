@@ -499,7 +499,11 @@ Each is marked where it is defined. Better evidence replaces it, never a guess.
 
 ### Boundaries of the crate
 
-- Zero dependencies, MSRV 1.87, `publish = false`, a workspace member but **not** a default member.
+- MSRV 1.87, `publish = false`, a workspace member but **not** a default member.
+- **Zero dependencies until 2026-10-15**, when the architecture audit's O6 began moving its private
+  copies onto the collection's shared crates. The generator went first, to `mxm-rng`'s SplitMix64,
+  bit-exact (a test pins the old copy's draws). `rng.rs` keeps room-ir's own seeding rule (`stream`)
+  and Box–Muller normal, by O3's rule that a consumer keeps its seeds, seeding rule and mappings.
   *Since the split (2026-10-06):* mxm-tools' workspace has no `default-members`, so a plain
   `cargo build` builds it.
 - The workspace builds this crate optimised in the dev profile (root `Cargo.toml`,
