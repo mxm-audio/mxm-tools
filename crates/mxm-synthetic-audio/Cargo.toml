@@ -1,0 +1,23 @@
+[package]
+name = "mxm-synthetic-audio"
+description = "Synthetic recordings with exact pitch ground truth, for the pitch editor's analysis. Ships nothing into a plugin."
+version.workspace = true
+edition.workspace = true
+# Inherited, not lowered: the VST3 host it renders String Studio through is at the GUI floor.
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+# The bowed and plucked strings are a VST3 instrument, rendered offline: a `.vst3` module loaded as
+# a CLAP entry through the kit's host, as MXM Player and newDAWn load one. The versions they pin.
+clack-host = { version = "=0.1.1", features = ["clack-plugin"] }
+clack-extensions = { version = "=0.1.1", default-features = false, features = [
+    "clack-host", "audio-ports", "params", "state",
+] }
+mxm-vst3-host.workspace = true
+mxm-audio-file.workspace = true
+mxm-fft.workspace = true
+mxm-rng.workspace = true

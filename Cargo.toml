@@ -5,6 +5,7 @@ members = [
     "crates/dsp-lab",
     "crates/mxm-listening",
     "crates/mxm-room-ir",
+    "crates/mxm-synthetic-audio",
 ]
 
 [workspace.package]
@@ -28,6 +29,7 @@ mxm-dsp = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
 mxm-fft = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
 mxm-measure = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
 mxm-rng = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
+mxm-vst3-host = { git = "https://github.com/mxm-audio/mxm-kit", branch = "main" }
 mxm-mono-01-dsp = { git = "https://github.com/mxm-audio/mxm-mono-01", branch = "main" }
 
 [profile.release]
