@@ -31,6 +31,7 @@ Each path's full scope: [NOTES.md § Ownership, in full](NOTES.md#ownership-in-f
 | `src/name.rs`, `src/glossary.rs`, `data/glossary.tsv`, `src/curves.rs` | A name's claims; what every id means; what a window draws |
 | `src/audibility.rs`, `data/thresholds.tsv`, `data/vocabulary.tsv` | Thresholds with sources, the owner's laid over; the owner's phrases |
 | `src/compare.rs`, `src/unexplained.rs`, `src/golden.rs`, `data/golden.tsv` | Findings and ranking; the auditory map of unexplained differences; the golden cases |
+| `src/screen.rs` | The screen: whether a model is obviously unlike its recording, against a second take, a recording's noise taken out |
 | `src/resynth.rs` | The self-test's rebuild; `tracks`, public for `mxm-model-drums-dsp` |
 | `src/perturb.rs`, `src/staircase.rs`, `src/session.rs` | Perturbations, staircases, calibration sessions and `calibrate` |
 | `src/bin/listen/`, `data/session.html` | The `listen` command (`main.rs`) and the session page's server (`serve.rs`) |
@@ -89,6 +90,10 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
   finding an EQ or a fader could make is **ranked lower, never hidden**. Against a set, a difference
   is established only above its threshold and the takes' spread, against two thirds of them.
 - What no reading explains is reported, through the auditory map.
+- **The screen judges a model against its original alone** (`screen`; the owner, 2026-10-23: "the
+  approved ones are not the gold standard. The original one is."): a second take is the yardstick,
+  each recording's noise is taken out (its end, and where a band first holds still under the
+  caller's ceiling), the model's own noise kept; never loosened so a model approved before passes.
 - The self-test rebuilds a sound from its readings; read its findings knowing its limits. A note, a
   held note or a voice is rebuilt from a note's analysis (`selftest --family note`).
 
@@ -167,6 +172,7 @@ cargo run -p mxm-listening --release --bin listen -- compare <original> <render>
 cargo run -p mxm-listening --release --bin listen -- selftest <file>
 cargo run -p mxm-listening --release --bin listen -- golden --files <local map.tsv>
 cargo run -p mxm-listening --release --bin listen -- site <site>
+cargo run -p mxm-listening --release --bin listen -- screen <take> <model> --take <second take> [--noise-under DBFS --gain DB --take-gain DB]
 cargo run -p mxm-listening --release --bin listen -- session <file> [--operators pitch,decay,band-3200-6400]
 cargo run -p mxm-listening --release --bin listen -- session <note> --family note --operators tilt,decay-law,inharmonicity
 cargo run -p mxm-listening --release --bin listen -- calibrate

@@ -33,6 +33,7 @@ pub mod report;
 pub mod repr;
 pub mod respond;
 pub mod resynth;
+pub mod screen;
 pub mod session;
 pub mod set;
 pub mod sound;

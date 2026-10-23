@@ -8,6 +8,7 @@
 //! listen selftest <file> [--family percussive|note|sustained|voice] [--room HZ,…] [--write REBUILT.wav] [--write-parts PREFIX] [--json OUT] [--md OUT]
 //! listen golden --files <map.tsv> [--cases <golden.tsv>] [--family percussive|note] [--md OUT] [--quiet]
 //! listen site <site-dir> [--family percussive|note] [--quiet]
+//! listen screen <reference> <candidate> [--take <the reference's second take>] [--noise-under DBFS --gain DB [--take-gain DB]] [--json OUT]
 //! listen session <file> [--name NAME] [--family percussive|note|sustained] [--operators pitch,decay,…] [--minutes 6] [--port 8781] [--device TEXT] [--dir .listening]
 //! listen calibrate [--dir .listening]
 //! listen split <run>… [--held] --out DIR
@@ -50,6 +51,14 @@
 //! `audio/NNN-original.wav` and `NNN-model.wav`), a report per row in `listen/NNN.md` and `.json`,
 //! and `listen/index.md` with each row's first differences: read before the owner listens.
 //!
+//! `screen` says whether the candidate is **obviously** unlike the reference (`screen`): `ok` or
+//! `OFF` and why, on one line; `--take`, a second take of the reference screened the same way, is
+//! the yardstick. Run it on every model before the owner hears it. Each recording's hiss is read
+//! from its end; `--noise-under` adds the first stretch after the strike where a band holds still
+//! under that level, in the recording's original scale (dB of a band's mean power), and `--gain`
+//! and `--take-gain` say how far each file was raised from it (a recording that fades out at its
+//! end holds there only its dither, the noise faded under it).
+//!
 //! `golden` scores the listener on the owner's golden cases (`data/golden.tsv`, or `--cases`): each
 //! case names its sounds logically, and the map, a local file never committed, has one
 //! `name<TAB>path` per line, paths relative to it. A pair whose sounds are not mapped is listed, not
@@ -79,7 +88,7 @@ mod serve;
 
 fn usage() -> ExitCode {
     eprintln!(
-        "usage: listen describe <file> [--name NAME] [--family percussive|note|sustained|voice|impulse] [--expect NOTE] [--off S] [--room HZ,…] [--json OUT] [--md OUT] [--quiet]\n       listen set <manifest.tsv> [--family percussive|note] [--json OUT] [--md OUT] [--quiet]\n       listen compare <reference> <candidate> [--family percussive|note] [--expect NOTE] [--room HZ,…] [--all] [--json OUT] [--md OUT] [--quiet]\n       listen compare --set <manifest.tsv> --group <name> <candidate> [--family percussive|note] [--all] [--json OUT] [--md OUT]\n       listen selftest <file> [--family percussive|note|sustained|voice] [--room HZ,…] [--write REBUILT.wav] [--write-parts PREFIX] [--json OUT] [--md OUT]\n       listen golden --files <map.tsv> [--cases <golden.tsv>] [--family percussive|note] [--md OUT] [--quiet]\n       listen site <site-dir> [--family percussive|note] [--quiet]\n       listen session <file> [--name NAME] [--family percussive|note|sustained] [--operators pitch,decay,…] [--minutes 6] [--port 8781] [--device TEXT] [--dir .listening]\n       listen calibrate [--dir .listening]\n       listen split <run>… [--held] --out DIR\n       listen keymap <note>… [--expect-from-name] [--room HZ,…] [--title T] [--md OUT]\n       listen stimulus <kind> --out PREFIX [--rate HZ] [--level DBFS] [--lead S] [--seconds S] [--tail S] [--channel both|left|right] [--hz F] [--hz2 F] [--second-db DB] [--from F] [--to F] [--cycles N] [--every S] [--levels DB,…] [--seed N] [--key K] [--velocity V] [--set NAME=VALUE]…\n       listen respond <sidecar> <response> [<sidecar> <response>]… [--name NAME] [--json OUT] [--md OUT] [--quiet]\n       listen respond <sidecar> <response> --against <reference> [--all] [--json OUT] [--md OUT] [--quiet]\n       listen explain \"<phrase>\" [<reference> <candidate>] [--family percussive|note|…] [--expect NOTE]"
+        "usage: listen describe <file> [--name NAME] [--family percussive|note|sustained|voice|impulse] [--expect NOTE] [--off S] [--room HZ,…] [--json OUT] [--md OUT] [--quiet]\n       listen set <manifest.tsv> [--family percussive|note] [--json OUT] [--md OUT] [--quiet]\n       listen compare <reference> <candidate> [--family percussive|note] [--expect NOTE] [--room HZ,…] [--all] [--json OUT] [--md OUT] [--quiet]\n       listen compare --set <manifest.tsv> --group <name> <candidate> [--family percussive|note] [--all] [--json OUT] [--md OUT]\n       listen selftest <file> [--family percussive|note|sustained|voice] [--room HZ,…] [--write REBUILT.wav] [--write-parts PREFIX] [--json OUT] [--md OUT]\n       listen golden --files <map.tsv> [--cases <golden.tsv>] [--family percussive|note] [--md OUT] [--quiet]\n       listen site <site-dir> [--family percussive|note] [--quiet]\n       listen screen <reference> <candidate> [--take <second take>] [--noise-under DBFS --gain DB [--take-gain DB]] [--json OUT]\n       listen session <file> [--name NAME] [--family percussive|note|sustained] [--operators pitch,decay,…] [--minutes 6] [--port 8781] [--device TEXT] [--dir .listening]\n       listen calibrate [--dir .listening]\n       listen split <run>… [--held] --out DIR\n       listen keymap <note>… [--expect-from-name] [--room HZ,…] [--title T] [--md OUT]\n       listen stimulus <kind> --out PREFIX [--rate HZ] [--level DBFS] [--lead S] [--seconds S] [--tail S] [--channel both|left|right] [--hz F] [--hz2 F] [--second-db DB] [--from F] [--to F] [--cycles N] [--every S] [--levels DB,…] [--seed N] [--key K] [--velocity V] [--set NAME=VALUE]…\n       listen respond <sidecar> <response> [<sidecar> <response>]… [--name NAME] [--json OUT] [--md OUT] [--quiet]\n       listen respond <sidecar> <response> --against <reference> [--all] [--json OUT] [--md OUT] [--quiet]\n       listen explain \"<phrase>\" [<reference> <candidate>] [--family percussive|note|…] [--expect NOTE]"
     );
     ExitCode::from(2)
 }
@@ -96,6 +105,7 @@ fn main() -> ExitCode {
         "selftest" => run_selftest(&args[1..]),
         "golden" => run_golden(&args[1..]),
         "site" => run_site(&args[1..]),
+        "screen" => run_screen(&args[1..]),
         "session" => run_session(&args[1..]),
         "calibrate" => run_calibrate(&args[1..]),
         "split" => run_split(&args[1..]),
@@ -960,6 +970,142 @@ const SITE_HEADLINE: usize = 5;
 
 /// The literature's thresholds, with the owner's from `.listening/owner-thresholds.tsv` laid over
 /// them when that local table exists (the plan's §5 precedence), and a note saying so.
+fn run_screen(args: &[String]) -> ExitCode {
+    use mxm_listening::screen::{NoiseCeiling, Screen, screen, screen_take, verdict};
+    let mut files: Vec<PathBuf> = Vec::new();
+    let mut take: Option<PathBuf> = None;
+    let mut json_out: Option<PathBuf> = None;
+    let mut noise_under: Option<f64> = None;
+    let (mut gain, mut take_gain) = (0.0, 0.0);
+    let mut i = 0;
+    while i < args.len() {
+        let value = args.get(i + 1);
+        let number = || value.and_then(|v| v.parse::<f64>().ok());
+        match args[i].as_str() {
+            "--take" => {
+                take = value.map(PathBuf::from);
+                i += 1;
+            }
+            "--noise-under" | "--gain" | "--take-gain" => {
+                let Some(v) = number() else {
+                    eprintln!("{} takes a number of dB", args[i]);
+                    return ExitCode::from(2);
+                };
+                match args[i].as_str() {
+                    "--noise-under" => noise_under = Some(v),
+                    "--gain" => gain = v,
+                    _ => take_gain = v,
+                }
+                i += 1;
+            }
+            "--json" => {
+                json_out = value.map(PathBuf::from);
+                i += 1;
+            }
+            other if !other.starts_with("--") => files.push(PathBuf::from(other)),
+            _ => return usage(),
+        }
+        i += 1;
+    }
+    let [reference, candidate] = files.as_slice() else {
+        return usage();
+    };
+    let load = |p: &Path, name: &str| {
+        Sound::load(p, name).map_err(|e| eprintln!("cannot read the {name}: {e}"))
+    };
+    let (Ok(r), Ok(c)) = (load(reference, "reference"), load(candidate, "candidate")) else {
+        return ExitCode::from(1);
+    };
+    let t = match take.as_deref().map(|p| load(p, "second take")) {
+        Some(Err(())) => return ExitCode::from(1),
+        Some(Ok(t)) => Some(t),
+        None => None,
+    };
+    // A band's power is a mean square: a full-scale sine's is −3 dB against its peak's 0 dBFS, and
+    // the ceiling is read as a band's mean power in dB, so it carries straight over.
+    let noise = NoiseCeiling {
+        reference_db: noise_under.map(|v| v + gain),
+        take_db: noise_under.map(|v| v + take_gain),
+    };
+    let Some(model) = screen(&r, &c, noise) else {
+        eprintln!("cannot screen: a sound is silent, or the two rates differ");
+        return ExitCode::from(1);
+    };
+    let takes = t.as_ref().and_then(|t| screen_take(&r, t, noise));
+    let why = verdict(&model, takes.as_ref());
+    let share = |s: Option<&Screen>| {
+        s.map_or_else(
+            || "-".to_string(),
+            |s| format!("{:.1}%", s.off_share * 100.0),
+        )
+    };
+    let tail = |s: Option<&Screen>| {
+        s.and_then(|s| s.tail_db)
+            .map_or_else(|| "-".to_string(), |v| format!("{v:+.1}"))
+    };
+    println!(
+        "{} off {} (takes {}), largest patch {:.0}% of its loudness, tail {} dB (takes {}){}{}",
+        if why.is_empty() { "ok " } else { "OFF" },
+        share(Some(&model)),
+        share(takes.as_ref()),
+        model.patch.as_ref().map_or(0.0, |p| p.loudness * 100.0),
+        tail(Some(&model)),
+        tail(takes.as_ref()),
+        if why.is_empty() { "" } else { ": " },
+        why.join("; ")
+    );
+    if let Some(out) = json_out {
+        if let Err(e) = std::fs::write(&out, screen_json(&model, takes.as_ref(), &why)) {
+            eprintln!("cannot write {}: {e}", out.display());
+            return ExitCode::from(1);
+        }
+    }
+    ExitCode::SUCCESS
+}
+
+/// The screen as JSON: the candidate's numbers, the second take's, and why the candidate is off.
+fn screen_json(
+    model: &mxm_listening::screen::Screen,
+    takes: Option<&mxm_listening::screen::Screen>,
+    why: &[String],
+) -> String {
+    let one = |s: &mxm_listening::screen::Screen| {
+        let patch = s.patch.as_ref().map_or_else(
+            || "null".to_string(),
+            |p| {
+                format!(
+                    "{{\"too_loud\": {}, \"mean_db\": {}, \"window_ms\": [{}, {}], \"band_hz\": [{}, {}], \"loudness\": {}}}",
+                    p.too_loud,
+                    p.mean_db,
+                    p.window_ms.0,
+                    p.window_ms.1,
+                    p.band_hz.0,
+                    p.band_hz.1,
+                    p.loudness
+                )
+            },
+        );
+        format!(
+            "{{\"off_share\": {}, \"patch\": {patch}, \"tail_db\": {}, \"length_ms\": {}, \"hiss_from_end\": {}}}",
+            s.off_share,
+            s.tail_db
+                .map_or_else(|| "null".to_string(), |v| format!("{v}")),
+            s.length_ms,
+            s.hiss_from_end
+        )
+    };
+    let why: Vec<String> = why
+        .iter()
+        .map(|w| format!("\"{}\"", w.replace('\\', "\\\\").replace('"', "\\\"")))
+        .collect();
+    format!(
+        "{{\"model\": {}, \"takes\": {}, \"off\": [{}]}}\n",
+        one(model),
+        takes.map_or_else(|| "null".to_string(), one),
+        why.join(", ")
+    )
+}
+
 fn owner_thresholds() -> (mxm_listening::audibility::Thresholds, Option<String>) {
     mxm_listening::audibility::Thresholds::with_owner(&serve::state_dir(None))
 }
