@@ -136,6 +136,10 @@ pub struct Screen {
     pub length_ms: f64,
     /// The reference's hiss was read from its end (else from its quietest tenth while it sounds).
     pub hiss_from_end: bool,
+    /// Where the share comes from, `[band][frame]`: each heard cell's share of the loudness, signed
+    /// as the candidate stands over (+) or under (−) the reference, where it is [`OFF_DB`] off; 0
+    /// elsewhere.
+    pub off_cells: Vec<Vec<f64>>,
 }
 
 /// A third octave's edges, Hz.
@@ -538,14 +542,15 @@ fn screen_with(
             *v /= total;
         }
     }
-    let mut off_share = 0.0;
+    let mut off_cells = vec![vec![0.0; frames]; BANDS];
     for k in 0..BANDS {
         for j in 0..frames {
             if heard[k][j] && d[k][j].abs() > OFF_DB {
-                off_share += w[k][j];
+                off_cells[k][j] = w[k][j].copysign(d[k][j]);
             }
         }
     }
+    let off_share = off_cells.iter().flatten().map(|v| v.abs()).sum();
     let patch = largest_patch(&d, &heard, &w);
 
     let end = r.len().min(c.len());
@@ -567,6 +572,7 @@ fn screen_with(
         tail_db,
         length_ms,
         hiss_from_end: floor_b.from_end,
+        off_cells,
     })
 }
 

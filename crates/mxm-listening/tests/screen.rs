@@ -164,6 +164,7 @@ fn the_takes_are_the_yardstick() {
         tail_db: Some(tail_db),
         length_ms: 1000.0,
         hiss_from_end: true,
+        off_cells: Vec::new(),
     };
     // 20 % off is off alone, and not where two takes differ by 10 % (under twice theirs and 5 %).
     assert!(!verdict(&screened(0.20, 0.0), None).is_empty());

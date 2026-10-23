@@ -8,7 +8,7 @@
 //! listen selftest <file> [--family percussive|note|sustained|voice] [--room HZ,…] [--write REBUILT.wav] [--write-parts PREFIX] [--json OUT] [--md OUT]
 //! listen golden --files <map.tsv> [--cases <golden.tsv>] [--family percussive|note] [--md OUT] [--quiet]
 //! listen site <site-dir> [--family percussive|note] [--quiet]
-//! listen screen <reference> <candidate> [--take <the reference's second take>] [--noise-under DBFS --gain DB [--take-gain DB]] [--json OUT]
+//! listen screen <reference> <candidate> [--take <the reference's second take>] [--noise-under DBFS --gain DB [--take-gain DB]] [--json OUT] [--map OUT.tsv]
 //! listen session <file> [--name NAME] [--family percussive|note|sustained] [--operators pitch,decay,…] [--minutes 6] [--port 8781] [--device TEXT] [--dir .listening]
 //! listen calibrate [--dir .listening]
 //! listen split <run>… [--held] --out DIR
@@ -57,7 +57,8 @@
 //! from its end; `--noise-under` adds the first stretch after the strike where a band holds still
 //! under that level, in the recording's original scale (dB of a band's mean power), and `--gain`
 //! and `--take-gain` say how far each file was raised from it (a recording that fades out at its
-//! end holds there only its dither, the noise faded under it).
+//! end holds there only its dither, the noise faded under it). `--map` writes where the share comes
+//! from: per third octave and 50 ms, the share of the loudness off there, signed over or under.
 //!
 //! `golden` scores the listener on the owner's golden cases (`data/golden.tsv`, or `--cases`): each
 //! case names its sounds logically, and the map, a local file never committed, has one
@@ -88,7 +89,7 @@ mod serve;
 
 fn usage() -> ExitCode {
     eprintln!(
-        "usage: listen describe <file> [--name NAME] [--family percussive|note|sustained|voice|impulse] [--expect NOTE] [--off S] [--room HZ,…] [--json OUT] [--md OUT] [--quiet]\n       listen set <manifest.tsv> [--family percussive|note] [--json OUT] [--md OUT] [--quiet]\n       listen compare <reference> <candidate> [--family percussive|note] [--expect NOTE] [--room HZ,…] [--all] [--json OUT] [--md OUT] [--quiet]\n       listen compare --set <manifest.tsv> --group <name> <candidate> [--family percussive|note] [--all] [--json OUT] [--md OUT]\n       listen selftest <file> [--family percussive|note|sustained|voice] [--room HZ,…] [--write REBUILT.wav] [--write-parts PREFIX] [--json OUT] [--md OUT]\n       listen golden --files <map.tsv> [--cases <golden.tsv>] [--family percussive|note] [--md OUT] [--quiet]\n       listen site <site-dir> [--family percussive|note] [--quiet]\n       listen screen <reference> <candidate> [--take <second take>] [--noise-under DBFS --gain DB [--take-gain DB]] [--json OUT]\n       listen session <file> [--name NAME] [--family percussive|note|sustained] [--operators pitch,decay,…] [--minutes 6] [--port 8781] [--device TEXT] [--dir .listening]\n       listen calibrate [--dir .listening]\n       listen split <run>… [--held] --out DIR\n       listen keymap <note>… [--expect-from-name] [--room HZ,…] [--title T] [--md OUT]\n       listen stimulus <kind> --out PREFIX [--rate HZ] [--level DBFS] [--lead S] [--seconds S] [--tail S] [--channel both|left|right] [--hz F] [--hz2 F] [--second-db DB] [--from F] [--to F] [--cycles N] [--every S] [--levels DB,…] [--seed N] [--key K] [--velocity V] [--set NAME=VALUE]…\n       listen respond <sidecar> <response> [<sidecar> <response>]… [--name NAME] [--json OUT] [--md OUT] [--quiet]\n       listen respond <sidecar> <response> --against <reference> [--all] [--json OUT] [--md OUT] [--quiet]\n       listen explain \"<phrase>\" [<reference> <candidate>] [--family percussive|note|…] [--expect NOTE]"
+        "usage: listen describe <file> [--name NAME] [--family percussive|note|sustained|voice|impulse] [--expect NOTE] [--off S] [--room HZ,…] [--json OUT] [--md OUT] [--quiet]\n       listen set <manifest.tsv> [--family percussive|note] [--json OUT] [--md OUT] [--quiet]\n       listen compare <reference> <candidate> [--family percussive|note] [--expect NOTE] [--room HZ,…] [--all] [--json OUT] [--md OUT] [--quiet]\n       listen compare --set <manifest.tsv> --group <name> <candidate> [--family percussive|note] [--all] [--json OUT] [--md OUT]\n       listen selftest <file> [--family percussive|note|sustained|voice] [--room HZ,…] [--write REBUILT.wav] [--write-parts PREFIX] [--json OUT] [--md OUT]\n       listen golden --files <map.tsv> [--cases <golden.tsv>] [--family percussive|note] [--md OUT] [--quiet]\n       listen site <site-dir> [--family percussive|note] [--quiet]\n       listen screen <reference> <candidate> [--take <second take>] [--noise-under DBFS --gain DB [--take-gain DB]] [--json OUT] [--map OUT.tsv]\n       listen session <file> [--name NAME] [--family percussive|note|sustained] [--operators pitch,decay,…] [--minutes 6] [--port 8781] [--device TEXT] [--dir .listening]\n       listen calibrate [--dir .listening]\n       listen split <run>… [--held] --out DIR\n       listen keymap <note>… [--expect-from-name] [--room HZ,…] [--title T] [--md OUT]\n       listen stimulus <kind> --out PREFIX [--rate HZ] [--level DBFS] [--lead S] [--seconds S] [--tail S] [--channel both|left|right] [--hz F] [--hz2 F] [--second-db DB] [--from F] [--to F] [--cycles N] [--every S] [--levels DB,…] [--seed N] [--key K] [--velocity V] [--set NAME=VALUE]…\n       listen respond <sidecar> <response> [<sidecar> <response>]… [--name NAME] [--json OUT] [--md OUT] [--quiet]\n       listen respond <sidecar> <response> --against <reference> [--all] [--json OUT] [--md OUT] [--quiet]\n       listen explain \"<phrase>\" [<reference> <candidate>] [--family percussive|note|…] [--expect NOTE]"
     );
     ExitCode::from(2)
 }
@@ -975,6 +976,7 @@ fn run_screen(args: &[String]) -> ExitCode {
     let mut files: Vec<PathBuf> = Vec::new();
     let mut take: Option<PathBuf> = None;
     let mut json_out: Option<PathBuf> = None;
+    let mut map_out: Option<PathBuf> = None;
     let mut noise_under: Option<f64> = None;
     let (mut gain, mut take_gain) = (0.0, 0.0);
     let mut i = 0;
@@ -1000,6 +1002,10 @@ fn run_screen(args: &[String]) -> ExitCode {
             }
             "--json" => {
                 json_out = value.map(PathBuf::from);
+                i += 1;
+            }
+            "--map" => {
+                map_out = value.map(PathBuf::from);
                 i += 1;
             }
             other if !other.starts_with("--") => files.push(PathBuf::from(other)),
@@ -1060,7 +1066,45 @@ fn run_screen(args: &[String]) -> ExitCode {
             return ExitCode::from(1);
         }
     }
+    if let Some(out) = map_out {
+        if let Err(e) = std::fs::write(&out, screen_map(&model)) {
+            eprintln!("cannot write {}: {e}", out.display());
+            return ExitCode::from(1);
+        }
+    }
     ExitCode::SUCCESS
+}
+
+/// Where the screen's share comes from, as TSV: a row per third octave, a column per 50 ms, each the
+/// share of the loudness off there in %, signed as the candidate stands over (+) or under (-) the
+/// reference (the larger of the two where both); `.` where nothing is off.
+fn screen_map(s: &mxm_listening::screen::Screen) -> String {
+    use mxm_listening::screen::{HOP_MS, band_hz};
+    let step = (50.0 / HOP_MS) as usize;
+    let frames = s.off_cells.first().map_or(0, Vec::len);
+    let blocks = frames.div_ceil(step);
+    let mut out = String::from("band_hz");
+    for b in 0..blocks {
+        out.push_str(&format!("\t{}", b * 50));
+    }
+    out.push('\n');
+    for (k, row) in s.off_cells.iter().enumerate() {
+        let (lo, hi) = band_hz(k);
+        out.push_str(&format!("{:.0}", (lo * hi).sqrt()));
+        for b in 0..blocks {
+            let cells = &row[b * step..((b + 1) * step).min(frames)];
+            let over: f64 = cells.iter().filter(|v| **v > 0.0).sum();
+            let under: f64 = cells.iter().filter(|v| **v < 0.0).sum();
+            let v = if over >= -under { over } else { under };
+            if v == 0.0 {
+                out.push_str("\t.");
+            } else {
+                out.push_str(&format!("\t{:+.1}", v * 100.0));
+            }
+        }
+        out.push('\n');
+    }
+    out
 }
 
 /// The screen as JSON: the candidate's numbers, the second take's, and why the candidate is off.
