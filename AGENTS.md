@@ -101,6 +101,11 @@ Child DOX Index
 
 **mxm-tools** is the tools the MXM instruments are tuned and measured with: the listener, the room simulator, the measurement harnesses and the listener HUD; and the synthetic recordings, with exact pitch truth, that newDAWn's pitch editor is scored against.
 
+**In version 1.0 of the MXM collection** (the owner, 2026-10-25: tutti "belongs in v. 101 along
+with player and tools", "i mean version 1.0 itself"). Nothing here was built for users yet: which
+tools ship, and in what form, is the owner's to say; until then each crate's own `AGENTS.md` keeps
+saying what it ships.
+
 It is one of the MXM products, each in its own repository under
 [github.com/mxm-audio](https://github.com/mxm-audio), built on the MIT-licensed
 [mxm-kit](https://github.com/mxm-audio/mxm-kit) — the design system, keyboard navigation, presets,

@@ -556,6 +556,5 @@ Each contract as it was written, with its reasons and measurements.
   that uses it. No existing implementation is opened (the Timbre Toolbox, Audio Commons, ViSQOL,
   Zimtohrli, PEAQ, the ISO or ECMA reference code).
 - **Windows is the platform this is verified on.** Linux and macOS are unverified; nothing here may
-  be Windows-only. *Since the split (2026-10-06):* the fast tier is checked on Windows and on Linux
-  in WSL before a push, and CI runs it on Windows, macOS and Linux on `v*` release tags or when
-  started by hand; the `release gate` suites stay a manual run.
+  be Windows-only. The fast tier is checked on Windows before a push, and on Linux and macOS in the
+  cross-platform batch and by CI when started by hand; the `release gate` suites stay a manual run.
