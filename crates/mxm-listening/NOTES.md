@@ -255,6 +255,39 @@ Each contract as it was written, with its reasons and measurements.
     owner sent back stood (20-80 %); an approved model the screen flags differs from its original
     and is looked at again, the screen never loosened for it.
 
+#### A pitched comparison's fragile readings
+
+Found by TWF's seam test (2026-11-04, `research:sources/strings/derived/seam-test/README.md`;
+ops' `plans/plan-mxm-twf.md` §4.1): three Salamander piano notes rendered exactly and through
+looping tables whose partials were rounded by a few cents, compared `--family note`. Three readings
+counted the rounding against itself, and were corrected on 2026-11-05 (the plan's W0), for pitched
+sounds only. Every drum comparison reads as before, which `tests/ring_lines.rs` holds for a moved
+line.
+- **The ring's lines.** Matched within ±1.5 Hz or ±0.2 %, a piano C6's second partial, 2108 Hz
+  at −11 dB, rounded by 4.6 cents (a loop of 64 cycles), fell outside its slot and read as missing,
+  57 thresholds down at its floor; so did C4's third and C6's third. A note's partial is matched by
+  ratio within ±3 % already (`note_partials`); its ring lines now are too, never past half the way
+  to the next line, so a neighbour is not taken for it, and the line's pitch is a reading of its
+  own (`tone.line_tuning`, 15 cents, as a partial's tuning): that C6 partial now reads at its level,
+  4.6 cents flat, 0.3 thresholds. A weak line 11 Hz from another keeps a narrow match and can still
+  read as missing (C6's 2097 Hz, 86 dB under its neighbour). A cymbal's lines hold their pitch from
+  strike to strike, so a drum keeps the narrow match.
+- **The stiffness B near zero.** Its threshold is a share of the reference's B (30 %), because the
+  timbre threshold spans three decades with f₀. Two nearly harmonic notes, B 10⁻⁶ apart, then
+  differed by 3.6 thresholds. Under the timbre threshold at the reference's pitch (Järveläinen et
+  al.'s `ln B = 2.57 ln f₀ − 26.5`, `research:listening/percussion-perception.md` §5.2) a B is
+  heard as harmonic, so it is the floor, and every value under it, a fitted one a hair under zero
+  too, compares as it.
+- **The time to the peak sample.** Where many partials' phases meet decides it, and a few cents
+  move it: a C4 read 29.6 → 2.8 ms. A note's attack compares by its rise time; the sample peak is
+  compared between drums only, where it is the strike.
+
+Measured on every comparison of the test, before and after (differences at 5× their threshold or
+more over the three notes, the table read's images above 6.4 kHz apart): rounding at loops of 256,
+64 and 16 cycles 3, 13 and 29 → 2, 5 and 10; a hard seam's 31–47 at 256 cycles unchanged, its
+clicks real; the phase ramps' changed by a difference or two either way, the wider match catching
+a candidate's line beside the reference's as well as dropping a moved one.
+
 ### Golden cases, calibration and the session
 
 - **Golden cases are data and never recordings.** `data/golden.tsv` holds what the owner said about

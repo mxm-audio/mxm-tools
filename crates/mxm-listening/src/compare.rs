@@ -6,6 +6,7 @@
 //! exceeds both its threshold and the set's spread and its sign holds against most of the takes: one
 //! strike per layer is noise (`docs/drum-model-fitting.md` §7, in mxm-drum-machine).
 
+use crate::Family;
 use crate::audibility::{Kind, Threshold, Thresholds, Vocabulary};
 use crate::reading::{Reading, Report, Unit, Validity};
 
@@ -78,6 +79,31 @@ pub const NOT_COMPARED: [&str; 4] = [
     "note.fundamental",
     "note.virtual_pitch",
 ];
+
+/// Readings not compared between two pitched sounds (a note, a held note, a voice): the time to
+/// the peak sample falls wherever many partials' phases happen to meet, so a few cents' change
+/// moves it by tens of ms (a piano C4 read 29.6 → 2.8 ms, its partials rounded by under 4 cents,
+/// ops' `plans/plan-mxm-twf.md` §4.1). The attack compares by its rise time
+/// (`attack.rise_time`), an envelope's. A drum's peak is its strike, and compares as before.
+pub const NOT_COMPARED_IN_A_NOTE: [&str; 1] = ["attack.peak_time"];
+
+/// A pitched sound: one declared a note, a held note or a voice.
+fn pitched(report: &Report) -> bool {
+    matches!(
+        report.family.family,
+        Family::Note | Family::Sustained | Family::Voice
+    )
+}
+
+/// The stiff-string inharmonicity B under which a tone at `f0_hz` is heard as harmonic, the mean
+/// timbre threshold `ln B = 2.57 ln f0 − 26.5` (Järveläinen, Välimäki and Karjalainen's fit, read in
+/// `research:listening/percussion-perception.md` §5.2): about 9·10⁻⁸ at 55 Hz, 2·10⁻⁵ at 440 Hz. A
+/// share of the reference's B alone made two nearly harmonic notes differ by thresholds over a B of
+/// 10⁻⁶ that nobody hears.
+#[must_use]
+pub fn inharmonicity_heard(f0_hz: f64) -> f64 {
+    (2.57 * f0_hz.ln() - 26.5).exp()
+}
 
 /// Readings that describe the file, not the sound.
 fn file_property(part: &str, id: &str) -> bool {
@@ -319,10 +345,14 @@ pub fn compare_to_set(
     };
     let references = references.as_slice();
     let static_colour = static_bands(references, candidate);
+    let note = pitched(candidate);
     let mut findings = Vec::new();
     for section in &candidate.sections {
         for r in &section.readings {
-            if NOT_COMPARED.contains(&r.id) || r.id.starts_with(WORDS) {
+            if NOT_COMPARED.contains(&r.id)
+                || r.id.starts_with(WORDS)
+                || (note && NOT_COMPARED_IN_A_NOTE.contains(&r.id))
+            {
                 continue;
             }
             let Some(c) = compared(candidate, r) else {
@@ -336,9 +366,22 @@ pub fn compare_to_set(
                 continue;
             }
             let context = Some(candidate.family.family.name());
-            let Some(threshold) = thresholds.for_reading_in(r.id, r.unit, context).cloned() else {
+            let Some(mut threshold) = thresholds.for_reading_in(r.id, r.unit, context).cloned()
+            else {
                 continue;
             };
+            // Under the timbre threshold at the reference's pitch, a stretch is not heard at all.
+            if r.id == "note.inharmonicity" && threshold.kind == Kind::Relative {
+                let f0 = references
+                    .first()
+                    .and_then(|rep| rep.find("note.fundamental", None))
+                    .and_then(|x| x.value)
+                    .filter(|f| *f > 0.0);
+                if let Some(f0) = f0 {
+                    let heard = inharmonicity_heard(f0);
+                    threshold.floor = Some(threshold.floor.map_or(heard, |f| f.max(heard)));
+                }
+            }
             let n = refs.len() as f64;
             let mean = refs.iter().sum::<f64>() / n;
             let spread = (refs.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / n).sqrt();
@@ -619,8 +662,10 @@ fn rows(report: &Report, id: &str) -> Vec<Vec<f64>> {
 /// there (`tone.ring_floor`), what it does hold; keyed by the slot's span and band. A ring whose lines
 /// stand at the reference's pitches is told from one with as much in each octave at other pitches,
 /// which the octaves cannot (the owner, 2026-10-12: "the model is lower in pitch/resonance"). With a
-/// note on the reference's lines the candidate does not ring. `None` unless the first reference
-/// holds lines and the candidate a floor.
+/// note on the reference's lines the candidate does not ring. A pitched candidate's lines are matched
+/// wider and read their pitch too (`tone.line_tuning`): a note's partial moved by 1–2 Hz read as
+/// missing before (ops' `plans/plan-mxm-twf.md` §4.1). `None` unless the first reference holds lines
+/// and the candidate a floor.
 fn ring_lines(
     references: &[&Report],
     candidate: &Report,
@@ -650,13 +695,37 @@ fn ring_lines(
         span.sort_by(|p, q| p.2.total_cmp(&q.2));
         slots.extend(span);
     }
-    let src = "the ring's lines (tone.ring_lines), matched by frequency within ±1.5 Hz or ±0.2 %; a line one sound lacks read as its floor there (tone.ring_floor)";
+    // A pitched sound's line is matched wider, so a line moved by a few cents reads as moved
+    // (`tone.line_tuning`), not as missing: within the partial table's own ±3 %, but never past half
+    // the way to the span's next line, so a neighbour is never taken for it. A drum's cymbal holds its
+    // lines' pitches from strike to strike, and keeps the narrow match.
+    let note = pitched(candidate);
+    let tolerances: Vec<f64> = slots
+        .iter()
+        .map(|&(a, b, hz, _)| {
+            let narrow = LINE_MATCH_HZ.max(LINE_MATCH * hz);
+            if !note {
+                return narrow;
+            }
+            let gap = slots
+                .iter()
+                .filter(|s| s.0 == a && s.1 == b && s.2 != hz)
+                .map(|s| (s.2 - hz).abs())
+                .fold(f64::INFINITY, f64::min);
+            narrow.max((PARTIAL_MATCH * hz).min(0.5 * gap))
+        })
+        .collect();
+    let src = if note {
+        "the ring's lines (tone.ring_lines), matched by frequency within ±3 % but under half the way to the next line, and at least ±1.5 Hz or ±0.2 %; a line one sound lacks read as its floor there (tone.ring_floor)"
+    } else {
+        "the ring's lines (tone.ring_lines), matched by frequency within ±1.5 Hz or ±0.2 %; a line one sound lacks read as its floor there (tone.ring_floor)"
+    };
     let with = |report: &Report| -> (Report, Vec<f64>) {
         let lines = rows(report, "tone.ring_lines");
         let floors = rows(report, "tone.ring_floor");
         let mut readings = Vec::new();
         let mut lacking = Vec::new();
-        for &(a, b, hz, level) in &slots {
+        for (&(a, b, hz, level), &tolerance) in slots.iter().zip(&tolerances) {
             let thirds: Vec<(f64, f64)> = floors
                 .iter()
                 .filter(|r| r[0] == a && r[1] == b)
@@ -665,19 +734,22 @@ fn ring_lines(
             if thirds.is_empty() {
                 continue;
             }
-            let tolerance = LINE_MATCH_HZ.max(LINE_MATCH * hz);
+            // The strongest line in the window: (Hz, level).
             let own = lines
                 .iter()
                 .filter(|r| r[0] == a && r[1] == b && (r[2] - hz).abs() <= tolerance)
-                .map(|r| r[3])
-                .fold(None, |m: Option<f64>, v| Some(m.map_or(v, |m| m.max(v))));
+                .map(|r| (r[2], r[3]))
+                .fold(None, |m: Option<(f64, f64)>, v| match m {
+                    Some(m) if m.1 >= v.1 => Some(m),
+                    _ => Some(v),
+                });
             if own.is_none() {
                 lacking.push(hz);
             }
             let mut r = Reading::new(
                 "tone.line_level",
                 "A ringing line's level against the span",
-                own.or_else(|| floor_at(&thirds, hz)),
+                own.map(|o| o.1).or_else(|| floor_at(&thirds, hz)),
                 Unit::Decibels,
                 src,
             )
@@ -685,6 +757,19 @@ fn ring_lines(
             .band(hz - tolerance, hz + tolerance);
             r.level_db = Some(level);
             readings.push(r);
+            if note {
+                let mut r = Reading::new(
+                    "tone.line_tuning",
+                    "A ringing line's pitch against the reference's",
+                    own.map(|o| 1200.0 * (o.0 / hz).log2()),
+                    Unit::Cents,
+                    src,
+                )
+                .window(a, b)
+                .band(hz - tolerance, hz + tolerance);
+                r.level_db = Some(level);
+                readings.push(r);
+            }
         }
         let mut out = report.clone();
         out.sections

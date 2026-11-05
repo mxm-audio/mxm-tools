@@ -81,15 +81,47 @@ fn a_sine_over_noise_reads_at_its_frequency_and_share() {
     );
 }
 
-fn report(x: Vec<f32>, name: &str) -> Report {
+fn report_as(x: Vec<f32>, name: &str, family: Family) -> Report {
     describe_with(
         &Sound::new(name, RATE, x),
         &Options {
-            family: Some(Family::Percussive),
+            family: Some(family),
             without_perception: true,
             ..Options::default()
         },
     )
+}
+
+fn report(x: Vec<f32>, name: &str) -> Report {
+    report_as(x, name, Family::Percussive)
+}
+
+/// Each `id` finding (audible or not): the middle of its band, and candidate minus reference.
+fn findings_as(
+    reference: Vec<f32>,
+    candidate: Vec<f32>,
+    family: Family,
+    id: &str,
+) -> (Vec<(f64, f64, bool)>, Vec<String>) {
+    let c = compare(
+        &report_as(reference, "reference", family),
+        &report_as(candidate, "candidate", family),
+        &Thresholds::literature(),
+        &Vocabulary::owner(),
+    );
+    let found = c
+        .findings
+        .iter()
+        .filter(|f| f.id == id)
+        .map(|f| {
+            (
+                f.band_hz.map_or(0.0, |b| 0.5 * (b.0 + b.1)),
+                f.candidate - f.reference,
+                f.units >= 1.0,
+            )
+        })
+        .collect();
+    (found, c.notes)
 }
 
 fn line_findings(reference: Vec<f32>, candidate: Vec<f32>) -> Vec<(f64, f64)> {
@@ -108,6 +140,63 @@ fn line_findings(reference: Vec<f32>, candidate: Vec<f32>) -> Vec<(f64, f64)> {
             )
         })
         .collect()
+}
+
+/// A note's partials, 440 Hz and its harmonics to the fifth, each moved up 4 Hz: past the narrow
+/// match of every one but the fifth (±1.5 Hz, or ±0.2 % = 4.4 Hz at 2200 Hz), as a table's
+/// rounding moves them. Read as a note, every line is there, its pitch moved by the cents the
+/// 4 Hz make; read as a drum, as before, the lower four are missing.
+#[test]
+fn a_note_s_line_moved_a_little_reads_as_moved_not_missing() {
+    let partials: Vec<(f64, f64)> = (1..=5)
+        .map(|n| (440.0 * n as f64, 0.1 / n as f64))
+        .collect();
+    let moved: Vec<(f64, f64)> = partials.iter().map(|&(hz, a)| (hz + 4.0, a)).collect();
+    let reference = ring(&partials, 0.001, 7);
+    let candidate = ring(&moved, 0.001, 7);
+
+    let (levels, notes) = findings_as(
+        reference.clone(),
+        candidate.clone(),
+        Family::Note,
+        "tone.line_level",
+    );
+    assert!(
+        levels.iter().all(|&(_, d, audible)| !audible || d > -10.0),
+        "a moved line read as missing in a note: {levels:?}"
+    );
+    assert!(
+        !notes
+            .iter()
+            .any(|n| n.starts_with("lines the reference rings")),
+        "{notes:?}"
+    );
+    let (tunings, _) = findings_as(
+        reference.clone(),
+        candidate.clone(),
+        Family::Note,
+        "tone.line_tuning",
+    );
+    for &(hz, _) in &partials {
+        let want = 1200.0 * ((hz + 4.0) / hz).log2();
+        // Within a cent: the ring's lines are read to about 0.2 Hz (the test above), under a cent
+        // at 440 Hz and less above it.
+        assert!(
+            tunings
+                .iter()
+                .any(|&(at, d, _)| (at - hz).abs() < 0.03 * hz && (d - want).abs() < 1.0),
+            "{hz} Hz: want +{want:.2} cents in {tunings:?}"
+        );
+    }
+
+    let (drum, _) = findings_as(reference, candidate, Family::Percussive, "tone.line_level");
+    for &(hz, _) in &partials[..4] {
+        assert!(
+            drum.iter()
+                .any(|&(at, d, audible)| (at - hz).abs() < 5.0 && audible && d < -10.0),
+            "{hz} Hz no longer missing for a drum: {drum:?}"
+        );
+    }
 }
 
 #[test]

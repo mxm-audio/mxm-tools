@@ -22,7 +22,8 @@ pub struct Threshold {
     pub kind: Kind,
     pub value: f64,
     pub source: String,
-    /// For a relative threshold: the smallest value that is perceived at all (roughness's 0.07 asper);
+    /// For a relative threshold: the smallest value that is perceived at all (roughness's 0.07 asper;
+    /// a note's inharmonicity takes its timbre threshold at the reference's pitch, set by `compare`);
     /// values under it compare as it, so a change between two imperceptible values is none.
     pub floor: Option<f64>,
 }
@@ -34,11 +35,10 @@ impl Threshold {
         match self.kind {
             Kind::Absolute => (candidate - reference).abs() / self.value,
             Kind::Relative => {
+                // Every value under the floor, a fitted one a hair under zero too, compares as it.
                 if let Some(f) = self.floor.filter(|f| *f > 0.0) {
-                    if reference >= 0.0 && candidate >= 0.0 {
-                        return (candidate.max(f) / reference.max(f)).ln().abs()
-                            / (1.0 + self.value).ln();
-                    }
+                    return (candidate.max(f) / reference.max(f)).ln().abs()
+                        / (1.0 + self.value).ln();
                 }
                 if reference > 0.0 && candidate > 0.0 {
                     (candidate / reference).ln().abs() / (1.0 + self.value).ln()

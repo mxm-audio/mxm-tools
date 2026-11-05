@@ -72,7 +72,10 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
 - **A ring's tone is read past the octaves' 0.7 s, line by line** (`tone::RING_MS`): each span's
   lines and floor, compared at the first reference's strongest lines' pitches, a line one sound
   lacks read as its floor there (`tone.line_level`). Octaves alone heard a cymbal's lines at the
-  wrong pitches as the same ring (the owner, 2026-10-12).
+  wrong pitches as the same ring (the owner, 2026-10-12). **A pitched sound's line is matched
+  wider** (within `PARTIAL_MATCH`, under half the way to the next line) and its pitch is read
+  (`tone.line_tuning`), so a partial moved a few cents reads as moved, not missing; a drum keeps
+  the narrow match ([why](NOTES.md#a-pitched-comparisons-fragile-readings)).
 - The rest pitch is the lowest believed mode within 12 dB of the strongest, **never a room line**
   (`--room`, or `set`). The glide is a line track. A line narrower than its window resolves is
   `Unresolved`. Definitions kept for continuity state their reach.
@@ -90,6 +93,10 @@ Each rule's reasons and measurements: [NOTES.md § Local contracts, in full](NOT
   finding an EQ or a fader could make is **ranked lower, never hidden**. Against a set, a difference
   is established only above its threshold and the takes' spread, against two thirds of them.
 - What no reading explains is reported, through the auditory map.
+- **Between pitched sounds** the peak sample's time is not compared (`NOT_COMPARED_IN_A_NOTE`; the
+  rise time is), and a note's inharmonicity compares above the timbre threshold at the reference's
+  pitch (`inharmonicity_heard`), never as a share of a B near zero
+  ([why](NOTES.md#a-pitched-comparisons-fragile-readings)).
 - **The screen judges a model against its original alone** (`screen`; the owner, 2026-10-23: "the
   approved ones are not the gold standard. The original one is."): a second take is the yardstick,
   each recording's noise is taken out (its end, and where a band first holds still under the
