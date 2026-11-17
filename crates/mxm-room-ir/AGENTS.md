@@ -109,9 +109,13 @@ Each section's reasons and measurements are under the same heading in
   new ones they will be different."*). Never re-render or re-release them. They are `RECIPE_EPOCH` 4's
   renders, which the committed sidecars describe; today's code (epoch 5, since O6) renders them
   differently, by rounding.
-- When the plugins ship, a release is **installed, not bundled**: a versioned download installed
-  under the platform's local data directory at `mxm/impulses/`; the plugin's reading of it is owned
-  by `plugins/mxm-fx-convolution/AGENTS.md` in the mxm-fx-convolution repository.
+- A release is **installed, not bundled**: a versioned download installed under the platform's
+  local data directory at `mxm/impulses/`; the plugin's reading of it is owned by
+  `plugins/mxm-fx-convolution/AGENTS.md` in the mxm-fx-convolution repository. **Released under
+  GPL-3.0-or-later** (the owner, 2026-11-17: "relased as gpl-3 too"), as the MXM portal's content
+  product `mxm-impulses`: 0.1.0, the 100 far stereo rooms with their sidecars, `manifest.json`,
+  `LICENSE` and a notice, packed from a copy checked against the committed sidecars (the beta,
+  2026-11-17).
 
 ## The catalogue
 - The target is **plausible**, generic rooms only: no archetype copies a real building. Scenes are
