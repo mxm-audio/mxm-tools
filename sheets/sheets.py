@@ -6,6 +6,7 @@ youre process?"; "I expect we will be building a lot of instruments this way"). 
 instrument are one sound: what one has and its siblings do not is suspect until explained.
 
     python sheets.py set <manifest.tsv> <out dir> [--title T] [--names Recording,Model] [--span S]
+                         [--views level,hz-difference]
     python sheets.py zoom <reference> <candidate or -> <out.png> [--from S] [--to S] [--lo HZ]
                           [--hi HZ] [--f0 HZ] [--q Q] [--names Recording,Model]
 
@@ -25,7 +26,8 @@ empty: unpitched) and `group` (sounds that must agree: one note's strengths). It
       10 % apart) over the span, reference and candidate, to 60 dB under the reference's peak there
   level                    both sounds' broadband level on the reference's scale
 
-and `summary.txt`, printed too: per sound, the line its reference rings nearest its f0 and the
+(`--views` draws only the sheets it names: a large set compared on a few views, as the workspace's
+platform check compares the collection's renders across platforms), and `summary.txt`, printed too: per sound, the line its reference rings nearest its f0 and the
 candidate's, in cents from the f0 given and from each other; per group, its references' spread; and
 the sounds furthest from their siblings (the others in their row and column), which the sheets
 frame: red, a candidate further from its siblings than its reference is from theirs; orange, a
@@ -621,7 +623,9 @@ def run_set(args):
         # The graphs (line-*, level): each over its own ring, its span in its corner.
 
     paths = []
-    for v in views.values():
+    for name, v in views.items():
+        if args.views and name not in args.views:
+            continue
         paths += v.save(out)
     text = "\n".join(report)
     (out / "summary.txt").write_text(text + "\n", encoding="utf-8")
@@ -673,6 +677,8 @@ def main(argv=None):
     s.add_argument("--title")
     s.add_argument("--names", default="Recording,Model")
     s.add_argument("--span", type=float, help="seconds the whole-sound views span (default: the longest ring)")
+    s.add_argument("--views", type=lambda text: text.split(","),
+                   help="only these sheets, by name (level,hz-difference): a large set compared on a few")
     z = sub.add_parser("zoom", help="one region of one pair, large")
     z.add_argument("reference")
     z.add_argument("candidate", help="a WAV, or - for the reference alone")

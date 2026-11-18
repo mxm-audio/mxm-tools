@@ -22,7 +22,10 @@ is its `AGENTS.md`, "Look before reporting"; this folder is the tool every produ
 - **Every sheet is 1560 × 736**, the largest Claude reads unscaled. More sounds go on more pages,
   never on panels under `MIN_PW` × `MIN_PH`.
 - **Every picture written is printed as `LOOK: <absolute path>`**, after the summary; progress goes
-  to stderr. The workspace's `look_before_reporting.py` hook reads those lines.
+  to stderr. The workspace's `look_before_reporting.py` hook reads those lines. `--views` writes
+  only the sheets it names, for a large set compared on a few views (the workspace's platform check,
+  every plugin's renders on three platforms: `level` and `hz-difference`); the flags and the
+  summary still cover every view.
 - **A flag is a pointer, not a verdict**: its thresholds are named in the code (`PITCH_CENTS`,
   `SIBLING_DB`), and what it points at is looked at, then explained or fixed.
 - It reads WAV; a caller with other audio decodes it first. A caller passing downloaded recordings
